@@ -485,6 +485,446 @@ describe('Button accessibility', () => {
 
 ---
 
+## Card Family — one token file, one component file
+
+`tokens/ps-tokens/component/card.json` contains 7 card variants. Generate a **single `Card.tsx`** with a `variant` prop — do NOT create separate files per card type.
+
+**File structure:**
+```
+src/components/Card/
+  Card.tsx
+  Card.stories.tsx
+  Card.test.tsx
+  Card.a11y.test.tsx
+  index.ts
+```
+
+**Props interface:**
+```tsx
+export interface CardProps {
+  variant?: 'base' | 'event' | 'status' | 'aiData' | 'data' | 'list' | 'analytics';
+  loading?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}
+```
+
+**Variant descriptions — read these to generate correct content slots:**
+
+| Variant | Content slots | Notes |
+|---|---|---|
+| `base` | header, body, footer | Foundational shell — all others extend this |
+| `event` | icon, title, meta, link | Service event rows; uses `InlineButton` (director variant) for "View Details →" |
+| `status` | image, title, subtitle, statusBadge, timestamp | Uses `badge.status` tokens for the status pill |
+| `aiData` | title, subtitle, badgeGroup, costLabel | Uses `badge.status` (Urgent / Waiting for approval); badge colors from badge tokens |
+| `data` | eyebrow, title, meta, quoteBlock, actions | Quote block has gray background; actions use `button.square` (legacy orange) and secondary button |
+| `list` | image, title, price, badge, quantityInput, actions | "Add to Cart" uses `button.square` (legacy orange); supports empty state (Create New List) |
+| `analytics` | metricLabel, metricValue, trend, subLabel | Trend uses `card.analytics.trendPositive` (green ↑) or `trendNegative` (red ↓) |
+
+**Required states per variant:**
+- `base` / `event` / `status` / `aiData`: default, loading skeleton
+- `data` / `list`: default, loading skeleton, empty state
+- `analytics`: default, loading skeleton, positive trend, negative trend
+
+**Storybook stories to generate:**
+```tsx
+export const Base: Story = { args: { variant: 'base' } };
+export const Event: Story = { args: { variant: 'event' } };
+export const Status: Story = { args: { variant: 'status' } };
+export const AiData: Story = { args: { variant: 'aiData' } };
+export const Data: Story = { args: { variant: 'data' } };
+export const List: Story = { args: { variant: 'list' } };
+export const Analytics: Story = { args: { variant: 'analytics' } };
+export const LoadingState: Story = { args: { variant: 'data', loading: true } };
+export const AllVariants: Story = { render: () => (/* grid of all 6 visible variants */) };
+```
+
+---
+
+---
+
+## Navigation — two token files, two component files
+
+`navTop.json` → `TopNav.tsx` | `navLeft.json` → `LeftNav.tsx`
+
+```
+src/components/Navigation/
+  TopNav.tsx
+  TopNav.stories.tsx
+  TopNav.test.tsx
+  TopNav.a11y.test.tsx
+  LeftNav.tsx
+  LeftNav.stories.tsx
+  LeftNav.test.tsx
+  LeftNav.a11y.test.tsx
+  index.ts
+```
+
+**`TopNav.tsx` props:**
+```tsx
+export interface TopNavProps {
+  logoText?: string;
+  cartCount?: number;         // 0 = no badge shown
+  notificationCount?: number;
+  onSearch?: (query: string) => void;
+  onCartClick?: () => void;
+  onUserMenuClick?: () => void;
+  userDisplayName?: string;
+}
+```
+
+**`LeftNav.tsx` props:**
+```tsx
+export interface NavItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  badge?: number;
+  children?: NavItem[];  // sub-items
+  disabled?: boolean;
+}
+
+export interface LeftNavProps {
+  items: NavItem[];
+  activeItemId?: string;
+  collapsed?: boolean;
+  onCollapse?: (collapsed: boolean) => void;
+  userInitials?: string;
+  userName?: string;
+}
+```
+
+**Required states:**
+- TopNav: default, search focused, search with value, cart with badge, user menu open
+- LeftNav: expanded, collapsed (icon-only), item default/hover/active/disabled, with sub-items expanded
+
+---
+
+## Filter — one token file, multiple component files
+
+`tokens/ps-tokens/component/filter.json` maps to 4 component files:
+
+```
+src/components/Filter/
+  FilterBar.tsx          ← the outer bar with filter + sort controls
+  FilterChip.tsx         ← individual active filter pill (removable)
+  FilterDropdown.tsx     ← dropdown panel opened by a filter button
+  SavedFilterButton.tsx  ← saved filter trigger button
+  index.ts
+```
+
+**`FilterBar.tsx` props:**
+```tsx
+export interface FilterBarProps {
+  filters: FilterConfig[];
+  activeFilters: ActiveFilter[];
+  onFilterChange: (filters: ActiveFilter[]) => void;
+  onClearAll: () => void;
+  savedFilters?: SavedFilter[];
+}
+```
+
+**`FilterChip.tsx` props:**
+```tsx
+export interface FilterChipProps {
+  label: string;
+  value: string;
+  onRemove: () => void;
+  disabled?: boolean;
+}
+```
+
+**Required states:** default, with active chips, null/empty state, dropdown open, saved filter selected
+
+---
+
+## Input — one token file, two component files
+
+`tokens/ps-tokens/component/input.json` maps to 2 component files. Checkbox variants in the input token file belong in `Checkbox.tsx`, not `Input.tsx`.
+
+```
+src/components/Input/
+  Input.tsx              ← text input + large input + dropdown + date picker
+  Input.stories.tsx
+  Input.test.tsx
+  Input.a11y.test.tsx
+  index.ts
+
+src/components/Checkbox/
+  Checkbox.tsx           ← checkboxShort, checkboxLong, checkmarkTextNumber
+  Checkbox.stories.tsx
+  Checkbox.test.tsx
+  Checkbox.a11y.test.tsx
+  index.ts
+```
+
+**`Input.tsx` props:**
+```tsx
+export interface InputProps {
+  type?: 'text' | 'large' | 'dropdown' | 'datePicker';
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  error?: string;
+  hint?: string;
+  disabled?: boolean;
+  required?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  // Dropdown-specific
+  options?: { label: string; value: string }[];
+  searchable?: boolean;        // enables inputDropdown — shows text input inside dropdown
+  // Date picker-specific
+  range?: boolean;             // true = Start Date + End Date side-by-side range picker
+  startDate?: Date;
+  endDate?: Date;
+  onDateChange?: (start: Date, end?: Date) => void;
+  'aria-label'?: string;
+}
+```
+
+**Dropdown searchable behavior** (when `type="dropdown"` and `searchable={true}`):
+- Renders a text input inside the open dropdown panel (`input.dropdown.inputDropdown` tokens)
+- As user types, filter options and **bold the matching substring** in each option label using `font-weight: 700` on the matched characters only — do NOT hide non-matching options, just visually emphasize the match
+- Use `input.dropdown.option.hover` background on keyboard-focused option
+- Use `input.dropdown.option.selected` (brand primary bg + white text) on the selected option
+
+**Date picker behavior** (when `type="datePicker"`):
+- `range={false}` (default) → single "Select Date" input + calendar popup with orange calendar icon button
+- `range={true}` → two inputs side by side: "Start Date" and "End Date", shared calendar popup
+- Calendar: prev/next month navigation (`‹` / `›`), day grid Sun–Sat
+- `calendar.daySelected`: brand primary fill + white text
+- `calendar.dayRange`: light blue fill (`feedback.infoSubtle`) on days between start and end
+- `calendar.dayToday`: brand primary border + brand primary text, no fill
+- `calendar.dayDisabled`: tertiary text color, not clickable
+- Orange calendar icon uses `button.square.sm` token (legacy orange — keep as-is)
+
+**`Checkbox.tsx` props:**
+```tsx
+export interface CheckboxProps {
+  variant?: 'short' | 'long' | 'checkmarkText';
+  label: string;
+  checked?: boolean;
+  indeterminate?: boolean;
+  disabled?: boolean;
+  onChange?: (checked: boolean) => void;
+  'aria-label'?: string;
+}
+```
+
+**Required states — Input:** default, focused (floating label + blue border), filled, error, disabled
+**Required states — Dropdown:** closed, open, open+searching (with bold match highlight), option hovered, option selected, disabled
+**Required states — DatePicker:** idle, focused, calendar open, date selected, range selected (start + end), disabled days
+**Required states — Checkbox:** default, hover, checked (selected), indeterminate, disabled, focus
+**Note:** `checkboxShort` and `checkboxLong` selected/hover states use legacy orange `#ff9505` — use the raw token value, do not replace with brand blue. `checkmarkTextNumber` uses brand primary (correct, not legacy)
+
+---
+
+## Modal — one token file, one component file
+
+`tokens/ps-tokens/component/modal.json` → `Modal.tsx` — responsive, handles all breakpoints internally.
+
+```
+src/components/Modal/
+  Modal.tsx
+  Modal.stories.tsx
+  Modal.test.tsx
+  Modal.a11y.test.tsx
+  index.ts
+```
+
+**Props:**
+```tsx
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  size?: 'sm' | 'md' | 'lg' | 'fullscreen';
+  showFooter?: boolean;
+  primaryAction?: { label: string; onClick: () => void; loading?: boolean; };
+  secondaryAction?: { label: string; onClick: () => void; };
+  children: React.ReactNode;
+  'aria-label'?: string;
+}
+```
+
+**Required states:** closed, open (desktop), open (tablet), open (mobile), loading (primary action), with line items list
+**Accessibility:** focus trap when open, restore focus on close, `role="dialog"`, `aria-modal="true"`, `aria-labelledby` tied to title
+
+---
+
+## Alert — one token file, two component files
+
+`tokens/ps-tokens/component/alert.json` → `Alert.tsx` + `Toast.tsx` (toast has distinct position/behavior)
+
+```
+src/components/Alert/
+  Alert.tsx              ← inline + dismissable alerts
+  Alert.stories.tsx
+  Alert.test.tsx
+  Alert.a11y.test.tsx
+  Toast.tsx              ← dark floating notification
+  Toast.stories.tsx
+  Toast.test.tsx
+  index.ts
+```
+
+**`Alert.tsx` props:**
+```tsx
+export interface AlertProps {
+  variant: 'success' | 'error' | 'info' | 'warning';
+  title?: string;
+  message: string;
+  dismissable?: boolean;
+  onDismiss?: () => void;
+  icon?: React.ReactNode;
+}
+```
+
+**`Toast.tsx` props:**
+```tsx
+export interface ToastProps {
+  message: string;
+  duration?: number;   // ms before auto-dismiss, default 4000
+  onClose?: () => void;
+  action?: { label: string; onClick: () => void; };
+}
+```
+
+**Required states — Alert:** success, error, info, warning; each in default + dismissable variants
+**Required states — Toast:** visible (animates in from bottom-right), dismissing (fade out)
+
+---
+
+## Badge — one token file, one component file
+
+`tokens/ps-tokens/component/badge.json` → `Badge.tsx` — handles both status badges and list-type pills via props.
+
+```
+src/components/Badge/
+  Badge.tsx
+  Badge.stories.tsx
+  Badge.test.tsx
+  Badge.a11y.test.tsx
+  index.ts
+```
+
+**Props:**
+```tsx
+export interface BadgeProps {
+  type?: 'status' | 'listType';
+  variant: 'active' | 'inactive' | 'pending' | 'error' | 'info' | 'new' | 'discontinued'  // status
+         | 'primary' | 'secondary' | 'accent' | 'success' | 'warning';                     // listType
+  label: string;
+}
+```
+
+**Visual rules:**
+- `type="status"` → `border-radius: 4px`, uppercase bold, has border
+- `type="listType"` → `border-radius: 100px` (pill), uppercase bold, no border
+
+---
+
+## Stepper — one token file, multiple component files
+
+`tokens/ps-tokens/component/stepper.json` → 3 component files that compose together.
+
+```
+src/components/Stepper/
+  Stepper.tsx            ← wrapper that renders all steps
+  StepIndicator.tsx      ← the circle (finished/current/future)
+  StepConnector.tsx      ← the bar between steps
+  Stepper.stories.tsx
+  Stepper.test.tsx
+  Stepper.a11y.test.tsx
+  index.ts
+```
+
+**`Stepper.tsx` props:**
+```tsx
+export interface Step {
+  id: string;
+  label: string;
+  state: 'finished' | 'current' | 'future';
+}
+
+export interface StepperProps {
+  steps: Step[];
+  currentStepId: string;
+  orientation?: 'horizontal';  // vertical not in token spec
+}
+```
+
+**`StepIndicator.tsx` props:**
+```tsx
+export interface StepIndicatorProps {
+  state: 'finished' | 'current' | 'future';
+  stepNumber: number;
+  label: string;
+}
+```
+
+**Visual rules from tokens:**
+- finished: green fill + white checkmark icon
+- current: white fill + green border + green step number + glow shadow `0 0 0 3px rgba(23,171,120,0.2)`
+- future: white fill + gray border + gray step number
+
+---
+
+## Cart — part of TopNav, not a standalone component
+
+The `cart.json` tokens are used inside `TopNav.tsx` — do NOT create a separate `Cart.tsx`. The cart icon with badge count is a sub-element of the top navigation, already covered by the `cartCount` prop on `TopNav`.
+
+---
+
+## PageShell — one token file, one layout component file
+
+`tokens/ps-tokens/component/pageShell.json` → `PageShell.tsx` — the responsive layout wrapper.
+
+```
+src/components/PageShell/
+  PageShell.tsx
+  PageShell.stories.tsx
+  index.ts
+```
+
+**Props:**
+```tsx
+export interface PageShellProps {
+  children: React.ReactNode;
+  className?: string;
+}
+```
+
+**Behavior:** applies `max-width: 1440px`, centers content, applies responsive `contentPadding` via CSS custom properties at each breakpoint (1920px→48px, 1440px→32px, tablet→24px, mobile→16px). Background uses `surface.page` token.
+
+---
+
+## Icon — no custom component needed
+
+`tokens/ps-tokens/component/icon.json` defines sizes and colors for **Lucide icons**. Do NOT create a custom Icon component — use Lucide icons directly and apply token-based size/color classes.
+
+**Usage pattern:**
+```tsx
+import { ShoppingCart } from 'lucide-react';
+
+// Apply token values via CSS vars
+<ShoppingCart
+  size={24}  // icon.size.default
+  style={{
+    color: 'var(--ps-icon-color-brand)',
+    strokeWidth: 1.75,  // icon.strokeWidth
+  }}
+/>
+```
+
+**Available icon color roles from `icon.color.*`:**
+`default` | `secondary` | `tertiary` | `brand` | `light` | `onDark` | `success` | `error` | `warning` | `disabled`
+
+---
+
 ## Token file location
 
 When generating a component, read:
