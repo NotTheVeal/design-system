@@ -1,0 +1,43 @@
+{
+  "primitive": {
+    "opacity": {
+      "0": {
+        "$value": "0",
+        "$type": "opacity",
+        "$description": "Fully transparent"
+      },
+      "10": {
+        "$value": "0.1",
+        "$type": "opacity"
+      },
+      "20": {
+        "$value": "0.2",
+        "$type": "opacity"
+      },
+      "40": {
+        "$value": "0.4",
+        "$type": "opacity",
+        "$description": "Disabled state"
+      },
+      "50": {
+        "$value": "0.5",
+        "$type": "opacity",
+        "$description": "Overlay / scrim"
+      },
+      "60": {
+        "$value": "0.6",
+        "$type": "opacity"
+      },
+      "80": {
+        "$value": "0.8",
+        "$type": "opacity",
+        "$description": "Subtle fade"
+      },
+      "100": {
+        "$value": "1",
+        "$type": "opacity",
+        "$description": "Fully opaque"
+      }
+    }
+  }
+}

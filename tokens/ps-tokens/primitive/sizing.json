@@ -1,0 +1,113 @@
+{
+  "primitive": {
+    "sizing": {
+      "0": {
+        "$value": "0px",
+        "$type": "sizing"
+      },
+      "4": {
+        "$value": "4px",
+        "$type": "sizing"
+      },
+      "8": {
+        "$value": "8px",
+        "$type": "sizing"
+      },
+      "12": {
+        "$value": "12px",
+        "$type": "sizing"
+      },
+      "16": {
+        "$value": "16px",
+        "$type": "sizing"
+      },
+      "20": {
+        "$value": "20px",
+        "$type": "sizing"
+      },
+      "24": {
+        "$value": "24px",
+        "$type": "sizing"
+      },
+      "28": {
+        "$value": "28px",
+        "$type": "sizing"
+      },
+      "32": {
+        "$value": "32px",
+        "$type": "sizing"
+      },
+      "36": {
+        "$value": "36px",
+        "$type": "sizing"
+      },
+      "38": {
+        "$value": "38px",
+        "$type": "sizing"
+      },
+      "40": {
+        "$value": "40px",
+        "$type": "sizing"
+      },
+      "44": {
+        "$value": "44px",
+        "$type": "sizing"
+      },
+      "48": {
+        "$value": "48px",
+        "$type": "sizing"
+      },
+      "50": {
+        "$value": "50px",
+        "$type": "sizing"
+      },
+      "52": {
+        "$value": "52px",
+        "$type": "sizing"
+      },
+      "56": {
+        "$value": "56px",
+        "$type": "sizing"
+      },
+      "64": {
+        "$value": "64px",
+        "$type": "sizing"
+      },
+      "80": {
+        "$value": "80px",
+        "$type": "sizing"
+      },
+      "96": {
+        "$value": "96px",
+        "$type": "sizing"
+      },
+      "icon": {
+        "xs": {
+          "$value": "12px",
+          "$type": "sizing",
+          "$description": "Inline small icon"
+        },
+        "sm": {
+          "$value": "16px",
+          "$type": "sizing",
+          "$description": "Default small icon"
+        },
+        "md": {
+          "$value": "20px",
+          "$type": "sizing",
+          "$description": "Default icon"
+        },
+        "lg": {
+          "$value": "24px",
+          "$type": "sizing",
+          "$description": "Large icon"
+        },
+        "xl": {
+          "$value": "32px",
+          "$type": "sizing",
+          "$description": "Feature icon"
+        }
+      }
+    }
+  }
+}

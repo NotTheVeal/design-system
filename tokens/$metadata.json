@@ -1,14 +1,21 @@
+
 {
   "tokenSetOrder": [
     "ps-tokens/primitive/color",
     "ps-tokens/primitive/typography",
     "ps-tokens/primitive/spacing",
+    "ps-tokens/primitive/sizing",
+    "ps-tokens/primitive/border",
     "ps-tokens/primitive/radius",
     "ps-tokens/primitive/shadow",
+    "ps-tokens/primitive/opacity",
     "ps-tokens/primitive/base",
     "ps-tokens/semantic/color",
     "ps-tokens/semantic/typography",
     "ps-tokens/semantic/spacing",
+    "ps-tokens/semantic/sizing",
+    "ps-tokens/semantic/border",
+    "ps-tokens/semantic/opacity",
     "ps-tokens/component/button",
     "ps-tokens/component/navigation",
     "ps-tokens/component/filter",

@@ -1,0 +1,67 @@
+{
+  "semantic": {
+    "border": {
+      "width": {
+        "none": {
+          "$value": "{primitive.border.width.none}",
+          "$type": "borderWidth",
+          "$description": "No border — transparent button, ghost element"
+        },
+        "default": {
+          "$value": "{primitive.border.width.thin}",
+          "$type": "borderWidth",
+          "$description": "Standard card, input, divider border"
+        },
+        "interactive": {
+          "$value": "{primitive.border.width.medium}",
+          "$type": "borderWidth",
+          "$description": "Primary/secondary button border"
+        },
+        "focus": {
+          "$value": "{primitive.border.width.medium}",
+          "$type": "borderWidth",
+          "$description": "Focus ring thickness"
+        },
+        "emphasis": {
+          "$value": "{primitive.border.width.thick}",
+          "$type": "borderWidth",
+          "$description": "Active nav indicator, selected state emphasis"
+        }
+      },
+      "style": {
+        "default": {
+          "$value": "{primitive.border.style.solid}",
+          "$type": "other"
+        },
+        "dashed": {
+          "$value": "{primitive.border.style.dashed}",
+          "$type": "other"
+        }
+      },
+      "radius": {
+        "none": {
+          "$value": "{primitive.radius.none}",
+          "$type": "borderRadius"
+        },
+        "sm": {
+          "$value": "{primitive.radius.sm}",
+          "$type": "borderRadius",
+          "$description": "Cards, inputs, buttons"
+        },
+        "md": {
+          "$value": "{primitive.radius.md}",
+          "$type": "borderRadius"
+        },
+        "lg": {
+          "$value": "{primitive.radius.lg}",
+          "$type": "borderRadius"
+        },
+        "full": {
+          "$value": "{primitive.radius.full}",
+          "$type": "borderRadius",
+          "$description": "Pills, chips, badges"
+        }
+      }
+    }
+  }
+}

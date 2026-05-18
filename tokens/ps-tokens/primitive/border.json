@@ -1,0 +1,42 @@
+{
+  "primitive": {
+    "border": {
+      "width": {
+        "none": {
+          "$value": "0px",
+          "$type": "borderWidth",
+          "$description": "No border"
+        },
+        "thin": {
+          "$value": "1px",
+          "$type": "borderWidth",
+          "$description": "Default input, card borders"
+        },
+        "medium": {
+          "$value": "2px",
+          "$type": "borderWidth",
+          "$description": "Interactive elements, focus rings, primary buttons"
+        },
+        "thick": {
+          "$value": "4px",
+          "$type": "borderWidth",
+          "$description": "Active nav indicators, emphasis borders"
+        }
+      },
+      "style": {
+        "solid": {
+          "$value": "solid",
+          "$type": "other"
+        },
+        "dashed": {
+          "$value": "dashed",
+          "$type": "other"
+        },
+        "none": {
+          "$value": "none",
+          "$type": "other"
+        }
+      }
+    }
+  }
+}

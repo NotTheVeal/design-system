@@ -1,0 +1,67 @@
+{
+  "semantic": {
+    "sizing": {
+      "component": {
+        "xs": {
+          "$value": "{primitive.sizing.32}",
+          "$type": "sizing",
+          "$description": "Small chip, small secondary button, small square button"
+        },
+        "sm": {
+          "$value": "{primitive.sizing.38}",
+          "$type": "sizing",
+          "$description": "Tertiary button LG"
+        },
+        "md": {
+          "$value": "{primitive.sizing.40}",
+          "$type": "sizing",
+          "$description": "Chip LG, segmented control, small arrow button"
+        },
+        "lg": {
+          "$value": "{primitive.sizing.48}",
+          "$type": "sizing",
+          "$description": "Pill button (legacy), large inputs"
+        },
+        "xl": {
+          "$value": "{primitive.sizing.50}",
+          "$type": "sizing",
+          "$description": "Secondary button LG, large square button"
+        },
+        "2xl": {
+          "$value": "{primitive.sizing.52}",
+          "$type": "sizing",
+          "$description": "Primary button — largest interactive element"
+        }
+      },
+      "icon": {
+        "xs": {
+          "$value": "{primitive.sizing.icon.xs}",
+          "$type": "sizing"
+        },
+        "sm": {
+          "$value": "{primitive.sizing.icon.sm}",
+          "$type": "sizing"
+        },
+        "md": {
+          "$value": "{primitive.sizing.icon.md}",
+          "$type": "sizing"
+        },
+        "lg": {
+          "$value": "{primitive.sizing.icon.lg}",
+          "$type": "sizing"
+        },
+        "xl": {
+          "$value": "{primitive.sizing.icon.xl}",
+          "$type": "sizing"
+        }
+      },
+      "touch": {
+        "min": {
+          "$value": "{primitive.sizing.44}",
+          "$type": "sizing",
+          "$description": "WCAG minimum touch target size"
+        }
+      }
+    }
+  }
+}
