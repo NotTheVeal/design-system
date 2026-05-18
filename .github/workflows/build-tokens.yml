@@ -1,6 +1,7 @@
 name: Build Design Tokens
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -14,7 +15,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +24,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version:
+  workflow_dispatch: '20'
 
       - name: Install dependencies
         run: npm install
