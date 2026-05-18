@@ -1,0 +1,126 @@
+{
+  "checkbox": {
+    "$description": "Check Box \u2014 24\u00d724px. States: Default/Disabled/Selected/Completed (Check Boxes page)",
+    "size": {
+      "$value": "24px",
+      "$type": "dimension"
+    },
+    "radius": {
+      "$value": "2px",
+      "$type": "borderRadius"
+    },
+    "strokeWidth": {
+      "$value": "1.5px",
+      "$type": "borderWidth"
+    },
+    "default": {
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.text.tertiary}",
+        "$type": "color"
+      },
+      "checkmark": {
+        "$value": "transparent",
+        "$type": "color"
+      }
+    },
+    "hover": {
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      }
+    },
+    "selected": {
+      "background": {
+        "$value": "#ff9505",
+        "$type": "color",
+        "$description": "Legacy orange \u2014 new work: use #005ba6"
+      },
+      "border": {
+        "$value": "#ec8000",
+        "$type": "color"
+      },
+      "checkmark": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      }
+    },
+    "completed": {
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.feedback.success}",
+        "$type": "color"
+      },
+      "checkmark": {
+        "$value": "{semantic.color.feedback.success}",
+        "$type": "color"
+      }
+    },
+    "disabled": {
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.text.tertiary}",
+        "$type": "color"
+      },
+      "inner": {
+        "$value": "{semantic.color.text.disabled}",
+        "$type": "color"
+      },
+      "checkmark": {
+        "$value": "transparent",
+        "$type": "color"
+      }
+    },
+    "focus": {
+      "shadow": {
+        "$value": "0 0 10px 5px rgba(0,91,166,0.5)",
+        "$type": "boxShadow"
+      }
+    },
+    "indeterminate": {
+      "background": {
+        "$value": "#ff9505",
+        "$type": "color",
+        "$description": "Legacy \u2014 partial selection"
+      },
+      "border": {
+        "$value": "#ec8000",
+        "$type": "color"
+      },
+      "dash": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      }
+    },
+    "paddingInner": {
+      "$value": "6px",
+      "$type": "dimension"
+    },
+    "labelTypography": {
+      "$value": {
+        "fontFamily": "Source Sans Pro",
+        "fontWeight": 400,
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "$type": "typography"
+    },
+    "gap": {
+      "$value": "8px",
+      "$type": "dimension"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "cart": {
+    "$description": "Cart icon + badge \u2014 count variants Default/1-10+",
+    "icon": {
+      "$value": "{semantic.color.brand.primary}",
+      "$type": "color"
+    },
+    "iconStroke": {
+      "$value": "{semantic.color.brand.primary}",
+      "$type": "color"
+    },
+    "badge": {
+      "background": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.surface.page}",
+        "$type": "color"
+      },
+      "radius": {
+        "$value": "100px",
+        "$type": "borderRadius"
+      },
+      "fontSize": {
+        "$value": "10px",
+        "$type": "dimension"
+      },
+      "fontWeight": {
+        "$value": "700",
+        "$type": "fontWeight"
+      },
+      "minWidth": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "height": {
+        "$value": "16px",
+        "$type": "dimension"
+      }
+    },
+    "default": {
+      "$description": "No items in cart",
+      "icon": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      }
+    },
+    "withCount": {
+      "$description": "Cart with item count badge (variants 1\u201310+)",
+      "icon": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "badge": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "badgeText": {
+        "$value": "{semantic.color.surface.page}",
+        "$type": "color"
+      }
+    }
+  }
+}

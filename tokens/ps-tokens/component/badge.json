@@ -1,0 +1,239 @@
+{
+  "badge": {
+    "$description": "Badges \u2014 Status badges (4px radius) + List type pill badges (pill radius)",
+    "status": {
+      "$description": "Status badges \u2014 4px radius, 12px bold, semantic bg/text/border",
+      "radius": {
+        "$value": "4px",
+        "$type": "borderRadius"
+      },
+      "fontSize": {
+        "$value": "12px",
+        "$type": "dimension"
+      },
+      "fontWeight": {
+        "$value": "700",
+        "$type": "fontWeight"
+      },
+      "padding": {
+        "$value": "2px 8px",
+        "$type": "other"
+      },
+      "active": {
+        "background": {
+          "$value": "{semantic.color.feedback.successSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.feedback.successDark}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.feedback.success}",
+          "$type": "color"
+        }
+      },
+      "inactive": {
+        "background": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text.secondary}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        }
+      },
+      "pending": {
+        "background": {
+          "$value": "{semantic.color.feedback.warningSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.feedback.warningDark}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.feedback.warning}",
+          "$type": "color"
+        }
+      },
+      "error": {
+        "background": {
+          "$value": "{semantic.color.feedback.dangerSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.feedback.dangerDark}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.feedback.dangerDark}",
+          "$type": "color"
+        }
+      },
+      "info": {
+        "background": {
+          "$value": "{semantic.color.feedback.infoSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.brand.light}",
+          "$type": "color"
+        }
+      },
+      "new": {
+        "background": {
+          "$value": "{semantic.color.brand.tint}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.brand.secondary}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.brand.light}",
+          "$type": "color"
+        }
+      },
+      "discontinued": {
+        "background": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        }
+      },
+      "typography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 700,
+          "fontSize": "12px",
+          "lineHeight": "16px",
+          "letterSpacing": "0.5px",
+          "textTransform": "upper"
+        },
+        "$type": "typography"
+      },
+      "paddingV": {
+        "$value": "2px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "8px",
+        "$type": "dimension"
+      }
+    },
+    "listType": {
+      "$description": "List type pill badges \u2014 pill radius, uppercase, 0.5px tracking",
+      "radius": {
+        "$value": "100px",
+        "$type": "borderRadius"
+      },
+      "fontSize": {
+        "$value": "12px",
+        "$type": "dimension"
+      },
+      "fontWeight": {
+        "$value": "700",
+        "$type": "fontWeight"
+      },
+      "letterSpacing": {
+        "$value": "0.5px",
+        "$type": "letterSpacing"
+      },
+      "primary": {
+        "background": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        }
+      },
+      "secondary": {
+        "background": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
+        }
+      },
+      "accent": {
+        "background": {
+          "$value": "{semantic.color.brand.light}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        }
+      },
+      "success": {
+        "background": {
+          "$value": "{semantic.color.feedback.successSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.feedback.successDark}",
+          "$type": "color"
+        }
+      },
+      "warning": {
+        "background": {
+          "$value": "{semantic.color.feedback.warningSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.feedback.warningDark}",
+          "$type": "color"
+        }
+      },
+      "error": {
+        "background": {
+          "$value": "{semantic.color.feedback.dangerSubtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.feedback.dangerDark}",
+          "$type": "color"
+        }
+      },
+      "typography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 700,
+          "fontSize": "12px",
+          "lineHeight": "16px",
+          "letterSpacing": "0.5px",
+          "textTransform": "upper"
+        },
+        "$type": "typography"
+      },
+      "paddingV": {
+        "$value": "4px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "10px",
+        "$type": "dimension"
+      }
+    }
+  }
+}
