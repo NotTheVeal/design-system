@@ -40,24 +40,24 @@
       },
       "radius": {
         "none": {
-          "$value": "{primitive.radius.none}",
+          "$value": "{primitive.borderRadius.none}",
           "$type": "borderRadius"
         },
         "sm": {
-          "$value": "{primitive.radius.sm}",
+          "$value": "{primitive.borderRadius.sm}",
           "$type": "borderRadius",
           "$description": "Cards, inputs, buttons"
         },
         "md": {
-          "$value": "{primitive.radius.md}",
+          "$value": "{primitive.borderRadius.md}",
           "$type": "borderRadius"
         },
         "lg": {
-          "$value": "{primitive.radius.lg}",
+          "$value": "{primitive.borderRadius.lg}",
           "$type": "borderRadius"
         },
         "full": {
-          "$value": "{primitive.radius.full}",
+          "$value": "{primitive.borderRadius.pill}",
           "$type": "borderRadius",
           "$description": "Pills, chips, badges"
         }

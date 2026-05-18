@@ -1,0 +1,41 @@
+name: Build Design Tokens
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tokens/**'
+      - 'style-dictionary.config.js'
+      - 'validate-references.js'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tokens/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate token references
+        run: npm run validate
+
+      - name: Build tokens
+        run: npm run build
+
+      - name: Upload built tokens
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-tokens
+          path: dist/
+          retention-days: 30

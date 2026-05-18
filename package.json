@@ -1,0 +1,15 @@
+{
+  "name": "@partssource/design-tokens",
+  "version": "1.0.0",
+  "description": "PartsSource design tokens — Token Studio → Style Dictionary → CSS/JS",
+  "scripts": {
+    "build": "node style-dictionary.config.js",
+    "validate": "node validate-references.js",
+    "build:validate": "npm run validate && npm run build"
+  },
+  "devDependencies": {
+    "style-dictionary": "^3.9.2"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
