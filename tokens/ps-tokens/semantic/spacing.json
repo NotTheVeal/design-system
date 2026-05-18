@@ -1,61 +1,63 @@
 {
-  "$description": "Level 2 \u2014 Describes intent. References primitive tokens only. Tells what a token is FOR.",
-  "spacing": {
-    "componentGap": {
-      "$value": "{primitive.spacing.3}",
-      "$type": "dimension"
+  "semantic": {
+    "$description": "Level 2 \u2014 Describes intent. References primitive tokens only. Tells what a token is FOR.",
+    "spacing": {
+      "componentGap": {
+        "$value": "{primitive.spacing.3}",
+        "$type": "dimension"
+      },
+      "componentPadSm": {
+        "$value": "{primitive.spacing.2}",
+        "$type": "dimension"
+      },
+      "componentPadMd": {
+        "$value": "{primitive.spacing.4}",
+        "$type": "dimension"
+      },
+      "componentPadLg": {
+        "$value": "{primitive.spacing.6}",
+        "$type": "dimension"
+      },
+      "sectionGap": {
+        "$value": "{primitive.spacing.8}",
+        "$type": "dimension"
+      }
     },
-    "componentPadSm": {
-      "$value": "{primitive.spacing.2}",
-      "$type": "dimension"
+    "borderRadius": {
+      "default": {
+        "$value": "{primitive.borderRadius.md}",
+        "$type": "dimension"
+      },
+      "small": {
+        "$value": "{primitive.borderRadius.sm}",
+        "$type": "dimension"
+      },
+      "large": {
+        "$value": "{primitive.borderRadius.lg}",
+        "$type": "dimension"
+      },
+      "pill": {
+        "$value": "{primitive.borderRadius.pill}",
+        "$type": "dimension"
+      }
     },
-    "componentPadMd": {
-      "$value": "{primitive.spacing.4}",
-      "$type": "dimension"
-    },
-    "componentPadLg": {
-      "$value": "{primitive.spacing.6}",
-      "$type": "dimension"
-    },
-    "sectionGap": {
-      "$value": "{primitive.spacing.8}",
-      "$type": "dimension"
-    }
-  },
-  "borderRadius": {
-    "default": {
-      "$value": "{primitive.borderRadius.md}",
-      "$type": "dimension"
-    },
-    "small": {
-      "$value": "{primitive.borderRadius.sm}",
-      "$type": "dimension"
-    },
-    "large": {
-      "$value": "{primitive.borderRadius.lg}",
-      "$type": "dimension"
-    },
-    "pill": {
-      "$value": "{primitive.borderRadius.pill}",
-      "$type": "dimension"
-    }
-  },
-  "shadow": {
-    "card": {
-      "$value": "{primitive.shadow.elevation1}",
-      "$type": "boxShadow"
-    },
-    "cardHover": {
-      "$value": "{primitive.shadow.cardHover}",
-      "$type": "boxShadow"
-    },
-    "modal": {
-      "$value": "{primitive.shadow.elevation3}",
-      "$type": "boxShadow"
-    },
-    "focus": {
-      "$value": "{primitive.shadow.focusRing}",
-      "$type": "boxShadow"
+    "shadow": {
+      "card": {
+        "$value": "{primitive.shadow.elevation1}",
+        "$type": "boxShadow"
+      },
+      "cardHover": {
+        "$value": "{primitive.shadow.cardHover}",
+        "$type": "boxShadow"
+      },
+      "modal": {
+        "$value": "{primitive.shadow.elevation3}",
+        "$type": "boxShadow"
+      },
+      "focus": {
+        "$value": "{primitive.shadow.focusRing}",
+        "$type": "boxShadow"
+      }
     }
   }
 }

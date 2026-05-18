@@ -1,97 +1,99 @@
 {
-  "fontFamily": {
-    "sans": {
-      "$value": "Source Sans Pro",
-      "$type": "fontFamily",
-      "$description": "Primary typeface \u2014 all product UI"
+  "primitive": {
+    "fontFamily": {
+      "sans": {
+        "$value": "Source Sans Pro",
+        "$type": "fontFamily",
+        "$description": "Primary typeface \u2014 all product UI"
+      },
+      "ui": {
+        "$value": "Inter",
+        "$type": "fontFamily",
+        "$description": "UI / internal tools"
+      },
+      "mono": {
+        "$value": "JetBrains Mono",
+        "$type": "fontFamily",
+        "$description": "Code, part numbers"
+      }
     },
-    "ui": {
-      "$value": "Inter",
-      "$type": "fontFamily",
-      "$description": "UI / internal tools"
+    "fontWeight": {
+      "light": {
+        "$value": 300,
+        "$type": "fontWeight"
+      },
+      "regular": {
+        "$value": 400,
+        "$type": "fontWeight"
+      },
+      "semibold": {
+        "$value": 600,
+        "$type": "fontWeight"
+      },
+      "bold": {
+        "$value": 700,
+        "$type": "fontWeight"
+      }
     },
-    "mono": {
-      "$value": "JetBrains Mono",
-      "$type": "fontFamily",
-      "$description": "Code, part numbers"
-    }
-  },
-  "fontWeight": {
-    "light": {
-      "$value": 300,
-      "$type": "fontWeight"
+    "fontSize": {
+      "xs": {
+        "$value": "12px",
+        "$type": "dimension"
+      },
+      "sm": {
+        "$value": "14px",
+        "$type": "dimension"
+      },
+      "base": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "lg": {
+        "$value": "18px",
+        "$type": "dimension"
+      },
+      "xl": {
+        "$value": "20px",
+        "$type": "dimension"
+      },
+      "2xl": {
+        "$value": "24px",
+        "$type": "dimension"
+      },
+      "3xl": {
+        "$value": "34px",
+        "$type": "dimension"
+      }
     },
-    "regular": {
-      "$value": 400,
-      "$type": "fontWeight"
-    },
-    "semibold": {
-      "$value": 600,
-      "$type": "fontWeight"
-    },
-    "bold": {
-      "$value": 700,
-      "$type": "fontWeight"
-    }
-  },
-  "fontSize": {
-    "xs": {
-      "$value": "12px",
-      "$type": "dimension"
-    },
-    "sm": {
-      "$value": "14px",
-      "$type": "dimension"
-    },
-    "base": {
-      "$value": "16px",
-      "$type": "dimension"
-    },
-    "lg": {
-      "$value": "18px",
-      "$type": "dimension"
-    },
-    "xl": {
-      "$value": "20px",
-      "$type": "dimension"
-    },
-    "2xl": {
-      "$value": "24px",
-      "$type": "dimension"
-    },
-    "3xl": {
-      "$value": "34px",
-      "$type": "dimension"
-    }
-  },
-  "lineHeight": {
-    "4": {
-      "$value": "16px",
-      "$type": "dimension"
-    },
-    "5": {
-      "$value": "20px",
-      "$type": "dimension"
-    },
-    "6": {
-      "$value": "24px",
-      "$type": "dimension"
-    },
-    "7": {
-      "$value": "28px",
-      "$type": "dimension"
-    },
-    "8": {
-      "$value": "32px",
-      "$type": "dimension"
-    },
-    "10": {
-      "$value": "40px",
-      "$type": "dimension"
-    },
-    "11": {
-      "$value": "42px",
-      "$type": "dimension"
+    "lineHeight": {
+      "4": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "5": {
+        "$value": "20px",
+        "$type": "dimension"
+      },
+      "6": {
+        "$value": "24px",
+        "$type": "dimension"
+      },
+      "7": {
+        "$value": "28px",
+        "$type": "dimension"
+      },
+      "8": {
+        "$value": "32px",
+        "$type": "dimension"
+      },
+      "10": {
+        "$value": "40px",
+        "$type": "dimension"
+      },
+      "11": {
+        "$value": "42px",
+        "$type": "dimension"
+      }
     }
   }
 }
