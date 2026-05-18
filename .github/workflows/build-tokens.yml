@@ -15,8 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on:
-  workflow_dispatch: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,8 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version:
-  workflow_dispatch: '20'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -40,5 +38,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: built-tokens
-          path: dist/
+          path: src/tokens/
           retention-days: 30
