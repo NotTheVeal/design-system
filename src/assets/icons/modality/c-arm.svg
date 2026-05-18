@@ -1,0 +1,21 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M36 39C27.025 39 19.75 31.725 19.75 22.75C19.75 13.775 27.025 6.5 36 6.5" stroke="black" stroke-width="1.25"/>
+<path d="M36 36.5C28.4063 36.5 22.25 30.3438 22.25 22.75C22.25 15.1563 28.4063 9 36 9" stroke="black" stroke-width="1.25"/>
+<path d="M38.5039 40.875C40.2298 40.875 41.6289 39.4759 41.6289 37.75C41.6289 36.0241 40.2298 34.625 38.5039 34.625C36.778 34.625 35.3789 36.0241 35.3789 37.75C35.3789 39.4759 36.778 40.875 38.5039 40.875Z" stroke="black" stroke-width="1.25"/>
+<path d="M37.25 31.5V34.625" stroke="black" stroke-width="1.25"/>
+<path d="M39.7539 31.5V34.625" stroke="black" stroke-width="1.25"/>
+<path d="M6.625 26.5H13.5C14.5352 26.5 15.375 27.3398 15.375 28.375V41.5H6.625V26.5Z" stroke="black" stroke-width="1.25"/>
+<path d="M15.3711 41.5H27.2461" stroke="black" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M15.3711 39H27.2461" stroke="black" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M25.375 43.375C26.0654 43.375 26.625 42.8154 26.625 42.125C26.625 41.4346 26.0654 40.875 25.375 40.875C24.6846 40.875 24.125 41.4346 24.125 42.125C24.125 42.8154 24.6846 43.375 25.375 43.375Z" fill="black"/>
+<path d="M9.12505 43.375C9.81541 43.375 10.3751 42.8154 10.3751 42.125C10.3751 41.4346 9.81541 40.875 9.12505 40.875C8.4347 40.875 7.87505 41.4346 7.87505 42.125C7.87505 42.8154 8.4347 43.375 9.12505 43.375Z" fill="black"/>
+<path d="M22.25 21.5H6" stroke="black" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M22.25 24H6" stroke="black" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M10.9961 24V26.5" stroke="black" stroke-width="1.25"/>
+<path d="M12.25 29H13.5" stroke="black" stroke-width="1.25"/>
+<path d="M12.25 31.5H13.5" stroke="black" stroke-width="1.25"/>
+<path d="M12.25 34H13.5" stroke="black" stroke-width="1.25"/>
+<path d="M41.6289 5.29434C39.9031 3.56855 37.1047 3.56855 35.3789 5.29434V13.9998H41.6289V5.29434Z" stroke="black" stroke-width="1.25"/>
+<path d="M15.375 12.75H6.625V19H15.375V12.75Z" stroke="black" stroke-width="1.25"/>
+<path d="M10.9961 19V21.5" stroke="black" stroke-width="1.25"/>
+</svg>
