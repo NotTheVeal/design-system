@@ -1,0 +1,179 @@
+{
+  "alert": {
+    "$description": "Alerts \u2014 2 Figma component sets: Core Alerts + Dismissable Alerts",
+    "radius": {
+      "$value": "4px",
+      "$type": "borderRadius"
+    },
+    "padding": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "success": {
+      "background": {
+        "$value": "{semantic.color.feedback.successSubtle}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.feedback.successDark}",
+        "$type": "color"
+      },
+      "icon": {
+        "$value": "{semantic.color.feedback.successDark}",
+        "$type": "color"
+      },
+      "iconBorder": {
+        "$value": "{semantic.color.feedback.successDark}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.feedback.success}",
+        "$type": "color"
+      }
+    },
+    "error": {
+      "background": {
+        "$value": "{semantic.color.feedback.dangerSubtle}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.feedback.dangerDark}",
+        "$type": "color"
+      },
+      "icon": {
+        "$value": "{semantic.color.feedback.dangerDark}",
+        "$type": "color"
+      },
+      "iconBorder": {
+        "$value": "{semantic.color.feedback.dangerDark}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.feedback.dangerDark}",
+        "$type": "color"
+      }
+    },
+    "info": {
+      "background": {
+        "$value": "{semantic.color.feedback.infoSubtle}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "icon": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "iconBorder": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.brand.light}",
+        "$type": "color"
+      }
+    },
+    "warning": {
+      "background": {
+        "$value": "{semantic.color.feedback.warningSubtle}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.feedback.warningDark}",
+        "$type": "color"
+      },
+      "icon": {
+        "$value": "{semantic.color.feedback.warningDark}",
+        "$type": "color"
+      },
+      "iconBorder": {
+        "$value": "{semantic.color.feedback.warningDark}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.feedback.warning}",
+        "$type": "color"
+      }
+    },
+    "dismissable": {
+      "$description": "Dismissable Alerts \u2014 same colors + close button",
+      "closeIcon": {
+        "default": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
+        },
+        "hover": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        }
+      },
+      "height": {
+        "$value": "48px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "18px",
+        "$type": "dimension"
+      }
+    },
+    "toast": {
+      "$description": "Toast notification \u2014 dark background, appears bottom-right",
+      "background": {
+        "$value": "{semantic.color.brand.secondary}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "radius": {
+        "$value": "4px",
+        "$type": "borderRadius"
+      },
+      "shadow": {
+        "$value": "0 6px 20px rgba(0,47,72,0.18)",
+        "$type": "boxShadow"
+      },
+      "close": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      }
+    },
+    "paddingV": {
+      "$value": "12px",
+      "$type": "dimension"
+    },
+    "paddingH": {
+      "$value": "18px",
+      "$type": "dimension"
+    },
+    "gap": {
+      "$value": "10px",
+      "$type": "dimension"
+    },
+    "height": {
+      "$value": "40px",
+      "$type": "dimension"
+    },
+    "typography": {
+      "$value": {
+        "fontFamily": "Source Sans Pro",
+        "fontWeight": 400,
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "$type": "typography"
+    },
+    "titleTypography": {
+      "$value": {
+        "fontFamily": "Source Sans Pro",
+        "fontWeight": 600,
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "$type": "typography"
+    }
+  }
+}

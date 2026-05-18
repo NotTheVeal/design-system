@@ -1,0 +1,199 @@
+{
+  "filter": {
+    "$description": "Filter \u2014 Filter bar + Filter Breakpoints (2 Figma component sets)",
+    "bar": {
+      "$description": "Filter \u2014 container bar across all breakpoints",
+      "background": {
+        "$value": "{semantic.color.surface.page}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "48px",
+        "$type": "dimension"
+      },
+      "paddingV": {
+        "$value": "8px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "8px",
+        "$type": "dimension"
+      }
+    },
+    "nullState": {
+      "$description": "Filter \u2014 no filters applied",
+      "background": {
+        "$value": "{semantic.color.surface.page}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "placeholderText": {
+        "$value": "{semantic.color.text.tertiary}",
+        "$type": "color"
+      },
+      "typography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "13px"
+        },
+        "$type": "typography",
+        "$description": "Placeholder text \u2014 italic"
+      }
+    },
+    "withChips": {
+      "$description": "Filter \u2014 active chips shown",
+      "background": {
+        "$value": "{semantic.color.surface.page}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "clearAll": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "chipGroup": {
+        "$value": "{semantic.color.feedback.dangerSubtle}",
+        "$type": "color"
+      }
+    },
+    "dropdown": {
+      "$description": "Filter \u2014 dropdown open state",
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "optionBg": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "optionHoverBg": {
+        "$value": "{semantic.color.surface.subtle}",
+        "$type": "color"
+      },
+      "selectedItemBg": {
+        "$value": "{semantic.color.feedback.infoSubtle}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.text.primary}",
+        "$type": "color"
+      },
+      "divider": {
+        "$value": "{semantic.color.surface.subtle}",
+        "$type": "color"
+      }
+    },
+    "savedFilter": {
+      "$description": "Filter \u2014 saved filter set selected state",
+      "background": {
+        "$value": "{semantic.color.surface.page}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "chipGroup": {
+        "$value": "{semantic.color.feedback.dangerSubtle}",
+        "$type": "color"
+      }
+    },
+    "chip": {
+      "default": {
+        "background": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
+        }
+      },
+      "hover": {
+        "background": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        }
+      },
+      "selected": {
+        "background": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        }
+      },
+      "disabled": {
+        "background": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text.tertiary}",
+          "$type": "color"
+        }
+      },
+      "height": {
+        "$value": "32px",
+        "$type": "dimension"
+      },
+      "paddingV": {
+        "$value": "4px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "12px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "6px",
+        "$type": "dimension"
+      },
+      "typography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "13px"
+        },
+        "$type": "typography"
+      },
+      "radius": {
+        "$value": "100px",
+        "$type": "borderRadius"
+      }
+    }
+  }
+}

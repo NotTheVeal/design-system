@@ -1,0 +1,192 @@
+{
+  "navigation": {
+    "$description": "Navigation \u2014 Left Hand Nav + Top Nav (2 Figma component sets)",
+    "leftNav": {
+      "$description": "Left Hand Navigation \u2014 dark sidebar. States: Default/Default Closed/Name Select",
+      "background": {
+        "$value": "{semantic.color.brand.navDark}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "divider": {
+        "$value": "{semantic.color.interactive.hoverDark}",
+        "$type": "color"
+      },
+      "width": {
+        "$value": "240px",
+        "$type": "dimension"
+      },
+      "widthCollapsed": {
+        "$value": "64px",
+        "$type": "dimension"
+      },
+      "userBadge": {
+        "background": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        }
+      },
+      "collapseIcon": {
+        "background": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        },
+        "container": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        }
+      },
+      "item": {
+        "default": {
+          "background": {
+            "$value": "transparent",
+            "$type": "color"
+          },
+          "text": {
+            "$value": "{semantic.color.surface.default}",
+            "$type": "color"
+          }
+        },
+        "hover": {
+          "background": {
+            "$value": "{semantic.color.interactive.hoverDark}",
+            "$type": "color"
+          },
+          "text": {
+            "$value": "{semantic.color.surface.default}",
+            "$type": "color"
+          }
+        },
+        "active": {
+          "background": {
+            "$value": "{semantic.color.interactive.hoverDark}",
+            "$type": "color"
+          },
+          "text": {
+            "$value": "{semantic.color.surface.default}",
+            "$type": "color"
+          },
+          "borderLeft": {
+            "$value": "{semantic.color.brand.light}",
+            "$type": "color"
+          }
+        },
+        "disabled": {
+          "background": {
+            "$value": "transparent",
+            "$type": "color"
+          },
+          "text": {
+            "$value": "{semantic.color.text.tertiary}",
+            "$type": "color"
+          }
+        }
+      },
+      "paddingV": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "itemHeight": {
+        "$value": "40px",
+        "$type": "dimension"
+      },
+      "itemGap": {
+        "$value": "4px",
+        "$type": "dimension"
+      },
+      "userNameTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "18px"
+        },
+        "$type": "typography",
+        "$description": "User display name in nav"
+      },
+      "itemTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "14px",
+          "lineHeight": "20px"
+        },
+        "$type": "typography",
+        "$description": "Nav item label"
+      },
+      "sectionTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 600,
+          "fontSize": "11px",
+          "letterSpacing": "0.5px",
+          "textTransform": "upper"
+        },
+        "$type": "typography",
+        "$description": "Section label \u2014 small caps"
+      }
+    },
+    "topNav": {
+      "$description": "Top Nav bar \u2014 blue header",
+      "background": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "icon": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "64px",
+        "$type": "dimension"
+      },
+      "border": {
+        "$value": "{semantic.color.interactive.hoverDark}",
+        "$type": "color"
+      },
+      "searchBackground": {
+        "$value": "{semantic.color.interactive.hoverDark}",
+        "$type": "color"
+      },
+      "searchText": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "paddingH": {
+        "$value": "24px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "logoTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "24px"
+        },
+        "$type": "typography",
+        "$description": "Top nav product name"
+      }
+    }
+  }
+}

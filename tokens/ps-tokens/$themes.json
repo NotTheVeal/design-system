@@ -1,0 +1,31 @@
+[
+  {
+    "id": "a81c5eec-9ac6-4134-b1a3-ba2d9926ed1d",
+    "name": "Default",
+    "selectedTokenSets": {
+      "primitive/color": "enabled",
+      "primitive/typography": "enabled",
+      "primitive/spacing": "enabled",
+      "primitive/radius": "enabled",
+      "primitive/shadow": "enabled",
+      "primitive/base": "enabled",
+      "semantic/color": "enabled",
+      "semantic/typography": "enabled",
+      "semantic/spacing": "enabled",
+      "component/button": "enabled",
+      "component/navigation": "enabled",
+      "component/filter": "enabled",
+      "component/card": "enabled",
+      "component/cart": "enabled",
+      "component/checkbox": "enabled",
+      "component/input": "enabled",
+      "component/modal": "enabled",
+      "component/stepper": "enabled",
+      "component/alert": "enabled",
+      "component/badge": "enabled",
+      "component/pageShell": "enabled",
+      "component/icon": "enabled"
+    },
+    "group": "Default"
+  }
+]

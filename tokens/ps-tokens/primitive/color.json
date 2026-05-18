@@ -1,0 +1,272 @@
+{
+  "color": {
+    "blue": {
+      "50": {
+        "$value": "#edf4fb",
+        "$type": "color"
+      },
+      "100": {
+        "$value": "#daeaf8",
+        "$type": "color"
+      },
+      "200": {
+        "$value": "#b6d5f0",
+        "$type": "color"
+      },
+      "300": {
+        "$value": "#78aedd",
+        "$type": "color"
+      },
+      "400": {
+        "$value": "#3f88cb",
+        "$type": "color"
+      },
+      "500": {
+        "$value": "#005ba7",
+        "$type": "color",
+        "$description": "PS Blue \u2014 primary brand color"
+      },
+      "600": {
+        "$value": "#0051a0",
+        "$type": "color"
+      },
+      "700": {
+        "$value": "#003e7a",
+        "$type": "color"
+      },
+      "800": {
+        "$value": "#002f61",
+        "$type": "color"
+      },
+      "900": {
+        "$value": "#002f48",
+        "$type": "color",
+        "$description": "Midnight \u2014 deep headings, secondary brand"
+      }
+    },
+    "teal": {
+      "50": {
+        "$value": "#e0f5fd",
+        "$type": "color"
+      },
+      "100": {
+        "$value": "#b3e6fa",
+        "$type": "color"
+      },
+      "200": {
+        "$value": "#80d5f7",
+        "$type": "color"
+      },
+      "300": {
+        "$value": "#4dc4f3",
+        "$type": "color"
+      },
+      "400": {
+        "$value": "#26b8f1",
+        "$type": "color"
+      },
+      "500": {
+        "$value": "#009cf4",
+        "$type": "color",
+        "$description": "Azure Blue / Cyan \u2014 info, link hover, accent"
+      },
+      "600": {
+        "$value": "#0088d8",
+        "$type": "color"
+      },
+      "700": {
+        "$value": "#006eb2",
+        "$type": "color"
+      },
+      "800": {
+        "$value": "#00548d",
+        "$type": "color"
+      },
+      "900": {
+        "$value": "#003a68",
+        "$type": "color"
+      }
+    },
+    "green": {
+      "50": {
+        "$value": "#e8f8f2",
+        "$type": "color"
+      },
+      "100": {
+        "$value": "#c6efe0",
+        "$type": "color"
+      },
+      "200": {
+        "$value": "#99e0c8",
+        "$type": "color"
+      },
+      "300": {
+        "$value": "#65d1af",
+        "$type": "color"
+      },
+      "400": {
+        "$value": "#3ac49c",
+        "$type": "color"
+      },
+      "500": {
+        "$value": "#17ab78",
+        "$type": "color",
+        "$description": "Signal Green \u2014 success"
+      },
+      "600": {
+        "$value": "#0f9a68",
+        "$type": "color"
+      },
+      "700": {
+        "$value": "#0a8056",
+        "$type": "color"
+      },
+      "800": {
+        "$value": "#066644",
+        "$type": "color"
+      },
+      "900": {
+        "$value": "#044d33",
+        "$type": "color"
+      }
+    },
+    "red": {
+      "50": {
+        "$value": "#fff0f0",
+        "$type": "color"
+      },
+      "100": {
+        "$value": "#ffd6d6",
+        "$type": "color"
+      },
+      "200": {
+        "$value": "#ffadad",
+        "$type": "color"
+      },
+      "300": {
+        "$value": "#ff8585",
+        "$type": "color"
+      },
+      "400": {
+        "$value": "#ff5c5c",
+        "$type": "color"
+      },
+      "500": {
+        "$value": "#ff0000",
+        "$type": "color",
+        "$description": "Alert Red \u2014 danger/error"
+      },
+      "600": {
+        "$value": "#e60000",
+        "$type": "color"
+      },
+      "700": {
+        "$value": "#cc0000",
+        "$type": "color"
+      },
+      "800": {
+        "$value": "#990000",
+        "$type": "color"
+      },
+      "900": {
+        "$value": "#660000",
+        "$type": "color"
+      }
+    },
+    "amber": {
+      "50": {
+        "$value": "#fef8ec",
+        "$type": "color"
+      },
+      "100": {
+        "$value": "#fcefd0",
+        "$type": "color"
+      },
+      "200": {
+        "$value": "#f9dfa0",
+        "$type": "color"
+      },
+      "300": {
+        "$value": "#f5c85a",
+        "$type": "color"
+      },
+      "400": {
+        "$value": "#e3a92d",
+        "$type": "color",
+        "$description": "Amber \u2014 warning state"
+      },
+      "500": {
+        "$value": "#cc8f0f",
+        "$type": "color"
+      },
+      "600": {
+        "$value": "#b07b0c",
+        "$type": "color"
+      },
+      "700": {
+        "$value": "#8c620a",
+        "$type": "color"
+      },
+      "800": {
+        "$value": "#6a4a07",
+        "$type": "color"
+      },
+      "900": {
+        "$value": "#4a3305",
+        "$type": "color"
+      }
+    },
+    "neutral": {
+      "0": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "White"
+      },
+      "50": {
+        "$value": "#f7f9fa",
+        "$type": "color"
+      },
+      "100": {
+        "$value": "#f0f2f4",
+        "$type": "color"
+      },
+      "200": {
+        "$value": "#e0e5e9",
+        "$type": "color"
+      },
+      "300": {
+        "$value": "#c4cdd6",
+        "$type": "color"
+      },
+      "400": {
+        "$value": "#a0aeb9",
+        "$type": "color"
+      },
+      "500": {
+        "$value": "#6e8291",
+        "$type": "color"
+      },
+      "600": {
+        "$value": "#4e6577",
+        "$type": "color"
+      },
+      "700": {
+        "$value": "#324e60",
+        "$type": "color"
+      },
+      "800": {
+        "$value": "#1a3546",
+        "$type": "color"
+      },
+      "900": {
+        "$value": "#0d1f2d",
+        "$type": "color"
+      },
+      "1000": {
+        "$value": "#000000",
+        "$type": "color",
+        "$description": "Black"
+      }
+    }
+  }
+}

@@ -1,0 +1,436 @@
+{
+  "card": {
+    "$description": "Cards \u2014 6 Figma component sets (Event, AI Data, Status, Data, List, Analytics)",
+    "base": {
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "radius": {
+        "$value": "4px",
+        "$type": "borderRadius"
+      },
+      "shadow": {
+        "$value": "0 1px 4px rgba(0,47,72,0.08)",
+        "$type": "boxShadow"
+      },
+      "hoverShadow": {
+        "$value": "0 4px 12px rgba(0,0,0,0.1)",
+        "$type": "boxShadow"
+      }
+    },
+    "event": {
+      "$description": "Event Card \u2014 317px wide, footer with Azure Blue link",
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "footer": {
+        "background": {
+          "$value": "{semantic.color.surface.page}",
+          "$type": "color"
+        },
+        "divider": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        }
+      },
+      "link": {
+        "$value": "{semantic.color.brand.light}",
+        "$type": "color"
+      },
+      "linkIcon": {
+        "$value": "{semantic.color.brand.light}",
+        "$type": "color"
+      },
+      "default": {
+        "background": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        }
+      },
+      "hover": {
+        "background": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        },
+        "shadow": {
+          "$value": "0 4px 12px rgba(0,0,0,0.1)",
+          "$type": "boxShadow"
+        }
+      },
+      "height": {
+        "$value": "220px",
+        "$type": "dimension"
+      },
+      "padding": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "linkTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "16px"
+        },
+        "$type": "typography"
+      }
+    },
+    "aiData": {
+      "$description": "Ai Data Card \u2014 Type: Delivery/Request/Ai/Quote/Order. States: Default/Hover/Selected",
+      "background": {
+        "$value": "{semantic.color.surface.subtle}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "title": {
+        "$value": "{semantic.color.text.primary}",
+        "$type": "color"
+      },
+      "manufacturer": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "label": {
+        "$value": "{semantic.color.text.tertiary}",
+        "$type": "color"
+      },
+      "value": {
+        "$value": "{semantic.color.text.primary}",
+        "$type": "color"
+      },
+      "link": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "statusBadge": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "proLabel": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "deliveryLabel": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "selected": {
+        "border": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "background": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        }
+      },
+      "hover": {
+        "shadow": {
+          "$value": "0 4px 12px rgba(0,0,0,0.1)",
+          "$type": "boxShadow"
+        }
+      },
+      "padding": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "titleTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 600,
+          "fontSize": "16px",
+          "lineHeight": "22px"
+        },
+        "$type": "typography"
+      },
+      "subtitleTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "14px",
+          "lineHeight": "20px"
+        },
+        "$type": "typography"
+      },
+      "labelTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "12px",
+          "lineHeight": "16px"
+        },
+        "$type": "typography"
+      },
+      "linkTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 600,
+          "fontSize": "14px"
+        },
+        "$type": "typography"
+      }
+    },
+    "status": {
+      "$description": "Status Card \u2014 compact 220\u00d773px horizontal card",
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "width": {
+        "$value": "220px",
+        "$type": "dimension"
+      },
+      "height": {
+        "$value": "73px",
+        "$type": "dimension"
+      },
+      "label": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "value": {
+        "$value": "{semantic.color.text.primary}",
+        "$type": "color"
+      },
+      "icon": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "padding": {
+        "$value": "14px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "10px",
+        "$type": "dimension"
+      },
+      "labelTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "12px",
+          "lineHeight": "16px"
+        },
+        "$type": "typography"
+      },
+      "valueTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 600,
+          "fontSize": "16px",
+          "lineHeight": "22px"
+        },
+        "$type": "typography"
+      }
+    },
+    "data": {
+      "$description": "Data Card \u2014 max 620px, label/value pairs with status bar",
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "maxWidth": {
+        "$value": "620px",
+        "$type": "dimension"
+      },
+      "label": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "value": {
+        "$value": "{semantic.color.text.primary}",
+        "$type": "color"
+      },
+      "divider": {
+        "$value": "{semantic.color.surface.subtle}",
+        "$type": "color"
+      },
+      "action": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "paddingV": {
+        "$value": "24px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "24px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "10px",
+        "$type": "dimension"
+      },
+      "labelTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "13px",
+          "lineHeight": "18px"
+        },
+        "$type": "typography"
+      },
+      "actionTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 700,
+          "fontSize": "13px",
+          "textTransform": "upper"
+        },
+        "$type": "typography"
+      }
+    },
+    "list": {
+      "$description": "List Card \u2014 list-style row card",
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "text": {
+        "$value": "{semantic.color.text.primary}",
+        "$type": "color"
+      },
+      "subtext": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "link": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "divider": {
+        "$value": "{semantic.color.surface.subtle}",
+        "$type": "color"
+      },
+      "hover": {
+        "background": {
+          "$value": "{semantic.color.surface.page}",
+          "$type": "color"
+        }
+      },
+      "paddingV": {
+        "$value": "12px",
+        "$type": "dimension"
+      },
+      "paddingH": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "8px",
+        "$type": "dimension"
+      },
+      "primaryTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "14px",
+          "lineHeight": "20px"
+        },
+        "$type": "typography"
+      },
+      "secondaryTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "12px",
+          "lineHeight": "16px"
+        },
+        "$type": "typography"
+      }
+    },
+    "analytics": {
+      "$description": "Analytics Card \u2014 metric display card",
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color"
+      },
+      "metric": {
+        "$value": "{semantic.color.brand.primary}",
+        "$type": "color"
+      },
+      "metricLabel": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "trendPositive": {
+        "$value": "{semantic.color.feedback.success}",
+        "$type": "color"
+      },
+      "trendNegative": {
+        "$value": "{semantic.color.feedback.dangerDark}",
+        "$type": "color"
+      },
+      "label": {
+        "$value": "{semantic.color.text.secondary}",
+        "$type": "color"
+      },
+      "padding": {
+        "$value": "16px",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "8px",
+        "$type": "dimension"
+      },
+      "metricTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 700,
+          "fontSize": "24px",
+          "lineHeight": "32px"
+        },
+        "$type": "typography"
+      },
+      "labelTypography": {
+        "$value": {
+          "fontFamily": "Source Sans Pro",
+          "fontWeight": 400,
+          "fontSize": "14px",
+          "lineHeight": "20px"
+        },
+        "$type": "typography"
+      }
+    }
+  }
+}

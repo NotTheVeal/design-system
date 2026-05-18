@@ -1,0 +1,26 @@
+{
+  "tokenSetOrder": [
+    "primitive/color",
+    "primitive/typography",
+    "primitive/spacing",
+    "primitive/radius",
+    "primitive/shadow",
+    "primitive/base",
+    "semantic/color",
+    "semantic/typography",
+    "semantic/spacing",
+    "component/button",
+    "component/navigation",
+    "component/filter",
+    "component/card",
+    "component/cart",
+    "component/checkbox",
+    "component/input",
+    "component/modal",
+    "component/stepper",
+    "component/alert",
+    "component/badge",
+    "component/pageShell",
+    "component/icon"
+  ]
+}
