@@ -12,6 +12,16 @@
           "$type": "color",
           "$description": "Page headings, deep brand moments"
         },
+        "navDark": {
+          "$value": "{primitive.color.blue.900}",
+          "$type": "color",
+          "$description": "Dark navy \u2014 left navigation background"
+        },
+        "navMid": {
+          "$value": "{primitive.color.blue.800}",
+          "$type": "color",
+          "$description": "Mid navy \u2014 navigation hover/active states"
+        },
         "accent": {
           "$value": "{primitive.color.teal.500}",
           "$type": "color",
@@ -72,11 +82,48 @@
           "$type": "color"
         }
       },
+      "interactive": {
+        "hoverDark": {
+          "$value": "{primitive.color.blue.700}",
+          "$type": "color",
+          "$description": "Darker blue for hover/pressed on primary interactive elements"
+        },
+        "hover": {
+          "$value": "{primitive.color.blue.50}",
+          "$type": "color",
+          "$description": "Subtle hover tint on light surfaces"
+        },
+        "pressed": {
+          "$value": "{primitive.color.blue.100}",
+          "$type": "color",
+          "$description": "Pressed state on light surfaces"
+        },
+        "focus": {
+          "$value": "{primitive.color.blue.500}",
+          "$type": "color",
+          "$description": "Focus indicator color"
+        },
+        "focusRing": {
+          "$value": "{primitive.color.blue.200}",
+          "$type": "color",
+          "$description": "Focus ring halo color"
+        }
+      },
       "surface": {
+        "default": {
+          "$value": "{primitive.color.neutral.0}",
+          "$type": "color",
+          "$description": "Default white surface \u2014 buttons, inputs, cards"
+        },
         "page": {
           "$value": "{primitive.color.neutral.0}",
           "$type": "color",
           "$description": "Primary page background"
+        },
+        "subtle": {
+          "$value": "{primitive.color.neutral.100}",
+          "$type": "color",
+          "$description": "Subtle tinted surface \u2014 tertiary button, chip, disabled"
         },
         "overlay": {
           "$value": "{primitive.color.neutral.50}",
