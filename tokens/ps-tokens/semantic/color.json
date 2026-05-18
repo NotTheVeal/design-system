@@ -28,9 +28,14 @@
           "$description": "Azure Blue \u2014 info state, link hover, gradient accent"
         },
         "light": {
-          "$value": "{primitive.color.neutral.50}",
+          "$value": "{primitive.color.blue.100}",
           "$type": "color",
-          "$description": "Brand light background"
+          "$description": "Brand light blue — info borders, accent badge backgrounds"
+        },
+        "tint": {
+          "$value": "{primitive.color.blue.50}",
+          "$type": "color",
+          "$description": "Faintest brand tint — 'New' badge background, hover fills"
         },
         "airway": {
           "$value": "#dceaed",
@@ -199,6 +204,21 @@
         "infoSubtle": {
           "$value": "{primitive.color.blue.50}",
           "$type": "color"
+        },
+        "successDark": {
+          "$value": "{primitive.color.green.700}",
+          "$type": "color",
+          "$description": "Dark green — success text, icons on light backgrounds"
+        },
+        "dangerDark": {
+          "$value": "{primitive.color.red.700}",
+          "$type": "color",
+          "$description": "Dark red — error text, icons on light backgrounds"
+        },
+        "warningDark": {
+          "$value": "{primitive.color.amber.700}",
+          "$type": "color",
+          "$description": "Dark amber — warning text, icons on light backgrounds"
         }
       }
     }

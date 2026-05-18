@@ -482,118 +482,157 @@
       }
     },
     "square": {
-      "$description": "Button/SquareLG + Button/SquareSM \u2014 icon-only square buttons",
+      "$description": "Button/SquareLG + Button/SquareSM \u2014 LEGACY orange CTA buttons. Being phased out; use button.primary for new work.",
       "lg": {
         "default": {
           "background": {
+            "$value": "#ff9505",
+            "$type": "color",
+            "$description": "Legacy orange \u2014 do not use in new components"
+          },
+          "text": {
             "$value": "{semantic.color.surface.default}",
             "$type": "color"
           },
           "border": {
-            "$value": "{semantic.color.border.default}",
-            "$type": "color"
-          },
-          "icon": {
-            "$value": "{semantic.color.text.primary}",
+            "$value": "transparent",
             "$type": "color"
           }
         },
         "hover": {
           "background": {
-            "$value": "{semantic.color.surface.subtle}",
+            "$value": "#ec8000",
             "$type": "color"
           },
-          "border": {
-            "$value": "{semantic.color.border.default}",
+          "text": {
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
         "pressed": {
           "background": {
-            "$value": "{semantic.color.border.default}",
+            "$value": "#db7206",
+            "$type": "color"
+          },
+          "text": {
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
         "disabled": {
           "background": {
-            "$value": "{semantic.color.surface.subtle}",
-            "$type": "color"
+            "$value": "#ffca80",
+            "$type": "color",
+            "$description": "Faded orange for disabled state"
           },
-          "icon": {
-            "$value": "{semantic.color.text.tertiary}",
+          "text": {
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
-        "size": {
-          "$value": "50px",
+        "height": {
+          "$value": "48px",
+          "$type": "dimension"
+        },
+        "paddingV": {
+          "$value": "12px",
+          "$type": "dimension"
+        },
+        "paddingH": {
+          "$value": "24px",
           "$type": "dimension"
         },
         "radius": {
           "$value": "4px",
           "$type": "borderRadius"
         },
-        "borderWidth": {
-          "$value": "1px",
-          "$type": "borderWidth"
+        "typography": {
+          "$value": {
+            "fontFamily": "Source Sans Pro",
+            "fontWeight": 700,
+            "fontSize": "14px",
+            "textTransform": "uppercase",
+            "letterSpacing": "0.5px"
+          },
+          "$type": "typography"
         }
       },
       "sm": {
         "default": {
           "background": {
+            "$value": "#ff9505",
+            "$type": "color",
+            "$description": "Legacy orange \u2014 do not use in new components"
+          },
+          "text": {
             "$value": "{semantic.color.surface.default}",
             "$type": "color"
           },
           "border": {
-            "$value": "{semantic.color.border.default}",
-            "$type": "color"
-          },
-          "icon": {
-            "$value": "{semantic.color.text.primary}",
+            "$value": "transparent",
             "$type": "color"
           }
         },
         "hover": {
           "background": {
-            "$value": "{semantic.color.surface.subtle}",
+            "$value": "#ec8000",
             "$type": "color"
           },
-          "border": {
-            "$value": "{semantic.color.border.default}",
+          "text": {
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
         "pressed": {
           "background": {
-            "$value": "{semantic.color.border.default}",
+            "$value": "#db7206",
+            "$type": "color"
+          },
+          "text": {
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
         "disabled": {
           "background": {
-            "$value": "{semantic.color.surface.subtle}",
+            "$value": "#ffca80",
             "$type": "color"
           },
-          "icon": {
-            "$value": "{semantic.color.text.tertiary}",
+          "text": {
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
-        "size": {
+        "height": {
           "$value": "32px",
+          "$type": "dimension"
+        },
+        "paddingV": {
+          "$value": "6px",
+          "$type": "dimension"
+        },
+        "paddingH": {
+          "$value": "16px",
           "$type": "dimension"
         },
         "radius": {
           "$value": "4px",
           "$type": "borderRadius"
         },
-        "borderWidth": {
-          "$value": "1px",
-          "$type": "borderWidth"
+        "typography": {
+          "$value": {
+            "fontFamily": "Source Sans Pro",
+            "fontWeight": 700,
+            "fontSize": "12px",
+            "textTransform": "uppercase",
+            "letterSpacing": "0.5px"
+          },
+          "$type": "typography"
         }
       }
     },
     "chip": {
-      "$description": "Button/ChipSM + Button/ChipLG \u2014 filter chip toggles",
+      "$description": "Button/ChipSM + Button/ChipLG \u2014 filter chip toggles and removable tags (with \u2297 dismiss icon)",
       "sm": {
         "single": {
           "background": {
@@ -748,6 +787,111 @@
         "radius": {
           "$value": "100px",
           "$type": "borderRadius"
+        }
+      },
+      "removable": {
+        "$description": "Button/ChipSM + ChipLG with ⊗ dismiss icon — used as filter tags that can be removed",
+        "sm": {
+          "default": {
+            "background": {
+              "$value": "{semantic.color.surface.default}",
+              "$type": "color"
+            },
+            "border": {
+              "$value": "{semantic.color.border.default}",
+              "$type": "color"
+            },
+            "text": {
+              "$value": "{semantic.color.text.primary}",
+              "$type": "color"
+            },
+            "icon": {
+              "$value": "{semantic.color.text.secondary}",
+              "$type": "color",
+              "$description": "⊗ dismiss icon color"
+            }
+          },
+          "hover": {
+            "border": {
+              "$value": "{semantic.color.brand.primary}",
+              "$type": "color"
+            },
+            "icon": {
+              "$value": "{semantic.color.brand.primary}",
+              "$type": "color"
+            }
+          },
+          "height": {
+            "$value": "32px",
+            "$type": "dimension"
+          },
+          "paddingV": {
+            "$value": "4px",
+            "$type": "dimension"
+          },
+          "paddingH": {
+            "$value": "12px",
+            "$type": "dimension"
+          },
+          "gap": {
+            "$value": "6px",
+            "$type": "dimension"
+          },
+          "radius": {
+            "$value": "100px",
+            "$type": "borderRadius"
+          }
+        },
+        "lg": {
+          "default": {
+            "background": {
+              "$value": "{semantic.color.surface.default}",
+              "$type": "color"
+            },
+            "border": {
+              "$value": "{semantic.color.border.default}",
+              "$type": "color"
+            },
+            "text": {
+              "$value": "{semantic.color.text.primary}",
+              "$type": "color"
+            },
+            "icon": {
+              "$value": "{semantic.color.text.secondary}",
+              "$type": "color",
+              "$description": "⊗ dismiss icon color"
+            }
+          },
+          "hover": {
+            "border": {
+              "$value": "{semantic.color.brand.primary}",
+              "$type": "color"
+            },
+            "icon": {
+              "$value": "{semantic.color.brand.primary}",
+              "$type": "color"
+            }
+          },
+          "height": {
+            "$value": "40px",
+            "$type": "dimension"
+          },
+          "paddingV": {
+            "$value": "8px",
+            "$type": "dimension"
+          },
+          "paddingH": {
+            "$value": "16px",
+            "$type": "dimension"
+          },
+          "gap": {
+            "$value": "8px",
+            "$type": "dimension"
+          },
+          "radius": {
+            "$value": "100px",
+            "$type": "borderRadius"
+          }
         }
       }
     },
@@ -983,7 +1127,7 @@
       }
     },
     "inline": {
-      "$description": "Button/Inline \u2014 text-only link-style button",
+      "$description": "Button/Inline \u2014 text-only link-style button. Variants: default (blue text), underline, allCaps, director (with trailing arrow chevron).",
       "default": {
         "text": {
           "$value": "{semantic.color.brand.primary}",
@@ -992,6 +1136,117 @@
         "textDecoration": {
           "$value": "none",
           "$type": "other"
+        }
+      },
+      "director": {
+        "default": {
+          "text": {
+            "$value": "{semantic.color.text.primary}",
+            "$type": "color"
+          },
+          "icon": {
+            "$value": "{semantic.color.text.primary}",
+            "$type": "color"
+          },
+          "textDecoration": {
+            "$value": "none",
+            "$type": "other"
+          }
+        },
+        "hover": {
+          "text": {
+            "$value": "{semantic.color.brand.primary}",
+            "$type": "color"
+          },
+          "icon": {
+            "$value": "{semantic.color.brand.primary}",
+            "$type": "color"
+          }
+        },
+        "typography": {
+          "$value": {
+            "fontFamily": "Source Sans Pro",
+            "fontWeight": 600,
+            "fontSize": "14px"
+          },
+          "$type": "typography"
+        },
+        "gap": {
+          "$value": "4px",
+          "$type": "dimension",
+          "$description": "Space between label and \u203a chevron"
+        }
+      },
+      "underline": {
+        "$description": "Button/Inline/Underline \u2014 always-underlined text link",
+        "default": {
+          "text": {
+            "$value": "{semantic.color.text.secondary}",
+            "$type": "color"
+          },
+          "textDecoration": {
+            "$value": "underline",
+            "$type": "other"
+          }
+        },
+        "hover": {
+          "text": {
+            "$value": "{semantic.color.brand.primary}",
+            "$type": "color"
+          },
+          "textDecoration": {
+            "$value": "underline",
+            "$type": "other"
+          }
+        },
+        "disabled": {
+          "text": {
+            "$value": "{semantic.color.text.disabled}",
+            "$type": "color"
+          }
+        },
+        "typography": {
+          "$value": {
+            "fontFamily": "Source Sans Pro",
+            "fontWeight": 400,
+            "fontSize": "14px"
+          },
+          "$type": "typography"
+        }
+      },
+      "allCaps": {
+        "$description": "Button/Inline/AllCaps \u2014 uppercase bold inline label",
+        "default": {
+          "text": {
+            "$value": "{semantic.color.text.primary}",
+            "$type": "color"
+          },
+          "textDecoration": {
+            "$value": "none",
+            "$type": "other"
+          }
+        },
+        "hover": {
+          "text": {
+            "$value": "{semantic.color.brand.primary}",
+            "$type": "color"
+          }
+        },
+        "disabled": {
+          "text": {
+            "$value": "{semantic.color.text.disabled}",
+            "$type": "color"
+          }
+        },
+        "typography": {
+          "$value": {
+            "fontFamily": "Source Sans Pro",
+            "fontWeight": 700,
+            "fontSize": "14px",
+            "textTransform": "uppercase",
+            "letterSpacing": "0.5px"
+          },
+          "$type": "typography"
         }
       },
       "hover": {
@@ -1030,7 +1285,7 @@
       }
     },
     "arrow": {
-      "$description": "Arrow \u2014 directional navigation button",
+      "$description": "Arrow \u2014 directional navigation button. Two variants: default (boxed with background) and ghost (icon only, no container).",
       "default": {
         "background": {
           "$value": "{semantic.color.surface.default}",
@@ -1053,11 +1308,19 @@
         "border": {
           "$value": "{semantic.color.border.default}",
           "$type": "color"
+        },
+        "icon": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
         }
       },
       "pressed": {
         "background": {
           "$value": "{semantic.color.border.default}",
+          "$type": "color"
+        },
+        "icon": {
+          "$value": "{semantic.color.text.primary}",
           "$type": "color"
         }
       },
@@ -1069,6 +1332,31 @@
         "icon": {
           "$value": "{semantic.color.text.tertiary}",
           "$type": "color"
+        }
+      },
+      "ghost": {
+        "$description": "Naked arrow \u2014 icon only, no background box. Used inline or in tight layouts.",
+        "default": {
+          "background": {
+            "$value": "transparent",
+            "$type": "color"
+          },
+          "icon": {
+            "$value": "{semantic.color.text.secondary}",
+            "$type": "color"
+          }
+        },
+        "hover": {
+          "icon": {
+            "$value": "{semantic.color.text.primary}",
+            "$type": "color"
+          }
+        },
+        "disabled": {
+          "icon": {
+            "$value": "{semantic.color.text.disabled}",
+            "$type": "color"
+          }
         }
       },
       "size": {

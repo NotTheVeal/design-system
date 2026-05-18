@@ -1,4 +1,3 @@
-
 {
   "tokenSetOrder": [
     "ps-tokens/primitive/color",
@@ -17,7 +16,8 @@
     "ps-tokens/semantic/border",
     "ps-tokens/semantic/opacity",
     "ps-tokens/component/button",
-    "ps-tokens/component/navigation",
+    "ps-tokens/component/navTop",
+    "ps-tokens/component/navLeft",
     "ps-tokens/component/filter",
     "ps-tokens/component/card",
     "ps-tokens/component/cart",
