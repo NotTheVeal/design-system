@@ -1,0 +1,50 @@
+{
+  "tab": {
+    "$description": "Tab navigation — horizontal tab bar with active/inactive states and optional count badges.",
+
+    "color": {
+      "default": {
+        "background": { "$value": "transparent", "$type": "color" },
+        "text": { "$value": "{semantic.color.text.primary}", "$type": "color" }
+      },
+      "active": {
+        "background": { "$value": "{semantic.color.surface.default}", "$type": "color", "$description": "White — active tab" },
+        "text": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "borderTop": { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "3px PS blue top accent" }
+      },
+      "hover": {
+        "background": { "$value": "{semantic.color.surface.default}", "$type": "color" }
+      }
+    },
+
+    "border": {
+      "activeWidth": { "$value": "3px", "$type": "borderWidth", "$description": "Top border width on active tab" }
+    },
+
+    "spacing": {
+      "paddingX": { "$value": "20px", "$type": "spacing", "$description": "Horizontal padding inside each tab" },
+      "gap": { "$value": "10px", "$type": "spacing", "$description": "Gap between label and count badge" }
+    },
+
+    "height": { "$value": "38px", "$type": "sizing", "$description": "Tab item height" },
+
+    "typography": {
+      "fontSize": { "$value": "16px", "$type": "fontSizes" }
+    },
+
+    "count": {
+      "$description": "Count badge inside tab items",
+      "background": { "$value": "#dcdcdc", "$type": "color", "$description": "Neutral gray pill" },
+      "text": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+      "radius": { "$value": "30px", "$type": "borderRadius", "$description": "Pill shape" },
+      "paddingX": { "$value": "5.5px", "$type": "spacing" },
+      "paddingY": { "$value": "4px", "$type": "spacing" },
+      "fontSize": { "$value": "12px", "$type": "fontSizes" },
+      "fontWeight": { "$value": "700", "$type": "fontWeights" },
+      "opacity": {
+        "default": { "$value": "0.8", "$type": "opacity", "$description": "Inactive tab count badge" },
+        "active": { "$value": "1", "$type": "opacity", "$description": "Active tab count badge" }
+      }
+    }
+  }
+}

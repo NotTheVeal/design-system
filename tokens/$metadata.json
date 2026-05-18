@@ -32,6 +32,7 @@
     "ps-tokens/component/iconModality",
     "ps-tokens/component/iconCustom",
     "ps-tokens/component/iconLineArt",
-    "ps-tokens/component/iconPictogram"
+    "ps-tokens/component/iconPictogram",
+    "ps-tokens/component/tab"
   ]
 }
