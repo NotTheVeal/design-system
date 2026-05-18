@@ -1,0 +1,54 @@
+{
+  "iconCustom": {
+    "$description": "Custom Icons — PartsSource-specific UI SVG icons. Source: src/assets/icons/custom/. 5 style variants: line, squareFilled, squareOutline, circleFilled, circleOutline.",
+    "size": {
+      "sm": { "$value": "16px", "$type": "dimension" },
+      "md": { "$value": "24px", "$type": "dimension" },
+      "lg": { "$value": "32px", "$type": "dimension" },
+      "xl": { "$value": "48px", "$type": "dimension" }
+    },
+    "line": {
+      "$description": "Bare icon — no container background.",
+      "default": { "color": { "$value": "{semantic.color.text.primary}", "$type": "color" } },
+      "brand": { "color": { "$value": "{semantic.color.brand.primary}", "$type": "color" } },
+      "secondary": { "color": { "$value": "{semantic.color.text.secondary}", "$type": "color" } },
+      "onDark": { "color": { "$value": "{semantic.color.surface.default}", "$type": "color" } },
+      "disabled": { "color": { "$value": "{semantic.color.text.disabled}", "$type": "color" } }
+    },
+    "squareFilled": {
+      "$description": "White icon on brand-primary square background — 4px radius",
+      "background": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "icon": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "radius": { "$value": "4px", "$type": "borderRadius" },
+      "padding": { "$value": "8px", "$type": "dimension" }
+    },
+    "squareOutline": {
+      "$description": "Brand-primary icon on white square with brand border — 4px radius",
+      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "icon": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "border": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "radius": { "$value": "4px", "$type": "borderRadius" },
+      "padding": { "$value": "8px", "$type": "dimension" }
+    },
+    "circleFilled": {
+      "$description": "White icon on brand-primary circle background",
+      "background": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "icon": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "radius": { "$value": "100px", "$type": "borderRadius" },
+      "padding": { "$value": "8px", "$type": "dimension" }
+    },
+    "circleOutline": {
+      "$description": "Brand-primary icon on white circle with brand border",
+      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "icon": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "border": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "radius": { "$value": "100px", "$type": "borderRadius" },
+      "padding": { "$value": "8px", "$type": "dimension" }
+    },
+    "strokeWidth": {
+      "$value": "1.5px",
+      "$type": "borderWidth",
+      "$description": "SVG stroke width for custom icons"
+    }
+  }
+}

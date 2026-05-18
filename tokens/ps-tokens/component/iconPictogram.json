@@ -1,0 +1,21 @@
+{
+  "iconPictogram": {
+    "$description": "Pictograms — detailed blue and white illustrated scenes. Source: src/assets/icons/pictograms/. Colors are intentional design colors baked into SVGs — do not override with currentColor.",
+    "size": {
+      "sm": { "$value": "80px", "$type": "dimension", "$description": "Small — card or sidebar illustration" },
+      "md": { "$value": "120px", "$type": "dimension", "$description": "Medium — feature callout" },
+      "lg": { "$value": "160px", "$type": "dimension", "$description": "Large — section hero illustration" },
+      "xl": { "$value": "240px", "$type": "dimension", "$description": "Extra large — empty state / onboarding hero" }
+    },
+    "container": {
+      "$description": "Optional container — pictograms work on light or dark backgrounds",
+      "background": {
+        "light": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+        "subtle": { "$value": "{semantic.color.surface.subtle}", "$type": "color" },
+        "dark": { "$value": "{semantic.color.brand.secondary}", "$type": "color" }
+      },
+      "radius": { "$value": "8px", "$type": "borderRadius" },
+      "padding": { "$value": "24px", "$type": "dimension" }
+    }
+  }
+}

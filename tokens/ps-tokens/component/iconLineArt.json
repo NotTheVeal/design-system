@@ -1,0 +1,24 @@
+{
+  "iconLineArt": {
+    "$description": "Line Art — detailed white outline illustration scenes. Source: src/assets/icons/line-art/. Used for feature highlights, empty states, marketing moments.",
+    "size": {
+      "sm": { "$value": "80px", "$type": "dimension", "$description": "Small — inline feature callout" },
+      "md": { "$value": "120px", "$type": "dimension", "$description": "Medium — card illustration" },
+      "lg": { "$value": "160px", "$type": "dimension", "$description": "Large — section hero" },
+      "xl": { "$value": "200px", "$type": "dimension", "$description": "Extra large — empty state / onboarding" }
+    },
+    "color": {
+      "$description": "Line art color roles — applied via currentColor on the SVG",
+      "default": { "$value": "{semantic.color.surface.default}", "$type": "color", "$description": "White — original design color, use on dark backgrounds" },
+      "brand": { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "Brand blue — use on light backgrounds" },
+      "onDark": { "$value": "{semantic.color.surface.default}", "$type": "color", "$description": "White on dark navy/dark backgrounds" },
+      "subtle": { "$value": "{semantic.color.text.secondary}", "$type": "color", "$description": "Muted gray — de-emphasized or disabled state" }
+    },
+    "container": {
+      "$description": "Optional dark background container for line art display",
+      "background": { "$value": "{semantic.color.brand.secondary}", "$type": "color", "$description": "Deep navy — matches the dark bg line art is designed for" },
+      "radius": { "$value": "8px", "$type": "borderRadius" },
+      "padding": { "$value": "24px", "$type": "dimension" }
+    }
+  }
+}
