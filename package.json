@@ -5,12 +5,14 @@
   "scripts": {
     "build": "node style-dictionary.config.js",
     "validate": "node validate-references.js",
-    "build:validate": "npm run validate && npm run build"
+    "build:validate": "npm run validate && npm run build",
+    "build:tokens": "style-dictionary build --config style-dictionary.config.js"
   },
   "devDependencies": {
     "style-dictionary": "^3.9.2",
     "token-transformer": "^0.0.33"
   },
   "license": "UNLICENSED",
-  "private": true
+  "private": true,
+  "dependencies": {}
 }

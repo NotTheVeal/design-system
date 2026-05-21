@@ -1,27 +1,21 @@
 /**
- * PartsSource Design System — Style Dictionary Config
+ * PartsSource Design System — Style Dictionary Config (v3 compatible)
  *
- * Transforms Token Studio JSON from GitHub into:
+ * Transforms Token Studio JSON into:
  *   1. CSS custom properties  → src/tokens/tokens.css
  *   2. Tailwind theme config  → src/tokens/tailwind-tokens.js
  *   3. TypeScript token map   → src/tokens/tokens.ts
  *
  * Run: npx style-dictionary build --config style-dictionary.config.js
+ *
+ * NOTE: Requires style-dictionary ^3.x (shadow/css was added in v4)
  */
 
 const StyleDictionary = require('style-dictionary');
 
 // ─── Custom transforms ────────────────────────────────────────────────────────
 
-// Strip Token Studio's {reference} syntax so SD resolves them
-StyleDictionary.registerTransform({
-  name: 'ps/resolve-references',
-  type: 'value',
-  matcher: (token) => typeof token.value === 'string' && token.value.startsWith('{'),
-  transformer: (token) => token.value, // SD handles resolution
-});
-
-// Convert px strings to unitless numbers for Tailwind spacing scale
+// px → rem for spacing/sizing/radius/border
 StyleDictionary.registerTransform({
   name: 'ps/px-to-rem',
   type: 'value',
@@ -29,10 +23,7 @@ StyleDictionary.registerTransform({
     ['sizing', 'spacing', 'borderRadius', 'borderWidth'].includes(token.type) &&
     typeof token.value === 'string' &&
     token.value.endsWith('px'),
-  transformer: (token) => {
-    const px = parseFloat(token.value);
-    return `${px / 16}rem`;
-  },
+  transformer: (token) => `${parseFloat(token.value) / 16}rem`,
 });
 
 // Font size px → rem
@@ -43,18 +34,37 @@ StyleDictionary.registerTransform({
     token.type === 'fontSizes' &&
     typeof token.value === 'string' &&
     token.value.endsWith('px'),
-  transformer: (token) => {
-    const px = parseFloat(token.value);
-    return `${px / 16}rem`;
-  },
+  transformer: (token) => `${parseFloat(token.value) / 16}rem`,
 });
 
-// Opacity: keep as decimal for CSS, Tailwind uses percentage string
+// Opacity decimal → percentage string
 StyleDictionary.registerTransform({
   name: 'ps/opacity-percent',
   type: 'value',
   matcher: (token) => token.type === 'opacity',
   transformer: (token) => `${parseFloat(token.value) * 100}%`,
+});
+
+// Shadow: flatten Token Studio boxShadow objects → CSS box-shadow string
+// (replaces shadow/css which only exists in Style Dictionary v4)
+StyleDictionary.registerTransform({
+  name: 'ps/shadow-css',
+  type: 'value',
+  matcher: (token) => token.type === 'boxShadow',
+  transformer: (token) => {
+    const v = token.value;
+    if (typeof v === 'string') return v; // already a string
+    if (Array.isArray(v)) {
+      // Multiple shadows
+      return v.map(s =>
+        `${s.x || 0}px ${s.y || 0}px ${s.blur || 0}px ${s.spread || 0}px ${s.color || '#000'}`
+      ).join(', ');
+    }
+    if (typeof v === 'object') {
+      return `${v.x || 0}px ${v.y || 0}px ${v.blur || 0}px ${v.spread || 0}px ${v.color || '#000'}`;
+    }
+    return v;
+  },
 });
 
 // ─── Transform groups ─────────────────────────────────────────────────────────
@@ -66,8 +76,8 @@ StyleDictionary.registerTransformGroup({
     'name/cti/kebab',
     'ps/px-to-rem',
     'ps/font-size-rem',
+    'ps/shadow-css',    // custom (replaces shadow/css which is v4-only)
     'color/css',
-    'shadow/css',
   ],
 });
 
@@ -91,7 +101,7 @@ StyleDictionary.registerTransformGroup({
   ],
 });
 
-// ─── Custom formatters ────────────────────────────────────────────────────────
+// ─── Formatters ───────────────────────────────────────────────────────────────
 
 // Tailwind theme extension object
 StyleDictionary.registerFormat({
@@ -108,40 +118,30 @@ StyleDictionary.registerFormat({
     const opacity = {};
 
     dictionary.allTokens.forEach((token) => {
-      const path = token.path;
+      const path  = token.path;
       const value = token.value;
 
       if (token.type === 'color') {
-        // Build nested color object: primitive.color.blue.500 → colors.blue[500]
         const [level, , ...rest] = path;
-        if (level === 'semantic' || level === 'primitive') {
-          const key = rest.join('-');
-          colors[key] = value;
+        if (['semantic', 'primitive'].includes(level)) {
+          colors[rest.join('-')] = value;
         }
-      } else if (token.type === 'spacing' || token.type === 'sizing') {
-        const key = path.slice(-1)[0];
-        spacing[key] = value;
+      } else if (['spacing', 'sizing'].includes(token.type)) {
+        spacing[path.slice(-1)[0]] = value;
       } else if (token.type === 'fontSizes') {
-        const key = path.slice(-1)[0];
-        fontSize[key] = value;
+        fontSize[path.slice(-1)[0]] = value;
       } else if (token.type === 'fontWeights') {
-        const key = path.slice(-1)[0];
-        fontWeight[key] = value;
+        fontWeight[path.slice(-1)[0]] = value;
       } else if (token.type === 'fontFamilies') {
-        const key = path.slice(-1)[0];
-        fontFamily[key] = [value];
+        fontFamily[path.slice(-1)[0]] = [value];
       } else if (token.type === 'borderRadius') {
-        const key = path.slice(-1)[0];
-        borderRadius[key] = value;
+        borderRadius[path.slice(-1)[0]] = value;
       } else if (token.type === 'borderWidth') {
-        const key = path.slice(-1)[0];
-        borderWidth[key] = value;
+        borderWidth[path.slice(-1)[0]] = value;
       } else if (token.type === 'boxShadow') {
-        const key = path.slice(-1)[0];
-        boxShadow[key] = value;
+        boxShadow[path.slice(-1)[0]] = value;
       } else if (token.type === 'opacity') {
-        const key = path.slice(-1)[0];
-        opacity[key] = value;
+        opacity[path.slice(-1)[0]] = value;
       }
     });
 
@@ -157,30 +157,24 @@ module.exports = {
   },
 });
 
-// TypeScript token map with full paths
+// TypeScript token map
 StyleDictionary.registerFormat({
   name: 'ps/typescript-tokens',
   formatter: ({ dictionary }) => {
     const tokens = {};
     dictionary.allTokens.forEach((token) => {
-      const key = token.path.join('.');
-      tokens[key] = token.value;
+      tokens[token.path.join('.')] = token.value;
     });
-
     return `/** Auto-generated by Style Dictionary — DO NOT EDIT */
 export const tokens = ${JSON.stringify(tokens, null, 2)} as const;
 
-export type TokenPath = keyof typeof tokens;
+export type TokenPath  = keyof typeof tokens;
 export type TokenValue = typeof tokens[TokenPath];
 `;
   },
 });
 
-// ─── Token file sources ───────────────────────────────────────────────────────
-
-// Token Studio outputs a single merged tokens.json OR multi-file structure.
-// This config expects the transformed (Style Dictionary compatible) JSON.
-// The GitHub Action runs `token-transformer` first to flatten Token Studio refs.
+// ─── Sources ──────────────────────────────────────────────────────────────────
 
 const SOURCE_GLOB = [
   'tokens/ps-tokens/primitive/*.json',
@@ -194,50 +188,35 @@ module.exports = {
   source: SOURCE_GLOB,
   platforms: {
 
-    // 1. CSS custom properties
     css: {
       transformGroup: 'ps/css',
       prefix: 'ps',
       buildPath: 'src/tokens/',
-      files: [
-        {
-          destination: 'tokens.css',
-          format: 'css/variables',
-          options: {
-            outputReferences: true,
-            selector: ':root',
-          },
-          filter: (token) =>
-            ['primitive', 'semantic'].includes(token.path[0]),
-        },
-      ],
+      files: [{
+        destination: 'tokens.css',
+        format: 'css/variables',
+        options: { outputReferences: true, selector: ':root' },
+        filter: (token) => ['primitive', 'semantic'].includes(token.path[0]),
+      }],
     },
 
-    // 2. Tailwind theme extension
     tailwind: {
       transformGroup: 'ps/tailwind',
       buildPath: 'src/tokens/',
-      files: [
-        {
-          destination: 'tailwind-tokens.js',
-          format: 'ps/tailwind-theme',
-          filter: (token) =>
-            ['primitive', 'semantic'].includes(token.path[0]),
-        },
-      ],
+      files: [{
+        destination: 'tailwind-tokens.js',
+        format: 'ps/tailwind-theme',
+        filter: (token) => ['primitive', 'semantic'].includes(token.path[0]),
+      }],
     },
 
-    // 3. TypeScript token map
     typescript: {
       transformGroup: 'ps/typescript',
       buildPath: 'src/tokens/',
-      files: [
-        {
-          destination: 'tokens.ts',
-          format: 'ps/typescript-tokens',
-        },
-      ],
+      files: [{
+        destination: 'tokens.ts',
+        format: 'ps/typescript-tokens',
+      }],
     },
   },
 };
-
