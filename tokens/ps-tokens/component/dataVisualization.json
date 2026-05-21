@@ -1,0 +1,94 @@
+{
+  "dataVisualization": {
+    "color": {
+      "series": {
+        "1": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "2": { "$value": "{semantic.color.brand.light}", "$type": "color" },
+        "3": { "$value": "{primitive.color.blue.300}", "$type": "color" },
+        "4": { "$value": "{semantic.color.brand.secondary}", "$type": "color" },
+        "5": { "$value": "{primitive.color.blue.100}", "$type": "color" },
+        "6": { "$value": "{primitive.color.blue.50}", "$type": "color" }
+      },
+      "feedback": {
+        "success": { "$value": "{semantic.color.feedback.success}", "$type": "color" },
+        "warning": { "$value": "{semantic.color.feedback.warning}", "$type": "color" },
+        "error": { "$value": "{semantic.color.feedback.error}", "$type": "color" },
+        "info": { "$value": "{semantic.color.brand.light}", "$type": "color" }
+      },
+      "axis": { "$value": "{semantic.color.border.default}", "$type": "color" },
+      "grid": { "$value": "{semantic.color.surface.subtle}", "$type": "color" },
+      "axisLabel": { "$value": "{semantic.color.text.tertiary}", "$type": "color" },
+      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "empty": { "$value": "{primitive.color.neutral.100}", "$type": "color" }
+    },
+    "tooltip": {
+      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "border": { "$value": "{semantic.color.border.default}", "$type": "color" },
+      "text": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+      "label": { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+      "shadow": { "$value": "{semantic.shadow.md}", "$type": "boxShadow" }
+    },
+    "legend": {
+      "text": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+      "fontSize": { "$value": "{semantic.typography.body.sm.fontSize}", "$type": "fontSizes" }
+    },
+    "typography": {
+      "axisLabel": {
+        "fontSize": { "$value": "{semantic.typography.body.xs.fontSize}", "$type": "fontSizes" },
+        "fontWeight": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
+        "color": { "$value": "{semantic.color.text.tertiary}", "$type": "color" }
+      },
+      "title": {
+        "fontSize": { "$value": "{semantic.typography.body.sm.fontSize}", "$type": "fontSizes" },
+        "fontWeight": { "$value": "{primitive.typography.fontWeight.semiBold}", "$type": "fontWeights" },
+        "color": { "$value": "{semantic.color.text.primary}", "$type": "color" }
+      },
+      "value": {
+        "fontSize": { "$value": "{semantic.typography.body.xs.fontSize}", "$type": "fontSizes" },
+        "fontWeight": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" }
+      }
+    },
+    "spacing": {
+      "marginTop": { "$value": "50px", "$type": "spacing" },
+      "marginRight": { "$value": "60px", "$type": "spacing" },
+      "marginBottom": { "$value": "50px", "$type": "spacing" },
+      "marginLeft": { "$value": "60px", "$type": "spacing" },
+      "padding": { "$value": "16px", "$type": "spacing" },
+      "gap": { "$value": "8px", "$type": "spacing" }
+    },
+    "border": {
+      "radius": { "$value": "{semantic.border.radius.sm}", "$type": "borderRadius" },
+      "width": { "$value": "1px", "$type": "borderWidth" },
+      "color": { "$value": "{semantic.color.border.default}", "$type": "color" }
+    },
+    "bar": {
+      "color": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "borderRadius": { "$value": "2px", "$type": "borderRadius" },
+      "padding": { "$value": "0.3", "$type": "other" },
+      "labelColor": { "$value": "#ffffff", "$type": "color" },
+      "labelSkipHeight": { "$value": "12px", "$type": "sizing" }
+    },
+    "line": {
+      "width": { "$value": "2.5px", "$type": "borderWidth" },
+      "activeWidth": { "$value": "4px", "$type": "borderWidth" },
+      "dotSize": { "$value": "8px", "$type": "sizing" },
+      "dotBorderWidth": { "$value": "2px", "$type": "borderWidth" },
+      "areaOpacity": { "$value": "0.2", "$type": "opacity" }
+    },
+    "pie": {
+      "innerRadius": { "$value": "0", "$type": "other" },
+      "donutInnerRadius": { "$value": "0.6", "$type": "other" },
+      "padAngle": { "$value": "0.02", "$type": "other" },
+      "cornerRadius": { "$value": "2px", "$type": "borderRadius" }
+    },
+    "heatmap": {
+      "emptyColor": { "$value": "{primitive.color.neutral.100}", "$type": "color" },
+      "cellBorderRadius": { "$value": "2px", "$type": "borderRadius" }
+    },
+    "motion": {
+      "config": { "$value": "gentle", "$type": "other" },
+      "duration": { "$value": "{semantic.motion.duration.base}", "$type": "other" }
+    }
+  }
+}
+

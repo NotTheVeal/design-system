@@ -1,0 +1,42 @@
+{
+  "radio": {
+    "sizing": {
+      "control": { "$value": "24px", "$type": "sizing", "$description": "Width and height of the radio circle" },
+      "innerDot": { "$value": "10px", "$type": "sizing", "$description": "Selected inner filled circle" },
+      "touchTarget": { "$value": "44px", "$type": "sizing", "$description": "Minimum WCAG touch target — make label clickable" }
+    },
+    "color": {
+      "border": {
+        "default": { "$value": "#4A4A4A", "$type": "color" },
+        "hover": { "$value": "#EC8000", "$type": "color", "$description": "Legacy orange — new work should use #005BA6" },
+        "focus": { "$value": "#EC8000", "$type": "color" },
+        "pressed": { "$value": "#D27200", "$type": "color" },
+        "disabled": { "$value": "#CCCCCC", "$type": "color" },
+        "error": { "$value": "#D32F2F", "$type": "color" }
+      },
+      "fill": {
+        "selected": { "$value": "#FF9505", "$type": "color", "$description": "Legacy orange fill — prefer #005BA6 for new work" },
+        "selectedNew": { "$value": "#005BA6", "$type": "color", "$description": "Preferred blue fill for new designs" },
+        "hover": { "$value": "#EC8000", "$type": "color" },
+        "disabled": { "$value": "#CCCCCC", "$type": "color" }
+      },
+      "label": {
+        "default": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
+      }
+    },
+    "border": {
+      "width": { "$value": "1.5px", "$type": "borderWidth" },
+      "radius": { "$value": "50%", "$type": "borderRadius" }
+    },
+    "shadow": {
+      "focus": { "$value": "0 0 10px 5px rgba(0,91,166,0.5)", "$type": "boxShadow" },
+      "pressed": { "$value": "0 0 0 4px #FFCA82", "$type": "boxShadow" }
+    },
+    "spacing": {
+      "labelGap": { "$value": "8px", "$type": "spacing" },
+      "groupGap": { "$value": "16px", "$type": "spacing" }
+    }
+  }
+}
+

@@ -1,0 +1,54 @@
+{
+  "toast": {
+    "color": {
+      "success": {
+        "background": { "$value": "#E2F5EE", "$type": "color" },
+        "text": { "$value": "#0E7C55", "$type": "color" },
+        "icon": { "$value": "#0E7C55", "$type": "color" }
+      },
+      "error": {
+        "background": { "$value": "#FEF0F0", "$type": "color" },
+        "text": { "$value": "#E00000", "$type": "color" },
+        "icon": { "$value": "#E00000", "$type": "color" }
+      },
+      "warning": {
+        "background": { "$value": "#FFF4E5", "$type": "color" },
+        "text": { "$value": "#B45309", "$type": "color" },
+        "icon": { "$value": "#B45309", "$type": "color" }
+      },
+      "info": {
+        "background": { "$value": "#EFF9FE", "$type": "color" },
+        "text": { "$value": "#005BA6", "$type": "color" },
+        "icon": { "$value": "#005BA6", "$type": "color" }
+      },
+      "dismiss": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+    },
+    "sizing": {
+      "minHeight": { "$value": "56px", "$type": "sizing" },
+      "minWidth": { "$value": "300px", "$type": "sizing" },
+      "maxWidth": { "$value": "420px", "$type": "sizing" }
+    },
+    "spacing": {
+      "padding": { "$value": "16px", "$type": "spacing" },
+      "gap": { "$value": "12px", "$type": "spacing" },
+      "iconSize": { "$value": "24px", "$type": "sizing" }
+    },
+    "border": {
+      "radius": { "$value": "8px", "$type": "borderRadius" }
+    },
+    "shadow": { "$value": "0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)", "$type": "boxShadow" },
+    "position": {
+      "bottom": { "$value": "24px", "$type": "spacing" },
+      "right": { "$value": "24px", "$type": "spacing" }
+    },
+    "animation": {
+      "enter": { "$value": "250ms ease-out", "$type": "other", "$description": "Slide in from right" },
+      "autoDismiss": { "$value": "5000ms", "$type": "other", "$description": "Success/info auto-dismiss (errors: persistent)" }
+    },
+    "typography": {
+      "fontSize": { "$value": "14px", "$type": "fontSizes" },
+      "fontWeight": { "$value": "600", "$type": "fontWeights" }
+    }
+  }
+}
+

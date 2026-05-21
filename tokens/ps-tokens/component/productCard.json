@@ -1,0 +1,38 @@
+{
+  "productCard": {
+    "color": {
+      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "border": {
+        "default": { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "hover": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
+      },
+      "text": {
+        "title": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "subtitle": { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+        "price": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "priceLabel": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+      },
+      "badge": {
+        "background": { "$value": "{semantic.color.brand.primaryLight}", "$type": "color" },
+        "text": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
+      },
+      "image": {
+        "background": { "$value": "{semantic.color.surface.subtle}", "$type": "color" }
+      }
+    },
+    "spacing": {
+      "padding": { "$value": "16px", "$type": "spacing" },
+      "gap": { "$value": "8px", "$type": "spacing" },
+      "imageHeight": { "$value": "140px", "$type": "spacing" }
+    },
+    "border": {
+      "radius": { "$value": "{semantic.border.radius.lg}", "$type": "borderRadius" },
+      "width": { "$value": "1px", "$type": "borderWidth" }
+    },
+    "shadow": {
+      "default": { "$value": "{semantic.shadow.sm}", "$type": "boxShadow" },
+      "hover": { "$value": "{semantic.shadow.md}", "$type": "boxShadow" }
+    }
+  }
+}
+

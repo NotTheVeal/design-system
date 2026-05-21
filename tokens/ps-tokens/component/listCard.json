@@ -1,0 +1,35 @@
+{
+  "listCard": {
+    "color": {
+      "background": {
+        "default": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+        "hover": { "$value": "{semantic.color.surface.hover}", "$type": "color" },
+        "selected": { "$value": "{semantic.color.surface.selected}", "$type": "color" }
+      },
+      "border": {
+        "default": { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "selected": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
+      },
+      "text": {
+        "primary": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "secondary": { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+        "link": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
+      },
+      "icon": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+    },
+    "spacing": {
+      "padding": { "$value": "16px", "$type": "spacing" },
+      "gap": { "$value": "12px", "$type": "spacing" },
+      "avatarGap": { "$value": "8px", "$type": "spacing" }
+    },
+    "border": {
+      "radius": { "$value": "{semantic.border.radius.md}", "$type": "borderRadius" },
+      "width": { "$value": "1px", "$type": "borderWidth" }
+    },
+    "sizing": {
+      "avatarSize": { "$value": "40px", "$type": "sizing" },
+      "iconSize": { "$value": "20px", "$type": "sizing" }
+    }
+  }
+}
+

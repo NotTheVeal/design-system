@@ -1,0 +1,23 @@
+{
+  "breadcrumb": {
+    "color": {
+      "text": {
+        "default": { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+        "hover": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "active": { "$value": "{semantic.color.text.primary}", "$type": "color" }
+      },
+      "separator": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
+    },
+    "typography": {
+      "fontSize": { "$value": "{semantic.typography.body.sm.fontSize}", "$type": "fontSizes" },
+      "fontWeight": {
+        "default": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
+        "active": { "$value": "{primitive.typography.fontWeight.semibold}", "$type": "fontWeights" }
+      }
+    },
+    "spacing": {
+      "gap": { "$value": "6px", "$type": "spacing" }
+    }
+  }
+}
+

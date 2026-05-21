@@ -1,0 +1,48 @@
+{
+  "select": {
+    "color": {
+      "background": {
+        "default": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+        "hover": { "$value": "{semantic.color.surface.hover}", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.surface.disabled}", "$type": "color" }
+      },
+      "border": {
+        "default": { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "focus": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "error": { "$value": "{semantic.color.feedback.error}", "$type": "color" }
+      },
+      "text": {
+        "placeholder": { "$value": "{semantic.color.text.placeholder}", "$type": "color" },
+        "value": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
+      },
+      "icon": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+    },
+    "border": {
+      "radius": { "$value": "{semantic.border.radius.sm}", "$type": "borderRadius" },
+      "width": { "$value": "1px", "$type": "borderWidth" }
+    },
+    "spacing": {
+      "paddingX": { "$value": "12px", "$type": "spacing" },
+      "paddingY": { "$value": "8px", "$type": "spacing" }
+    },
+    "sizing": {
+      "height": { "$value": "38px", "$type": "sizing" },
+      "minWidth": { "$value": "160px", "$type": "sizing" }
+    },
+    "dropdown": {
+      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "shadow": { "$value": "{semantic.shadow.md}", "$type": "boxShadow" },
+      "maxHeight": { "$value": "240px", "$type": "sizing" },
+      "item": {
+        "paddingX": { "$value": "12px", "$type": "spacing" },
+        "paddingY": { "$value": "8px", "$type": "spacing" },
+        "background": {
+          "hover": { "$value": "{semantic.color.surface.hover}", "$type": "color" },
+          "selected": { "$value": "{semantic.color.surface.selected}", "$type": "color" }
+        }
+      }
+    }
+  }
+}
+

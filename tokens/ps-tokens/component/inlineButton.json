@@ -1,0 +1,74 @@
+{
+  "inlineButton": {
+    "base": {
+      "display": { "$value": "inline-flex", "$type": "other" },
+      "background": { "$value": "transparent", "$type": "color" },
+      "border": { "$value": "none", "$type": "other" }
+    },
+    "link": {
+      "fontSize": { "$value": "14px", "$type": "fontSizes" },
+      "fontWeight": { "$value": "400", "$type": "fontWeights" },
+      "color": {
+        "default": { "$value": "#777777", "$type": "color" },
+        "hover": { "$value": "#005BA6", "$type": "color" }
+      },
+      "textDecoration": {
+        "default": { "$value": "underline", "$type": "other" },
+        "offset": { "$value": "4px", "$type": "other" }
+      }
+    },
+    "linkBlue": {
+      "fontSize": { "$value": "16px", "$type": "fontSizes" },
+      "fontWeight": { "$value": "700", "$type": "fontWeights" },
+      "color": {
+        "default": { "$value": "#005DA6", "$type": "color" },
+        "hover": { "$value": "#004A84", "$type": "color" }
+      },
+      "textDecoration": {
+        "default": { "$value": "none", "$type": "other" },
+        "hover": { "$value": "underline", "$type": "other" }
+      },
+      "usage": { "$value": "Product titles, primary text links", "$type": "other" }
+    },
+    "tall": {
+      "height": { "$value": "48px", "$type": "sizing" },
+      "fontSize": { "$value": "14px", "$type": "fontSizes" },
+      "fontWeight": { "$value": "600", "$type": "fontWeights" },
+      "textTransform": { "$value": "uppercase", "$type": "other" },
+      "color": {
+        "default": { "$value": "#777777", "$type": "color" },
+        "hover": { "$value": "#005BA6", "$type": "color" }
+      },
+      "usage": { "$value": "Header navigation items", "$type": "other" }
+    },
+    "directory": {
+      "fontSize": { "$value": "14px", "$type": "fontSizes" },
+      "fontWeight": { "$value": "400", "$type": "fontWeights" },
+      "color": {
+        "default": { "$value": "#777777", "$type": "color" },
+        "hover": { "$value": "#005BA6", "$type": "color" }
+      },
+      "chevron": {
+        "color": { "$value": "#949494", "$type": "color" },
+        "size": { "$value": "14px", "$type": "fontSizes" }
+      }
+    },
+    "iconButton": {
+      "sizing": { "$value": "28px", "$type": "sizing", "$description": "Arrow/Back icon button" },
+      "border": {
+        "radius": { "$value": "4px", "$type": "borderRadius" },
+        "width": { "$value": "1px", "$type": "borderWidth" }
+      },
+      "color": {
+        "background": {
+          "default": { "$value": "transparent", "$type": "color" },
+          "hover": { "$value": "#F1F1F1", "$type": "color" },
+          "pressed": { "$value": "#DCDCDC", "$type": "color" }
+        },
+        "icon": { "$value": "#4A4A4A", "$type": "color" }
+      }
+    },
+    "gap": { "$value": "6px", "$type": "spacing" }
+  }
+}
+

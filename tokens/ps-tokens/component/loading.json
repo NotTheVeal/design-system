@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "spinner": {
+      "sizing": {
+        "sm": { "$value": "16px", "$type": "sizing" },
+        "md": { "$value": "20px", "$type": "sizing" },
+        "lg": { "$value": "32px", "$type": "sizing" }
+      },
+      "color": {
+        "onWhite": { "$value": "#005BA6", "$type": "color" },
+        "onBlue": { "$value": "#FFFFFF", "$type": "color" },
+        "onGrey": { "$value": "#777777", "$type": "color" }
+      },
+      "animation": {
+        "duration": { "$value": "0.8s", "$type": "other" },
+        "timing": { "$value": "linear", "$type": "other" },
+        "iteration": { "$value": "infinite", "$type": "other" }
+      }
+    },
+    "buttonLoading": {
+      "background": { "$value": "#005BA6", "$type": "color" },
+      "border": { "$value": "#005BA6", "$type": "color" },
+      "text": { "$value": "#FFFFFF", "$type": "color" },
+      "cursor": { "$value": "wait", "$type": "other" }
+    },
+    "skeleton": {
+      "color": {
+        "base": { "$value": "#F1F1F1", "$type": "color" },
+        "highlight": { "$value": "#FAFAFA", "$type": "color" }
+      },
+      "animation": {
+        "duration": { "$value": "1.5s", "$type": "other" },
+        "timing": { "$value": "ease-in-out", "$type": "other" }
+      },
+      "border": {
+        "radius": {
+          "text": { "$value": "4px", "$type": "borderRadius" },
+          "circle": { "$value": "50%", "$type": "borderRadius" },
+          "card": { "$value": "4px", "$type": "borderRadius" }
+        }
+      },
+      "sizing": {
+        "textLine": { "$value": "12px", "$type": "sizing" },
+        "textLineWide": { "$value": "80%", "$type": "sizing" },
+        "textLineNarrow": { "$value": "55%", "$type": "sizing" },
+        "avatar": { "$value": "44px", "$type": "sizing" },
+        "thumbnail": { "$value": "100px", "$type": "sizing" }
+      }
+    }
+  }
+}
+

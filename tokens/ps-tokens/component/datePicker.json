@@ -1,0 +1,48 @@
+{
+  "datePicker": {
+    "color": {
+      "background": {
+        "calendar": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+        "day": {
+          "default": { "$value": "transparent", "$type": "color" },
+          "hover": { "$value": "{semantic.color.surface.hover}", "$type": "color" },
+          "selected": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+          "today": { "$value": "{semantic.color.brand.primaryLight}", "$type": "color" },
+          "range": { "$value": "{semantic.color.brand.primaryLight}", "$type": "color" },
+          "disabled": { "$value": "transparent", "$type": "color" }
+        }
+      },
+      "border": {
+        "input": { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "calendar": { "$value": "{semantic.color.border.default}", "$type": "color" }
+      },
+      "text": {
+        "day": {
+          "default": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+          "selected": { "$value": "{semantic.color.text.inverse}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" },
+          "today": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
+        },
+        "header": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "weekday": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+      },
+      "icon": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+    },
+    "spacing": {
+      "cellSize": { "$value": "36px", "$type": "spacing" },
+      "calendarPadding": { "$value": "16px", "$type": "spacing" },
+      "gap": { "$value": "4px", "$type": "spacing" }
+    },
+    "border": {
+      "radius": {
+        "day": { "$value": "50%", "$type": "borderRadius" },
+        "calendar": { "$value": "{semantic.border.radius.lg}", "$type": "borderRadius" }
+      },
+      "width": { "$value": "1px", "$type": "borderWidth" }
+    },
+    "shadow": {
+      "calendar": { "$value": "{semantic.shadow.lg}", "$type": "boxShadow" }
+    }
+  }
+}
+

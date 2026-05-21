@@ -1,0 +1,42 @@
+{
+  "toggle": {
+    "color": {
+      "track": {
+        "off": { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "on": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.surface.disabled}", "$type": "color" }
+      },
+      "thumb": {
+        "default": { "$value": "#ffffff", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
+      },
+      "label": {
+        "default": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
+      }
+    },
+    "sizing": {
+      "track": {
+        "width": { "$value": "44px", "$type": "sizing" },
+        "height": { "$value": "24px", "$type": "sizing" }
+      },
+      "thumb": {
+        "size": { "$value": "18px", "$type": "sizing" }
+      }
+    },
+    "spacing": {
+      "thumbOffset": { "$value": "3px", "$type": "spacing" },
+      "labelGap": { "$value": "8px", "$type": "spacing" }
+    },
+    "border": {
+      "radius": {
+        "track": { "$value": "30px", "$type": "borderRadius" },
+        "thumb": { "$value": "50%", "$type": "borderRadius" }
+      }
+    },
+    "transition": {
+      "duration": { "$value": "200ms", "$type": "other" }
+    }
+  }
+}
+
