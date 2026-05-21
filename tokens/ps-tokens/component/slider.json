@@ -1,0 +1,40 @@
+{
+  "slider": {
+    "$description": "Slider — range input control.",
+    "track": {
+      "height":      { "$value": "4px", "$type": "sizing" },
+      "radius":      { "$value": "100px", "$type": "borderRadius" },
+      "background":  { "$value": "{primitive.color.neutral.200}", "$type": "color" },
+      "fill":        { "$value": "{semantic.color.brand.primary}", "$type": "color" }
+    },
+    "thumb": {
+      "size":        { "$value": "20px", "$type": "sizing" },
+      "radius":      { "$value": "50%", "$type": "borderRadius" },
+      "background":  { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "border":      { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "borderWidth": { "$value": "2px", "$type": "borderWidth" },
+      "shadow":      { "$value": "{primitive.shadow.sm}", "$type": "boxShadow" },
+      "shadowFocus": { "$value": "0 0 0 3px rgba(0,91,166,0.18)", "$type": "boxShadow" },
+      "backgroundHover": { "$value": "{semantic.color.brand.tint}", "$type": "color" }
+    },
+    "label": {
+      "color":       { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+      "fontSize":    { "$value": "13px", "$type": "fontSizes" },
+      "marginB":     { "$value": "8px", "$type": "spacing" }
+    },
+    "tooltip": {
+      "background":  { "$value": "{primitive.color.blue.900}", "$type": "color" },
+      "text":        { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "radius":      { "$value": "4px", "$type": "borderRadius" },
+      "paddingV":    { "$value": "4px", "$type": "spacing" },
+      "paddingH":    { "$value": "8px", "$type": "spacing" },
+      "fontSize":    { "$value": "12px", "$type": "fontSizes" }
+    },
+    "disabled": {
+      "track":       { "$value": "{primitive.color.neutral.200}", "$type": "color" },
+      "fill":        { "$value": "{primitive.color.neutral.300}", "$type": "color" },
+      "thumb":       { "$value": "{primitive.color.neutral.300}", "$type": "color" }
+    }
+  }
+}
+

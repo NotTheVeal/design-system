@@ -1,0 +1,35 @@
+{
+  "avatar": {
+    "$description": "Avatar — user profile image or initials fallback. Sizes: xs 24px, sm 32px, md 40px, lg 48px, xl 64px.",
+    "radius":       { "$value": "50%", "$type": "borderRadius" },
+    "border":       { "$value": "{semantic.color.surface.default}", "$type": "color" },
+    "borderWidth":  { "$value": "2px", "$type": "borderWidth" },
+    "size": {
+      "xs": { "$value": "24px", "$type": "sizing" },
+      "sm": { "$value": "32px", "$type": "sizing" },
+      "md": { "$value": "40px", "$type": "sizing" },
+      "lg": { "$value": "48px", "$type": "sizing" },
+      "xl": { "$value": "64px", "$type": "sizing" }
+    },
+    "fallback": {
+      "background": { "$value": "{semantic.color.brand.tint}", "$type": "color" },
+      "text":       { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "fontWeight": { "$value": "600", "$type": "fontWeights" }
+    },
+    "group": {
+      "$description": "Avatar group — overlapping stack",
+      "overlap":     { "$value": "-8px", "$type": "spacing" },
+      "borderColor": { "$value": "{semantic.color.surface.default}", "$type": "color" },
+      "borderWidth": { "$value": "2px", "$type": "borderWidth" }
+    },
+    "status": {
+      "$description": "Presence indicator dot",
+      "online":   { "$value": "{semantic.color.feedback.success}", "$type": "color" },
+      "away":     { "$value": "{semantic.color.feedback.warning}", "$type": "color" },
+      "offline":  { "$value": "{semantic.color.text.tertiary}", "$type": "color" },
+      "size":     { "$value": "10px", "$type": "sizing" },
+      "border":   { "$value": "{semantic.color.surface.default}", "$type": "color" }
+    }
+  }
+}
+

@@ -1,0 +1,18 @@
+{
+  "divider": {
+    "$description": "Divider — horizontal or vertical separator line.",
+    "color":        { "$value": "{semantic.color.border.default}", "$type": "color" },
+    "colorStrong":  { "$value": "{semantic.color.border.strong}", "$type": "color" },
+    "weight":       { "$value": "1px", "$type": "borderWidth" },
+    "weightThick":  { "$value": "2px", "$type": "borderWidth" },
+    "marginV":      { "$value": "16px", "$type": "spacing" },
+    "marginH":      { "$value": "0", "$type": "spacing" },
+    "label": {
+      "$description": "Divider with centered label text",
+      "text":       { "$value": "{semantic.color.text.tertiary}", "$type": "color" },
+      "fontSize":   { "$value": "12px", "$type": "fontSizes" },
+      "paddingH":   { "$value": "8px", "$type": "spacing" }
+    }
+  }
+}
+

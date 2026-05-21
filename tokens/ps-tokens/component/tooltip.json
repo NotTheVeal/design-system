@@ -1,0 +1,26 @@
+{
+  "tooltip": {
+    "$description": "Tooltip — contextual helper text on hover/focus. Dark background, 4px radius.",
+    "background":    { "$value": "{primitive.color.blue.900}", "$type": "color", "$description": "#002F48 Midnight" },
+    "text":          { "$value": "{semantic.color.surface.default}", "$type": "color" },
+    "border":        { "$value": "transparent", "$type": "color" },
+    "radius":        { "$value": "4px", "$type": "borderRadius" },
+    "shadow":        { "$value": "{primitive.shadow.md}", "$type": "boxShadow" },
+    "paddingV":      { "$value": "6px", "$type": "spacing" },
+    "paddingH":      { "$value": "10px", "$type": "spacing" },
+    "maxWidth":      { "$value": "240px", "$type": "sizing" },
+    "zIndex":        { "$value": "500", "$type": "other" },
+    "fontSize":      { "$value": "12px", "$type": "fontSizes" },
+    "fontWeight":    { "$value": "400", "$type": "fontWeights" },
+    "lineHeight":    { "$value": "16px", "$type": "lineHeights" },
+    "arrow": {
+      "size":        { "$value": "6px", "$type": "sizing" },
+      "color":       { "$value": "{primitive.color.blue.900}", "$type": "color" }
+    },
+    "animation": {
+      "duration":    { "$value": "150ms", "$type": "other" },
+      "easing":      { "$value": "ease", "$type": "other" }
+    }
+  }
+}
+

@@ -1,0 +1,41 @@
+{
+  "carousel": {
+    "$description": "Carousel — informative content slider. Figma: 'Carousel' page.",
+    "background":        { "$value": "{semantic.color.surface.default}", "$type": "color" },
+    "border":            { "$value": "{semantic.color.border.default}", "$type": "color" },
+    "borderWidth":       { "$value": "1px", "$type": "borderWidth" },
+    "radius":            { "$value": "8px", "$type": "borderRadius" },
+    "shadow":            { "$value": "{primitive.shadow.sm}", "$type": "boxShadow" },
+    "slide": {
+      "paddingV":        { "$value": "24px", "$type": "spacing" },
+      "paddingH":        { "$value": "24px", "$type": "spacing" },
+      "gap":             { "$value": "16px", "$type": "spacing" }
+    },
+    "navigation": {
+      "arrow": {
+        "background":        { "$value": "{semantic.color.surface.default}", "$type": "color" },
+        "backgroundHover":   { "$value": "{primitive.color.neutral.100}", "$type": "color" },
+        "border":            { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "borderWidth":       { "$value": "1px", "$type": "borderWidth" },
+        "radius":            { "$value": "50%", "$type": "borderRadius" },
+        "size":              { "$value": "32px", "$type": "sizing" },
+        "icon":              { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+        "iconHover":         { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "shadow":            { "$value": "{primitive.shadow.sm}", "$type": "boxShadow" }
+      },
+      "dot": {
+        "size":              { "$value": "8px", "$type": "sizing" },
+        "sizeActive":        { "$value": "24px", "$type": "sizing" },
+        "radius":            { "$value": "100px", "$type": "borderRadius" },
+        "color":             { "$value": "{primitive.color.neutral.300}", "$type": "color" },
+        "colorActive":       { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "gap":               { "$value": "6px", "$type": "spacing" }
+      }
+    },
+    "animation": {
+      "duration":          { "$value": "300ms", "$type": "other" },
+      "easing":            { "$value": "ease-in-out", "$type": "other" }
+    }
+  }
+}
+

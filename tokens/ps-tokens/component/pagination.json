@@ -1,0 +1,45 @@
+{
+  "pagination": {
+    "$description": "Pagination — page navigation for tables, search results, and list views.",
+    "gap":       { "$value": "4px", "$type": "spacing" },
+    "item": {
+      "size":             { "$value": "32px", "$type": "sizing" },
+      "radius":           { "$value": "4px", "$type": "borderRadius" },
+      "background": {
+        "default":  { "$value": "transparent", "$type": "color" },
+        "hover":    { "$value": "{primitive.color.neutral.100}", "$type": "color" },
+        "active":   { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "disabled": { "$value": "transparent", "$type": "color" }
+      },
+      "border": {
+        "default":  { "$value": "transparent", "$type": "color" },
+        "hover":    { "$value": "{semantic.color.border.default}", "$type": "color" },
+        "active":   { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "width":    { "$value": "1px", "$type": "borderWidth" }
+      },
+      "text": {
+        "default":  { "$value": "{semantic.color.text.primary}", "$type": "color" },
+        "hover":    { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+        "active":   { "$value": "{semantic.color.surface.default}", "$type": "color" },
+        "disabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" },
+        "fontSize": { "$value": "14px", "$type": "fontSizes" },
+        "fontWeight":{ "$value": "400", "$type": "fontWeights" }
+      }
+    },
+    "arrow": {
+      "color":         { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+      "colorHover":    { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "colorDisabled": { "$value": "{semantic.color.text.disabled}", "$type": "color" },
+      "size":          { "$value": "16px", "$type": "sizing" }
+    },
+    "ellipsis": {
+      "color":   { "$value": "{semantic.color.text.tertiary}", "$type": "color" }
+    },
+    "perPage": {
+      "$description": "Items per page selector",
+      "fontSize":  { "$value": "13px", "$type": "fontSizes" },
+      "color":     { "$value": "{semantic.color.text.secondary}", "$type": "color" }
+    }
+  }
+}
+
