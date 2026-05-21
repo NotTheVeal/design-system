@@ -1,0 +1,97 @@
+{
+  "accordion": {
+    "color": {
+      "background": {
+        "header": {
+          "default": {
+            "$value": "{semantic.color.surface.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.surface.hover}",
+            "$type": "color"
+          },
+          "expanded": {
+            "$value": "{semantic.color.surface.subtle}",
+            "$type": "color"
+          }
+        },
+        "content": {
+          "$value": "{semantic.color.surface.default}",
+          "$type": "color"
+        }
+      },
+      "border": {
+        "$value": "{semantic.color.border.subtle}",
+        "$type": "color"
+      },
+      "text": {
+        "header": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
+        },
+        "content": {
+          "$value": "{semantic.color.text.secondary}",
+          "$type": "color"
+        }
+      },
+      "icon": {
+        "default": {
+          "$value": "{semantic.color.text.secondary}",
+          "$type": "color"
+        },
+        "expanded": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        }
+      },
+      "expandedBorder": {
+        "$value": "{semantic.color.border.subtle}",
+        "$type": "color",
+        "$description": "Figma: expanded strk:#f1f1f1"
+      }
+    },
+    "typography": {
+      "header": {
+        "fontSize": {
+          "$value": "{semantic.typography.body.md.fontSize}",
+          "$type": "fontSizes"
+        },
+        "fontWeight": {
+          "$value": "{primitive.typography.fontWeight.semibold}",
+          "$type": "fontWeights"
+        }
+      }
+    },
+    "spacing": {
+      "headerPaddingX": {
+        "$value": "16px",
+        "$type": "spacing"
+      },
+      "headerPaddingY": {
+        "$value": "14px",
+        "$type": "spacing"
+      },
+      "contentPadding": {
+        "$value": "16px",
+        "$type": "spacing"
+      }
+    },
+    "border": {
+      "width": {
+        "$value": "1px",
+        "$type": "borderWidth"
+      },
+      "radius": {
+        "$value": "{semantic.border.radius.md}",
+        "$type": "borderRadius"
+      }
+    },
+    "sizing": {
+      "iconSize": {
+        "$value": "20px",
+        "$type": "sizing"
+      }
+    }
+  }
+}

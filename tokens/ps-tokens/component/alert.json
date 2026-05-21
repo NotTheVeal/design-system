@@ -1,179 +1,59 @@
 {
   "alert": {
-    "$description": "Alerts \u2014 2 Figma component sets: Core Alerts + Dismissable Alerts",
-    "radius": {
-      "$value": "4px",
-      "$type": "borderRadius"
-    },
-    "padding": {
-      "$value": "16px",
-      "$type": "dimension"
-    },
+    "$description": "Alerts — Core, Dismissable, Multi-line, Toast. Values verified against Figma 'Alerts' page.",
+    "radius":      { "$value": "5px", "$type": "borderRadius", "$description": "Figma: r:5" },
+    "borderWidth": { "$value": "0px", "$type": "borderWidth" },
+
     "success": {
-      "background": {
-        "$value": "{semantic.color.feedback.successSubtle}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.feedback.successDark}",
-        "$type": "color"
-      },
-      "icon": {
-        "$value": "{semantic.color.feedback.successDark}",
-        "$type": "color"
-      },
-      "iconBorder": {
-        "$value": "{semantic.color.feedback.successDark}",
-        "$type": "color"
-      },
-      "border": {
-        "$value": "{semantic.color.feedback.success}",
-        "$type": "color"
-      }
+      "background": { "$value": "#e2f5ee", "$type": "color", "$description": "Figma exact" },
+      "text":       { "$value": "#0e7c55", "$type": "color", "$description": "Figma exact" },
+      "icon":       { "$value": "#0e7c55", "$type": "color" },
+      "border":     { "$value": "transparent", "$type": "color" }
     },
-    "error": {
-      "background": {
-        "$value": "{semantic.color.feedback.dangerSubtle}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.feedback.dangerDark}",
-        "$type": "color"
-      },
-      "icon": {
-        "$value": "{semantic.color.feedback.dangerDark}",
-        "$type": "color"
-      },
-      "iconBorder": {
-        "$value": "{semantic.color.feedback.dangerDark}",
-        "$type": "color"
-      },
-      "border": {
-        "$value": "{semantic.color.feedback.dangerDark}",
-        "$type": "color"
-      }
-    },
-    "info": {
-      "background": {
-        "$value": "{semantic.color.feedback.infoSubtle}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.brand.primary}",
-        "$type": "color"
-      },
-      "icon": {
-        "$value": "{semantic.color.brand.primary}",
-        "$type": "color"
-      },
-      "iconBorder": {
-        "$value": "{semantic.color.brand.primary}",
-        "$type": "color"
-      },
-      "border": {
-        "$value": "{semantic.color.brand.light}",
-        "$type": "color"
-      }
+    "danger": {
+      "background": { "$value": "#fdebeb", "$type": "color", "$description": "Figma exact" },
+      "text":       { "$value": "#e00000", "$type": "color", "$description": "Figma exact" },
+      "icon":       { "$value": "#e00000", "$type": "color" },
+      "border":     { "$value": "transparent", "$type": "color" }
     },
     "warning": {
-      "background": {
-        "$value": "{semantic.color.feedback.warningSubtle}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.feedback.warningDark}",
-        "$type": "color"
-      },
-      "icon": {
-        "$value": "{semantic.color.feedback.warningDark}",
-        "$type": "color"
-      },
-      "iconBorder": {
-        "$value": "{semantic.color.feedback.warningDark}",
-        "$type": "color"
-      },
-      "border": {
-        "$value": "{semantic.color.feedback.warning}",
-        "$type": "color"
-      }
+      "background": { "$value": "#fff4e5", "$type": "color", "$description": "Figma exact" },
+      "text":       { "$value": "#b45309", "$type": "color", "$description": "Figma exact" },
+      "icon":       { "$value": "#b45309", "$type": "color" },
+      "border":     { "$value": "transparent", "$type": "color" }
     },
-    "dismissable": {
-      "$description": "Dismissable Alerts \u2014 same colors + close button",
-      "closeIcon": {
-        "default": {
-          "$value": "{semantic.color.text.primary}",
-          "$type": "color"
-        },
-        "hover": {
-          "$value": "{semantic.color.brand.primary}",
-          "$type": "color"
-        }
-      },
-      "height": {
-        "$value": "48px",
-        "$type": "dimension"
-      },
-      "gap": {
-        "$value": "18px",
-        "$type": "dimension"
-      }
+    "info": {
+      "background": { "$value": "#eff9fe", "$type": "color", "$description": "Figma exact" },
+      "text":       { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "#005ba6" },
+      "icon":       { "$value": "{semantic.color.brand.primary}", "$type": "color" },
+      "border":     { "$value": "transparent", "$type": "color" }
     },
+
+    "dismiss": {
+      "icon":      { "$value": "{semantic.color.text.secondary}", "$type": "color" },
+      "iconHover": { "$value": "{semantic.color.text.primary}", "$type": "color" },
+      "size":      { "$value": "18px", "$type": "sizing" }
+    },
+    "paddingV":  { "$value": "12px", "$type": "spacing" },
+    "paddingH":  { "$value": "16px", "$type": "spacing" },
+    "gap":       { "$value": "12px", "$type": "spacing" },
+    "iconSize":  { "$value": "20px", "$type": "sizing" },
+    "title":     { "fontSize": { "$value": "14px", "$type": "fontSizes" }, "fontWeight": { "$value": "600", "$type": "fontWeights" } },
+    "body":      { "fontSize": { "$value": "14px", "$type": "fontSizes" }, "fontWeight": { "$value": "400", "$type": "fontWeights" } },
+
     "toast": {
-      "$description": "Toast notification \u2014 dark background, appears bottom-right",
-      "background": {
-        "$value": "{semantic.color.brand.secondary}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      },
-      "radius": {
-        "$value": "4px",
-        "$type": "borderRadius"
-      },
-      "shadow": {
-        "$value": "0 6px 20px rgba(0,47,72,0.18)",
-        "$type": "boxShadow"
-      },
-      "close": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      }
-    },
-    "paddingV": {
-      "$value": "12px",
-      "$type": "dimension"
-    },
-    "paddingH": {
-      "$value": "18px",
-      "$type": "dimension"
-    },
-    "gap": {
-      "$value": "10px",
-      "$type": "dimension"
-    },
-    "height": {
-      "$value": "40px",
-      "$type": "dimension"
-    },
-    "typography": {
-      "$value": {
-        "fontFamily": "Source Sans Pro",
-        "fontWeight": 400,
-        "fontSize": "14px",
-        "lineHeight": "20px"
-      },
-      "$type": "typography"
-    },
-    "titleTypography": {
-      "$value": {
-        "fontFamily": "Source Sans Pro",
-        "fontWeight": 600,
-        "fontSize": "14px",
-        "lineHeight": "20px"
-      },
-      "$type": "typography"
+      "$description": "Toast Alert — floating, radius 8px. Figma: r:8",
+      "radius":   { "$value": "8px", "$type": "borderRadius" },
+      "shadow":   { "$value": "0 6px 20px rgba(0,47,72,0.18)", "$type": "boxShadow" },
+      "minWidth": { "$value": "320px", "$type": "sizing" },
+      "maxWidth": { "$value": "480px", "$type": "sizing" },
+      "paddingV": { "$value": "12px", "$type": "spacing" },
+      "paddingH": { "$value": "16px", "$type": "spacing" },
+      "success":  { "background": { "$value": "#e2f5ee", "$type": "color" }, "text": { "$value": "#0e7c55", "$type": "color" }, "icon": { "$value": "#0e7c55", "$type": "color" } },
+      "danger":   { "background": { "$value": "#fdebeb", "$type": "color" }, "text": { "$value": "#e00000", "$type": "color" }, "icon": { "$value": "#e00000", "$type": "color" } },
+      "warning":  { "background": { "$value": "#fff4e5", "$type": "color" }, "text": { "$value": "#b45309", "$type": "color" }, "icon": { "$value": "#b45309", "$type": "color" } },
+      "info":     { "background": { "$value": "#eff9fe", "$type": "color" }, "text": { "$value": "{semantic.color.brand.primary}", "$type": "color" }, "icon": { "$value": "{semantic.color.brand.primary}", "$type": "color" } }
     }
   }
 }
+

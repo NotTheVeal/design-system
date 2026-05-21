@@ -177,7 +177,8 @@
         },
         "height": {
           "$value": "50px",
-          "$type": "dimension"
+          "$type": "dimension",
+          "$description": "Figma: 325x50"
         },
         "paddingV": {
           "$value": "15px",
@@ -207,8 +208,9 @@
           "$type": "borderWidth"
         },
         "radius": {
-          "$value": "4px",
-          "$type": "borderRadius"
+          "$value": "3px",
+          "$type": "borderRadius",
+          "$description": "Figma: r:3"
         }
       },
       "sm": {
@@ -315,8 +317,9 @@
           "$type": "borderWidth"
         },
         "radius": {
-          "$value": "4px",
-          "$type": "borderRadius"
+          "$value": "2.5px",
+          "$type": "borderRadius",
+          "$description": "Figma: r:2.47"
         }
       }
     },
@@ -447,11 +450,12 @@
         },
         "disabled": {
           "background": {
-            "$value": "{semantic.color.border.default}",
-            "$type": "color"
+            "$value": "#ffca82",
+            "$type": "color",
+            "$description": "Figma exact: faded orange disabled"
           },
           "text": {
-            "$value": "{semantic.color.text.tertiary}",
+            "$value": "{semantic.color.surface.default}",
             "$type": "color"
           }
         },
@@ -476,8 +480,9 @@
           "$type": "typography"
         },
         "radius": {
-          "$value": "100px",
-          "$type": "borderRadius"
+          "$value": "24px",
+          "$type": "borderRadius",
+          "$description": "Figma: r:24 (167x48px pill)"
         }
       }
     },
@@ -511,8 +516,9 @@
         },
         "pressed": {
           "background": {
-            "$value": "#db7206",
-            "$type": "color"
+            "$value": "#d27200",
+            "$type": "color",
+            "$description": "Figma exact"
           },
           "text": {
             "$value": "{semantic.color.surface.default}",
@@ -790,7 +796,7 @@
         }
       },
       "removable": {
-        "$description": "Button/ChipSM + ChipLG with ⊗ dismiss icon — used as filter tags that can be removed",
+        "$description": "Button/ChipSM + ChipLG with \u2297 dismiss icon \u2014 used as filter tags that can be removed",
         "sm": {
           "default": {
             "background": {
@@ -808,7 +814,7 @@
             "icon": {
               "$value": "{semantic.color.text.secondary}",
               "$type": "color",
-              "$description": "⊗ dismiss icon color"
+              "$description": "\u2297 dismiss icon color"
             }
           },
           "hover": {
@@ -859,7 +865,7 @@
             "icon": {
               "$value": "{semantic.color.text.secondary}",
               "$type": "color",
-              "$description": "⊗ dismiss icon color"
+              "$description": "\u2297 dismiss icon color"
             }
           },
           "hover": {
@@ -975,8 +981,9 @@
           }
         },
         "height": {
-          "$value": "40px",
-          "$type": "dimension"
+          "$value": "30px",
+          "$type": "dimension",
+          "$description": "Figma: 128x30"
         },
         "paddingV": {
           "$value": "8px",

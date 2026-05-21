@@ -1,7 +1,7 @@
 {
   "tooltip": {
-    "$description": "Tooltip — contextual helper text on hover/focus. Dark background, 4px radius.",
-    "background":    { "$value": "{primitive.color.blue.900}", "$type": "color", "$description": "#002F48 Midnight" },
+    "$description": "Tooltip — contextual helper text on hover/focus. Dark gray background, 4px radius. Figma: fill #323232",
+    "background":    { "$value": "#323232", "$type": "color", "$description": "Figma exact: #323232 (dark gray, not midnight navy)" },
     "text":          { "$value": "{semantic.color.surface.default}", "$type": "color" },
     "border":        { "$value": "transparent", "$type": "color" },
     "radius":        { "$value": "4px", "$type": "borderRadius" },
@@ -15,7 +15,7 @@
     "lineHeight":    { "$value": "16px", "$type": "lineHeights" },
     "arrow": {
       "size":        { "$value": "6px", "$type": "sizing" },
-      "color":       { "$value": "{primitive.color.blue.900}", "$type": "color" }
+      "color":       { "$value": "#323232", "$type": "color" }
     },
     "animation": {
       "duration":    { "$value": "150ms", "$type": "other" },

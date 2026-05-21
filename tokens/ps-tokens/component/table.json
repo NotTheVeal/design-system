@@ -1,0 +1,112 @@
+{
+  "table": {
+    "color": {
+      "background": {
+        "header": {
+          "$value": "{semantic.color.surface.subtle}",
+          "$type": "color"
+        },
+        "row": {
+          "default": {
+            "$value": "{semantic.color.surface.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.surface.hover}",
+            "$type": "color"
+          },
+          "selected": {
+            "$value": "{semantic.color.surface.selected}",
+            "$type": "color"
+          },
+          "striped": {
+            "$value": "{semantic.color.surface.subtle}",
+            "$type": "color"
+          }
+        }
+      },
+      "border": {
+        "$value": "{semantic.color.border.subtle}",
+        "$type": "color",
+        "$description": "Figma exact: #F1F1F1 (table outer border)"
+      },
+      "text": {
+        "header": {
+          "$value": "{semantic.color.text.secondary}",
+          "$type": "color"
+        },
+        "cell": {
+          "$value": "{semantic.color.text.primary}",
+          "$type": "color"
+        }
+      },
+      "sort": {
+        "icon": {
+          "$value": "{semantic.color.text.disabled}",
+          "$type": "color"
+        },
+        "active": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        }
+      }
+    },
+    "typography": {
+      "header": {
+        "fontSize": {
+          "$value": "{semantic.typography.body.sm.fontSize}",
+          "$type": "fontSizes"
+        },
+        "fontWeight": {
+          "$value": "{primitive.typography.fontWeight.semibold}",
+          "$type": "fontWeights"
+        }
+      },
+      "cell": {
+        "fontSize": {
+          "$value": "{semantic.typography.body.sm.fontSize}",
+          "$type": "fontSizes"
+        },
+        "fontWeight": {
+          "$value": "{primitive.typography.fontWeight.regular}",
+          "$type": "fontWeights"
+        }
+      }
+    },
+    "spacing": {
+      "cellPaddingX": {
+        "$value": "16px",
+        "$type": "spacing"
+      },
+      "cellPaddingY": {
+        "$value": "12px",
+        "$type": "spacing"
+      },
+      "headerPaddingY": {
+        "$value": "10px",
+        "$type": "spacing"
+      }
+    },
+    "sizing": {
+      "rowHeight": {
+        "$value": "48px",
+        "$type": "sizing"
+      },
+      "headerHeight": {
+        "$value": "42px",
+        "$type": "sizing"
+      }
+    },
+    "border": {
+      "width": {
+        "$value": "2px",
+        "$type": "borderWidth",
+        "$description": "Figma: strokeW:2"
+      },
+      "radius": {
+        "$value": "{semantic.border.radius.md}",
+        "$type": "borderRadius"
+      }
+    }
+  }
+}

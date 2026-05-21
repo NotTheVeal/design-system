@@ -10,7 +10,7 @@
       "$type": "color"
     },
     "radius": {
-      "$value": "8px",
+      "$value": "5px",
       "$type": "borderRadius"
     },
     "shadow": {

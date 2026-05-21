@@ -1,27 +1,96 @@
 {
   "skeleton": {
-    "$description": "Skeleton Screens — loading placeholders that mimic content layout.",
-    "background":       { "$value": "{primitive.color.neutral.100}", "$type": "color", "$description": "#F1F1F1" },
-    "backgroundShimmer":{ "$value": "{primitive.color.neutral.200}", "$type": "color", "$description": "#DCDCDC — shimmer highlight" },
+    "$description": "Skeleton Screens \u2014 loading placeholders that mimic content layout.",
+    "background": {
+      "$value": "{primitive.color.neutral.100}",
+      "$type": "color",
+      "$description": "Figma: #F1F1F1 shimmer base"
+    },
+    "backgroundShimmer": {
+      "$value": "{semantic.color.border.default}",
+      "$type": "color",
+      "$description": "Figma: #DCDCDC shimmer highlight"
+    },
     "radius": {
-      "text":  { "$value": "4px", "$type": "borderRadius" },
-      "image": { "$value": "4px", "$type": "borderRadius" },
-      "pill":  { "$value": "100px", "$type": "borderRadius" },
-      "circle":{ "$value": "50%", "$type": "borderRadius" }
+      "text": {
+        "$value": "4px",
+        "$type": "borderRadius"
+      },
+      "image": {
+        "$value": "4px",
+        "$type": "borderRadius"
+      },
+      "pill": {
+        "$value": "100px",
+        "$type": "borderRadius"
+      },
+      "circle": {
+        "$value": "50%",
+        "$type": "borderRadius"
+      }
     },
     "animation": {
-      "duration": { "$value": "1400ms", "$type": "other" },
-      "easing":   { "$value": "ease-in-out", "$type": "other" }
+      "duration": {
+        "$value": "1400ms",
+        "$type": "other"
+      },
+      "easing": {
+        "$value": "ease-in-out",
+        "$type": "other"
+      }
     },
     "sizes": {
-      "textLine":  { "$value": "16px", "$type": "sizing", "$description": "Height of a single text skeleton line" },
-      "textShort": { "$value": "60%", "$type": "sizing", "$description": "Typical short line width" },
-      "textFull":  { "$value": "100%", "$type": "sizing" },
-      "avatar":    { "$value": "40px", "$type": "sizing" },
-      "button":    { "$value": "32px", "$type": "sizing" },
-      "card":      { "$value": "120px", "$type": "sizing", "$description": "Card image/media area height" }
+      "textLine": {
+        "$value": "16px",
+        "$type": "sizing",
+        "$description": "Height of a single text skeleton line"
+      },
+      "textShort": {
+        "$value": "60%",
+        "$type": "sizing",
+        "$description": "Typical short line width"
+      },
+      "textFull": {
+        "$value": "100%",
+        "$type": "sizing"
+      },
+      "avatar": {
+        "$value": "40px",
+        "$type": "sizing"
+      },
+      "button": {
+        "$value": "32px",
+        "$type": "sizing"
+      },
+      "card": {
+        "$value": "120px",
+        "$type": "sizing",
+        "$description": "Card image/media area height"
+      }
     },
-    "gap": { "$value": "8px", "$type": "spacing" }
+    "gap": {
+      "$value": "8px",
+      "$type": "spacing"
+    },
+    "card": {
+      "background": {
+        "$value": "{semantic.color.surface.default}",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "{semantic.color.border.default}",
+        "$type": "color",
+        "$description": "Figma: #DCDCDC"
+      },
+      "borderWidth": {
+        "$value": "1px",
+        "$type": "borderWidth"
+      },
+      "radius": {
+        "$value": "8px",
+        "$type": "borderRadius",
+        "$description": "Figma: r:8"
+      }
+    }
   }
 }
-

@@ -148,14 +148,19 @@
       },
       "border": {
         "default": {
-          "$value": "{primitive.color.neutral.300}",
-          "$type": "color",
-          "$description": "Card borders, dividers, inputs at rest"
-        },
-        "subtle": {
           "$value": "{primitive.color.neutral.200}",
           "$type": "color",
-          "$description": "Subtle separators"
+          "$description": "Card borders, dividers, inputs at rest — #DCDCDC"
+        },
+        "subtle": {
+          "$value": "{primitive.color.neutral.100}",
+          "$type": "color",
+          "$description": "Subtle separators — #F1F1F1 (table stripes, accordion)"
+        },
+        "strong": {
+          "$value": "{primitive.color.neutral.400}",
+          "$type": "color",
+          "$description": "Strong border — #949494 (checkbox border, input hover)"
         },
         "brand": {
           "$value": "{primitive.color.blue.500}",
@@ -206,19 +211,44 @@
           "$type": "color"
         },
         "successDark": {
-          "$value": "{primitive.color.green.700}",
+          "$value": "#0e7c55",
           "$type": "color",
-          "$description": "Dark green — success text, icons on light backgrounds"
+          "$description": "Dark green — success alert text/icon (Figma exact: #0e7c55)"
         },
         "dangerDark": {
-          "$value": "{primitive.color.red.700}",
+          "$value": "#e00000",
           "$type": "color",
-          "$description": "Dark red — error text, icons on light backgrounds"
+          "$description": "Dark red — error alert text/icon (Figma exact: #e00000)"
         },
         "warningDark": {
-          "$value": "{primitive.color.amber.700}",
+          "$value": "#b45309",
           "$type": "color",
-          "$description": "Dark amber — warning text, icons on light backgrounds"
+          "$description": "Dark amber — warning alert text/icon (Figma exact: #b45309)"
+        },
+        "alertSuccessBg": {
+          "$value": "#e2f5ee",
+          "$type": "color",
+          "$description": "Alert success background (Figma exact)"
+        },
+        "alertDangerBg": {
+          "$value": "#fdebeb",
+          "$type": "color",
+          "$description": "Alert danger/fail background (Figma exact)"
+        },
+        "alertWarningBg": {
+          "$value": "#fff4e5",
+          "$type": "color",
+          "$description": "Alert warning background (Figma exact)"
+        },
+        "alertInfoBg": {
+          "$value": "#eff9fe",
+          "$type": "color",
+          "$description": "Alert info background (Figma exact)"
+        },
+        "error": {
+          "$value": "#e00000",
+          "$type": "color",
+          "$description": "Alias for dangerDark — form errors, fail states"
         }
       }
     }

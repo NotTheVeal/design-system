@@ -19,8 +19,9 @@
         "$type": "color"
       },
       "border": {
-        "$value": "{semantic.color.text.tertiary}",
-        "$type": "color"
+        "$value": "{primitive.color.neutral.400}",
+        "$type": "color",
+        "$description": "Figma: strk:#949494"
       },
       "checkmark": {
         "$value": "transparent",
@@ -41,15 +42,25 @@
       "background": {
         "$value": "#ff9505",
         "$type": "color",
-        "$description": "Legacy orange \u2014 new work: use #005ba6"
+        "$description": "Figma exact: orange selected fill"
       },
       "border": {
         "$value": "#ec8000",
-        "$type": "color"
+        "$type": "color",
+        "$description": "Figma exact: orange selected stroke"
       },
       "checkmark": {
         "$value": "{semantic.color.surface.default}",
         "$type": "color"
+      },
+      "stroke": {
+        "$value": "#ec8000",
+        "$type": "color"
+      },
+      "strokeWidth": {
+        "$value": "1.5px",
+        "$type": "borderWidth",
+        "$description": "Figma: sw:1.5"
       }
     },
     "completed": {
@@ -68,12 +79,14 @@
     },
     "disabled": {
       "background": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
+        "$value": "{primitive.color.neutral.300}",
+        "$type": "color",
+        "$description": "Figma: #cccccc"
       },
       "border": {
-        "$value": "{semantic.color.text.tertiary}",
-        "$type": "color"
+        "$value": "{primitive.color.neutral.400}",
+        "$type": "color",
+        "$description": "Figma: strk:#949494"
       },
       "inner": {
         "$value": "{semantic.color.text.disabled}",
