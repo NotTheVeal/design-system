@@ -15,17 +15,17 @@
         "navDark": {
           "$value": "{primitive.color.blue.900}",
           "$type": "color",
-          "$description": "Dark navy \u2014 left navigation background"
+          "$description": "Dark navy — left navigation background"
         },
         "navMid": {
           "$value": "{primitive.color.blue.800}",
           "$type": "color",
-          "$description": "Mid navy \u2014 navigation hover/active states"
+          "$description": "Mid navy — navigation hover/active states"
         },
         "accent": {
           "$value": "{primitive.color.teal.500}",
           "$type": "color",
-          "$description": "Azure Blue \u2014 info state, link hover, gradient accent"
+          "$description": "Azure Blue — info state, link hover, gradient accent"
         },
         "light": {
           "$value": "{primitive.color.blue.100}",
@@ -41,6 +41,10 @@
           "$value": "#dceaed",
           "$type": "color",
           "$description": "Hover tints, icon circle backgrounds"
+        },
+        "subtle": {
+          "$value": "{primitive.color.blue.100}",
+          "$type": "color"
         }
       },
       "text": {
@@ -85,6 +89,14 @@
         "warning": {
           "$value": "{primitive.color.amber.400}",
           "$type": "color"
+        },
+        "placeholder": {
+          "$value": "{primitive.color.neutral.400}",
+          "$type": "color"
+        },
+        "link": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
         }
       },
       "interactive": {
@@ -118,7 +130,7 @@
         "default": {
           "$value": "{primitive.color.neutral.0}",
           "$type": "color",
-          "$description": "Default white surface \u2014 buttons, inputs, cards"
+          "$description": "Default white surface — buttons, inputs, cards"
         },
         "page": {
           "$value": "{primitive.color.neutral.0}",
@@ -128,22 +140,34 @@
         "subtle": {
           "$value": "{primitive.color.neutral.100}",
           "$type": "color",
-          "$description": "Subtle tinted surface \u2014 tertiary button, chip, disabled"
+          "$description": "Subtle tinted surface — tertiary button, chip, disabled"
         },
         "overlay": {
           "$value": "{primitive.color.neutral.50}",
           "$type": "color",
-          "$description": "Subtle surface \u2014 card footer, sidebar"
+          "$description": "Subtle surface — card footer, sidebar"
         },
         "raised": {
           "$value": "{primitive.color.neutral.0}",
           "$type": "color",
-          "$description": "Raised elements \u2014 cards, dropdowns"
+          "$description": "Raised elements — cards, dropdowns"
         },
         "muted": {
           "$value": "{primitive.color.neutral.100}",
           "$type": "color",
-          "$description": "Muted fill \u2014 tertiary button, disabled input"
+          "$description": "Muted fill — tertiary button, disabled input"
+        },
+        "hover": {
+          "$value": "{primitive.color.neutral.100}",
+          "$type": "color"
+        },
+        "selected": {
+          "$value": "{primitive.color.blue.100}",
+          "$type": "color"
+        },
+        "disabled": {
+          "$value": "{primitive.color.neutral.100}",
+          "$type": "color"
         }
       },
       "border": {
@@ -175,12 +199,30 @@
         "success": {
           "$value": "{primitive.color.green.500}",
           "$type": "color"
+        },
+        "focus": {
+          "$value": "{semantic.color.brand.primary}",
+          "$type": "color"
+        },
+        "error": {
+          "$value": "{primitive.color.red.600}",
+          "$type": "color"
         }
       },
       "feedback": {
         "success": {
-          "$value": "{primitive.color.green.500}",
-          "$type": "color"
+          "DEFAULT": {
+            "$value": "{primitive.color.green.500}",
+            "$type": "color"
+          },
+          "background": {
+            "$value": "{primitive.color.green.50}",
+            "$type": "color"
+          },
+          "foreground": {
+            "$value": "{primitive.color.green.700}",
+            "$type": "color"
+          }
         },
         "successSubtle": {
           "$value": "{primitive.color.green.50}",
@@ -195,16 +237,36 @@
           "$type": "color"
         },
         "warning": {
-          "$value": "{primitive.color.amber.400}",
-          "$type": "color"
+          "DEFAULT": {
+            "$value": "{primitive.color.amber.400}",
+            "$type": "color"
+          },
+          "background": {
+            "$value": "{primitive.color.amber.50}",
+            "$type": "color"
+          },
+          "foreground": {
+            "$value": "{primitive.color.amber.700}",
+            "$type": "color"
+          }
         },
         "warningSubtle": {
           "$value": "{primitive.color.amber.50}",
           "$type": "color"
         },
         "info": {
-          "$value": "{primitive.color.blue.200}",
-          "$type": "color"
+          "DEFAULT": {
+            "$value": "{primitive.color.blue.200}",
+            "$type": "color"
+          },
+          "background": {
+            "$value": "{primitive.color.blue.100}",
+            "$type": "color"
+          },
+          "foreground": {
+            "$value": "{semantic.color.brand.primary}",
+            "$type": "color"
+          }
         },
         "infoSubtle": {
           "$value": "{primitive.color.blue.50}",
@@ -246,9 +308,18 @@
           "$description": "Alert info background (Figma exact)"
         },
         "error": {
-          "$value": "#e00000",
-          "$type": "color",
-          "$description": "Alias for dangerDark — form errors, fail states"
+          "DEFAULT": {
+            "$value": "#e00000",
+            "$type": "color"
+          },
+          "background": {
+            "$value": "{primitive.color.red.50}",
+            "$type": "color"
+          },
+          "foreground": {
+            "$value": "{primitive.color.red.600}",
+            "$type": "color"
+          }
         }
       }
     }

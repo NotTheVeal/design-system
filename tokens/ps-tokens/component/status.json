@@ -2,9 +2,9 @@
   "status": {
     "color": {
       "active": {
-        "background": { "$value": "{semantic.color.feedback.successLight}", "$type": "color" },
-        "text": { "$value": "{semantic.color.feedback.success}", "$type": "color" },
-        "dot": { "$value": "{semantic.color.feedback.success}", "$type": "color" }
+        "background": { "$value": "{semantic.color.feedback.success.DEFAULTLight}", "$type": "color" },
+        "text": { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" },
+        "dot": { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" }
       },
       "inactive": {
         "background": { "$value": "{semantic.color.surface.muted}", "$type": "color" },
@@ -12,19 +12,19 @@
         "dot": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
       },
       "warning": {
-        "background": { "$value": "{semantic.color.feedback.warningLight}", "$type": "color" },
-        "text": { "$value": "{semantic.color.feedback.warning}", "$type": "color" },
-        "dot": { "$value": "{semantic.color.feedback.warning}", "$type": "color" }
+        "background": { "$value": "{semantic.color.feedback.warning.DEFAULTLight}", "$type": "color" },
+        "text": { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" },
+        "dot": { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" }
       },
       "error": {
-        "background": { "$value": "{semantic.color.feedback.errorLight}", "$type": "color" },
-        "text": { "$value": "{semantic.color.feedback.error}", "$type": "color" },
-        "dot": { "$value": "{semantic.color.feedback.error}", "$type": "color" }
+        "background": { "$value": "{semantic.color.feedback.error.DEFAULTLight}", "$type": "color" },
+        "text": { "$value": "{semantic.color.feedback.error.DEFAULT}", "$type": "color" },
+        "dot": { "$value": "{semantic.color.feedback.error.DEFAULT}", "$type": "color" }
       },
       "info": {
-        "background": { "$value": "{semantic.color.feedback.infoLight}", "$type": "color" },
-        "text": { "$value": "{semantic.color.feedback.info}", "$type": "color" },
-        "dot": { "$value": "{semantic.color.feedback.info}", "$type": "color" }
+        "background": { "$value": "{semantic.color.feedback.info.DEFAULTLight}", "$type": "color" },
+        "text": { "$value": "{semantic.color.feedback.info.DEFAULT}", "$type": "color" },
+        "dot": { "$value": "{semantic.color.feedback.info.DEFAULT}", "$type": "color" }
       }
     },
     "border": {

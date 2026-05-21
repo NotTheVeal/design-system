@@ -73,7 +73,7 @@
 
     "motion": {
       "config":   { "$value": "gentle", "$type": "other" },
-      "duration": { "$value": "{semantic.motion.duration.base}", "$type": "other" }
+      "duration": { "$value": "{semantic.motion.duration.normal}", "$type": "other" }
     },
 
     "bar": {

@@ -1,0 +1,30 @@
+{
+  "semantic": {
+    "shadow": {
+      "sm": {
+        "$value": "0 1px 4px rgba(0,47,72,0.08)",
+        "$type": "boxShadow",
+        "$description": "Subtle shadow — inputs, list items"
+      },
+      "md": {
+        "$value": "0 2px 10px rgba(0,47,72,0.10)",
+        "$type": "boxShadow",
+        "$description": "Card shadow"
+      },
+      "lg": {
+        "$value": "0 6px 20px rgba(0,47,72,0.18)",
+        "$type": "boxShadow",
+        "$description": "Elevated — modals, dropdowns"
+      },
+      "focus": {
+        "$value": "0 0 0 3px rgba(0,147,244,0.3)",
+        "$type": "boxShadow",
+        "$description": "Focus ring"
+      },
+      "none": {
+        "$value": "none",
+        "$type": "boxShadow"
+      }
+    }
+  }
+}

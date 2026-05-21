@@ -41,7 +41,7 @@
       "width": { "$value": "1px", "$type": "borderWidth" }
     },
     "shadow": {
-      "calendar": { "$value": "{semantic.shadow.lg}", "$type": "boxShadow" }
+      "calendar": { "$value": "{semantic.shadow.md}", "$type": "boxShadow" }
     }
   }
 }
