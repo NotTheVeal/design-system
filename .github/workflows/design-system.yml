@@ -1,0 +1,261 @@
+name: Design System Pipeline
+
+# Triggers when tokens are pushed from Token Studio (Figma → GitHub sync)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tokens/**'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  # ─── Job 1: Validate Tokens ───────────────────────────────────────────────
+  validate-tokens:
+    name: Validate Token Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate token JSON syntax
+        run: |
+          echo "Validating token JSON files..."
+          find tokens/ -name "*.json" -exec node -e "
+            const fs = require('fs');
+            const file = process.argv[1];
+            try {
+              JSON.parse(fs.readFileSync(file, 'utf8'));
+              console.log('✅ Valid:', file);
+            } catch(e) {
+              console.error('❌ Invalid JSON:', file, e.message);
+              process.exit(1);
+            }
+          " {} \;
+
+      - name: Check for broken references
+        run: |
+          node scripts/validate-references.js
+
+  # ─── Job 2: Transform Tokens ─────────────────────────────────────────────
+  transform-tokens:
+    name: Transform Tokens → CSS/Tailwind/TypeScript
+    runs-on: ubuntu-latest
+    needs: validate-tokens
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Flatten Token Studio references
+        run: |
+          npx token-transformer \
+            tokens/ps-tokens \
+            tokens/transformed.json \
+            "primitive/color,primitive/typography,primitive/spacing,primitive/sizing,primitive/border,primitive/radius,primitive/shadow,primitive/opacity,primitive/motion,primitive/zIndex,primitive/base,primitive/grid,semantic/color,semantic/typography,semantic/spacing,semantic/sizing,semantic/border,semantic/opacity,semantic/motion,semantic/zIndex,component/button,component/navigation,component/navTop,component/navLeft,component/tabs,component/breadcrumb,component/pagination,component/filter,component/search,component/input,component/select,component/checkbox,component/radio,component/toggle,component/slider,component/stepper,component/datePicker,component/fileUpload,component/card,component/listCard,component/productCard,component/aiDataCard,component/table,component/badge,component/status,component/avatar,component/divider,component/skeleton,component/alert,component/toast,component/modal,component/drawer,component/tooltip,component/popover,component/accordion,component/carousel,component/emptyState,component/progressIndicator,component/loading,component/metric,component/pageShell,component/cart,component/icon,component/iconModality,component/iconCustom,component/iconLineArt,component/iconPictogram,component/inlineButton,component/ctaBar,component/aiAgent,component/cms,component/dataVisualization"
+
+      - name: Run Style Dictionary
+        run: npx style-dictionary build --config style-dictionary.config.js
+
+      - name: Upload token artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: transformed-tokens
+          path: |
+            src/tokens/tokens.css
+            src/tokens/tailwind-tokens.js
+            src/tokens/tokens.ts
+
+  # ─── Job 3: Generate Components (Claude) ─────────────────────────────────
+  generate-components:
+    name: Claude — Generate Components
+    runs-on: ubuntu-latest
+    needs: transform-tokens
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download transformed tokens
+        uses: actions/download-artifact@v4
+        with:
+          name: transformed-tokens
+          path: src/tokens/
+
+      - name: Install Claude CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Generate components from tokens
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Claude reads CLAUDE.md for rules, then generates components
+          # for any component token file that has changed
+          CHANGED_COMPONENTS=$(git diff --name-only HEAD~1 HEAD -- 'tokens/ps-tokens/component/*.json' | sed 's|tokens/ps-tokens/component/||' | sed 's|.json||')
+
+          if [ -z "$CHANGED_COMPONENTS" ]; then
+            echo "No component tokens changed, regenerating all..."
+            CHANGED_COMPONENTS="button navigation navTop navLeft tabs breadcrumb pagination filter search input select checkbox radio toggle slider stepper datePicker fileUpload card listCard productCard aiDataCard table badge status avatar divider skeleton alert toast modal drawer tooltip popover accordion carousel emptyState progressIndicator loading metric pageShell cart icon iconModality iconCustom iconLineArt iconPictogram inlineButton ctaBar aiAgent cms dataVisualization"
+          fi
+
+          for component in $CHANGED_COMPONENTS; do
+            echo "Generating component: $component"
+            claude --print "Generate the $component React component following all rules in CLAUDE.md. Token file: tokens/ps-tokens/component/$component.json" \
+              > src/components/$component/$component.tsx || true
+          done
+
+      - name: Commit generated components
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Design System Bot"
+          git add src/components/
+          git diff --staged --quiet || git commit -m "🤖 Auto-generate components from token update"
+
+  # ─── Job 4: Build Storybook ───────────────────────────────────────────────
+  build-storybook:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+    needs: generate-components
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+
+  # ─── Job 5: Run Tests ────────────────────────────────────────────────────
+  test:
+    name: Run Tests (Lint + Unit + Accessibility)
+    runs-on: ubuntu-latest
+    needs: build-storybook
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests (Jest)
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Accessibility tests (Axe via Storybook)
+        run: npm run test:a11y
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox
+
+      - name: Visual regression tests (Playwright)
+        run: npx playwright test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            coverage/
+            playwright-report/
+            test-results/
+
+  # ─── Job 6: Deploy Storybook ─────────────────────────────────────────────
+  deploy:
+    name: Deploy Storybook to Chromatic
+    runs-on: ubuntu-latest
+    needs: test
+    if: success()
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Storybook build
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+
+      - name: Deploy to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: storybook-static
+          exitOnceUploaded: true
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Design system deployed successfully!"
+          echo "Storybook: ${{ steps.chromatic.outputs.storybookUrl }}"
+          # Add Teams/email notification here if needed
+
+  # ─── Job 7: Notify on Failure ────────────────────────────────────────────
+  notify-failure:
+    name: Notify on Pipeline Failure
+    runs-on: ubuntu-latest
+    needs: [validate-tokens, transform-tokens, generate-components, build-storybook, test]
+    if: failure()
+    steps:
+      - name: Send failure notification
+        run: |
+          echo "❌ Design system pipeline failed!"
+          echo "Check GitHub Actions for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # Add Teams webhook or email notification here
+

@@ -8,7 +8,8 @@
     "build:validate": "npm run validate && npm run build"
   },
   "devDependencies": {
-    "style-dictionary": "^3.9.2"
+    "style-dictionary": "^3.9.2",
+    "token-transformer": "^0.0.33"
   },
   "license": "UNLICENSED",
   "private": true
