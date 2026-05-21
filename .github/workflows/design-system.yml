@@ -115,7 +115,7 @@ jobs:
       - name: Generate components from tokens
         if: steps.changed.outputs.components != ''
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
