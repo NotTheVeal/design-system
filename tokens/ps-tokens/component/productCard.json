@@ -13,7 +13,7 @@
         "priceLabel": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
       },
       "badge": {
-        "background": { "$value": "{semantic.color.brand.primaryLight}", "$type": "color" },
+        "background": { "$value": "{semantic.color.brand.subtle}", "$type": "color" },
         "text": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
       },
       "image": {

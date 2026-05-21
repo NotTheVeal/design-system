@@ -5,7 +5,7 @@
         "sans": {
           "$value": "Source Sans Pro",
           "$type": "fontFamily",
-          "$description": "Primary typeface \u2014 all product UI"
+          "$description": "Primary typeface — all product UI"
         },
         "ui": {
           "$value": "Inter",
@@ -34,6 +34,14 @@
         "bold": {
           "$value": 700,
           "$type": "fontWeight"
+        },
+        "medium": {
+          "$value": "500",
+          "$type": "fontWeights"
+        },
+        "semiBold": {
+          "$value": "600",
+          "$type": "fontWeights"
         }
       },
       "fontSize": {

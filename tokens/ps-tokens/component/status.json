@@ -2,7 +2,7 @@
   "status": {
     "color": {
       "active": {
-        "background": { "$value": "{semantic.color.feedback.success.DEFAULTLight}", "$type": "color" },
+        "background": { "$value": "{semantic.color.feedback.success.background}", "$type": "color" },
         "text": { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" },
         "dot": { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" }
       },
@@ -12,17 +12,17 @@
         "dot": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
       },
       "warning": {
-        "background": { "$value": "{semantic.color.feedback.warning.DEFAULTLight}", "$type": "color" },
+        "background": { "$value": "{semantic.color.feedback.warning.background}", "$type": "color" },
         "text": { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" },
         "dot": { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" }
       },
       "error": {
-        "background": { "$value": "{semantic.color.feedback.error.DEFAULTLight}", "$type": "color" },
+        "background": { "$value": "{semantic.color.feedback.error.background}", "$type": "color" },
         "text": { "$value": "{semantic.color.feedback.error.DEFAULT}", "$type": "color" },
         "dot": { "$value": "{semantic.color.feedback.error.DEFAULT}", "$type": "color" }
       },
       "info": {
-        "background": { "$value": "{semantic.color.feedback.info.DEFAULTLight}", "$type": "color" },
+        "background": { "$value": "{semantic.color.feedback.info.background}", "$type": "color" },
         "text": { "$value": "{semantic.color.feedback.info.DEFAULT}", "$type": "color" },
         "dot": { "$value": "{semantic.color.feedback.info.DEFAULT}", "$type": "color" }
       }

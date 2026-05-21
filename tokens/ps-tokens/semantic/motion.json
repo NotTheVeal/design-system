@@ -1,0 +1,18 @@
+{
+  "semantic": {
+    "motion": {
+      "duration": {
+        "fast":   { "$value": "150ms", "$type": "other", "$description": "Inputs, micro-interactions" },
+        "normal": { "$value": "200ms", "$type": "other", "$description": "Standard hover/transition" },
+        "base":   { "$value": "200ms", "$type": "other", "$description": "Alias for normal" },
+        "slow":   { "$value": "300ms", "$type": "other", "$description": "Panel open/close" },
+        "slower": { "$value": "500ms", "$type": "other", "$description": "Page transitions" }
+      },
+      "easing": {
+        "standard":   { "$value": "cubic-bezier(0.4, 0, 0.2, 1)", "$type": "other" },
+        "decelerate": { "$value": "cubic-bezier(0.0, 0.0, 0.2, 1)", "$type": "other" },
+        "accelerate": { "$value": "cubic-bezier(0.4, 0.0, 1, 1)",   "$type": "other" }
+      }
+    }
+  }
+}

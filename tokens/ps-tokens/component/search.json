@@ -29,7 +29,7 @@
         "width":            { "$value": "48px", "$type": "sizing" },
         "height":           { "$value": "40px", "$type": "sizing" },
         "background":       { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "#FF9505" },
-        "backgroundHover":  { "$value": "{primitive.color.orange.600}", "$type": "color", "$description": "#E88500" },
+        "backgroundHover":  { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "#E88500" },
         "icon":             { "$value": "{semantic.color.surface.default}", "$type": "color" },
         "radius":           { "$value": "0 4px 4px 0", "$type": "borderRadius" }
       }
@@ -119,7 +119,7 @@
       "submit": {
         "width":           { "$value": "48px", "$type": "sizing" },
         "background":      { "$value": "{semantic.color.brand.primary}", "$type": "color" },
-        "backgroundHover": { "$value": "{primitive.color.orange.600}", "$type": "color" },
+        "backgroundHover": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
         "icon":            { "$value": "{semantic.color.surface.default}", "$type": "color" },
         "radius":          { "$value": "0 5px 5px 0", "$type": "borderRadius" }
       }

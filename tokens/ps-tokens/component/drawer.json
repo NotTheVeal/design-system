@@ -5,7 +5,7 @@
     "overlay":     { "$value": "rgba(0,47,72,0.40)", "$type": "color" },
     "border":      { "$value": "{semantic.color.border.default}", "$type": "color" },
     "borderWidth": { "$value": "1px", "$type": "borderWidth" },
-    "shadow":      { "$value": "{primitive.shadow.xl}", "$type": "boxShadow" },
+    "shadow":      { "$value": "{semantic.shadow.lg}", "$type": "boxShadow" },
     "radius":      { "$value": "0", "$type": "borderRadius" },
     "zIndex":      { "$value": "400", "$type": "other" },
     "width": {

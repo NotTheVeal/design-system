@@ -5,7 +5,7 @@
     "text":          { "$value": "{semantic.color.surface.default}", "$type": "color" },
     "border":        { "$value": "transparent", "$type": "color" },
     "radius":        { "$value": "4px", "$type": "borderRadius" },
-    "shadow":        { "$value": "{primitive.shadow.md}", "$type": "boxShadow" },
+    "shadow":        { "$value": "{semantic.shadow.md}", "$type": "boxShadow" },
     "paddingV":      { "$value": "6px", "$type": "spacing" },
     "paddingH":      { "$value": "10px", "$type": "spacing" },
     "maxWidth":      { "$value": "240px", "$type": "sizing" },

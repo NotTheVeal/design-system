@@ -21,7 +21,7 @@
         "radius":          { "$value": "12px 12px 12px 4px", "$type": "borderRadius" }
       },
       "error": {
-        "background":      { "$value": "{semantic.color.feedback.errorSubtle}", "$type": "color" },
+        "background":      { "$value": "{semantic.color.feedback.error.background}", "$type": "color" },
         "text":            { "$value": "{semantic.color.feedback.error}", "$type": "color" },
         "border":          { "$value": "{semantic.color.feedback.error}", "$type": "color" },
         "borderWidth":     { "$value": "1px", "$type": "borderWidth" },

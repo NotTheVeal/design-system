@@ -7,8 +7,8 @@
           "default": { "$value": "transparent", "$type": "color" },
           "hover": { "$value": "{semantic.color.surface.hover}", "$type": "color" },
           "selected": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
-          "today": { "$value": "{semantic.color.brand.primaryLight}", "$type": "color" },
-          "range": { "$value": "{semantic.color.brand.primaryLight}", "$type": "color" },
+          "today": { "$value": "{semantic.color.brand.subtle}", "$type": "color" },
+          "range": { "$value": "{semantic.color.brand.subtle}", "$type": "color" },
           "disabled": { "$value": "transparent", "$type": "color" }
         }
       },

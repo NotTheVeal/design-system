@@ -1,160 +1,66 @@
 {
   "semantic": {
     "typography": {
-      "desktopHeaders": {
-        "h00": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.light}",
-            "fontSize": "{primitive.typography.fontSize.3xl}",
-            "lineHeight": "{primitive.typography.lineHeight.11}"
-          },
-          "$type": "typography",
-          "$description": "Header 00 \u2014 Hero, 34px Light"
+      "body": {
+        "xs": {
+          "fontSize":   { "$value": "12px", "$type": "fontSizes",   "$description": "Caption / label text" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
+          "lineHeight": { "$value": "1.4",  "$type": "lineHeights" }
         },
-        "h1": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.light}",
-            "fontSize": "30px",
-            "lineHeight": "{primitive.typography.lineHeight.10}"
-          },
-          "$type": "typography",
-          "$description": "H1 \u2014 Page-level heading, 30px Light"
+        "sm": {
+          "fontSize":   { "$value": "14px", "$type": "fontSizes",   "$description": "Small body / secondary text" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
+          "lineHeight": { "$value": "1.5",  "$type": "lineHeights" }
         },
-        "h2": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.light}",
-            "fontSize": "{primitive.typography.fontSize.2xl}",
-            "lineHeight": "{primitive.typography.lineHeight.8}"
-          },
-          "$type": "typography",
-          "$description": "H2 \u2014 Section heading, 24px Light"
+        "md": {
+          "fontSize":   { "$value": "16px", "$type": "fontSizes",   "$description": "Default body text" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
+          "lineHeight": { "$value": "1.5",  "$type": "lineHeights" }
         },
-        "h3": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.regular}",
-            "fontSize": "{primitive.typography.fontSize.2xl}",
-            "lineHeight": "{primitive.typography.lineHeight.8}"
-          },
-          "$type": "typography",
-          "$description": "H3 \u2014 Sub-section, 24px Regular"
-        },
-        "h4": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.semibold}",
-            "fontSize": "{primitive.typography.fontSize.2xl}",
-            "lineHeight": "{primitive.typography.lineHeight.8}"
-          },
-          "$type": "typography",
-          "$description": "H4 \u2014 24px Semibold"
+        "lg": {
+          "fontSize":   { "$value": "18px", "$type": "fontSizes",   "$description": "Large body text" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
+          "lineHeight": { "$value": "1.6",  "$type": "lineHeights" }
         }
       },
-      "mobileHeaders": {
-        "h1": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.light}",
-            "fontSize": "{primitive.typography.fontSize.2xl}",
-            "lineHeight": "{primitive.typography.lineHeight.8}"
-          },
-          "$type": "typography"
+      "display": {
+        "xs": {
+          "fontSize":   { "$value": "20px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" }
         },
-        "h2": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.light}",
-            "fontSize": "{primitive.typography.fontSize.xl}",
-            "lineHeight": "{primitive.typography.lineHeight.7}"
-          },
-          "$type": "typography"
+        "sm": {
+          "fontSize":   { "$value": "24px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" }
+        },
+        "md": {
+          "fontSize":   { "$value": "30px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" }
+        },
+        "lg": {
+          "fontSize":   { "$value": "36px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" }
+        },
+        "xl": {
+          "fontSize":   { "$value": "48px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" }
         }
       },
-      "desktopBody": {
-        "default": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.regular}",
-            "fontSize": "{primitive.typography.fontSize.base}",
-            "lineHeight": "{primitive.typography.lineHeight.6}"
-          },
-          "$type": "typography",
-          "$description": "Body-01 \u2014 Default paragraph text"
-        },
-        "bold": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.bold}",
-            "fontSize": "{primitive.typography.fontSize.base}",
-            "lineHeight": "{primitive.typography.lineHeight.6}"
-          },
-          "$type": "typography",
-          "$description": "Body-02 Bold \u2014 Inline emphasis"
-        },
-        "small": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.regular}",
-            "fontSize": "{primitive.typography.fontSize.sm}",
-            "lineHeight": "{primitive.typography.lineHeight.5}"
-          },
-          "$type": "typography",
-          "$description": "Small body / micro text"
-        },
-        "micro": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.regular}",
-            "fontSize": "{primitive.typography.fontSize.xs}",
-            "lineHeight": "{primitive.typography.lineHeight.4}"
-          },
-          "$type": "typography",
-          "$description": "Micro \u2014 Captions, helper text, footnotes"
-        },
-        "label": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.semibold}",
-            "fontSize": "{primitive.typography.fontSize.xs}",
-            "lineHeight": "{primitive.typography.lineHeight.4}"
-          },
-          "$type": "typography",
-          "$description": "Label \u2014 Uppercase, overlines, section markers"
-        }
+      "heading": {
+        "h1": { "fontSize": { "$value": "48px", "$type": "fontSizes" }, "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" } },
+        "h2": { "fontSize": { "$value": "36px", "$type": "fontSizes" }, "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" } },
+        "h3": { "fontSize": { "$value": "30px", "$type": "fontSizes" }, "fontWeight": { "$value": "{primitive.typography.fontWeight.light}", "$type": "fontWeights" } },
+        "h4": { "fontSize": { "$value": "24px", "$type": "fontSizes" }, "fontWeight": { "$value": "{primitive.typography.fontWeight.semiBold}", "$type": "fontWeights" } },
+        "h5": { "fontSize": { "$value": "20px", "$type": "fontSizes" }, "fontWeight": { "$value": "{primitive.typography.fontWeight.semiBold}", "$type": "fontWeights" } },
+        "h6": { "fontSize": { "$value": "16px", "$type": "fontSizes" }, "fontWeight": { "$value": "{primitive.typography.fontWeight.semiBold}", "$type": "fontWeights" } }
       },
-      "button": {
-        "large": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.regular}",
-            "fontSize": "15px",
-            "lineHeight": "{primitive.typography.lineHeight.6}"
-          },
-          "$type": "typography",
-          "$description": "Primary Large button label"
+      "label": {
+        "sm": {
+          "fontSize":   { "$value": "12px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.semiBold}", "$type": "fontWeights" }
         },
-        "medium": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.semibold}",
-            "fontSize": "{primitive.typography.fontSize.sm}",
-            "lineHeight": "{primitive.typography.lineHeight.5}"
-          },
-          "$type": "typography",
-          "$description": "Secondary Small button label"
-        },
-        "inline": {
-          "$value": {
-            "fontFamily": "{primitive.typography.fontFamily.sans}",
-            "fontWeight": "{primitive.typography.fontWeight.regular}",
-            "fontSize": "{primitive.typography.fontSize.sm}",
-            "lineHeight": "{primitive.typography.lineHeight.5}"
-          },
-          "$type": "typography",
-          "$description": "Inline / text button label"
+        "md": {
+          "fontSize":   { "$value": "14px", "$type": "fontSizes" },
+          "fontWeight": { "$value": "{primitive.typography.fontWeight.semiBold}", "$type": "fontWeights" }
         }
       }
     }
