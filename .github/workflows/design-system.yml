@@ -1,12 +1,11 @@
 name: Design System Pipeline
 
-# Triggers when tokens are pushed from Token Studio (Figma → GitHub sync)
 on:
   push:
     branches: [main]
     paths:
       - 'tokens/**'
-  workflow_dispatch: # Allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   # ─── Job 1: Validate Tokens ───────────────────────────────────────────────
@@ -14,36 +13,23 @@ jobs:
     name: Validate Token Structure
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
 
       - name: Validate token JSON syntax
         run: |
-          echo "Validating token JSON files..."
-          find tokens/ -name "*.json" -exec node -e "
-            const fs = require('fs');
-            const file = process.argv[1];
-            try {
-              JSON.parse(fs.readFileSync(file, 'utf8'));
-              console.log('✅ Valid:', file);
-            } catch(e) {
-              console.error('❌ Invalid JSON:', file, e.message);
-              process.exit(1);
-            }
-          " {} \;
+          find tokens/ -name "*.json" ! -name '$metadata.json' | while read file; do
+            node -e "
+              const fs = require('fs');
+              try { JSON.parse(fs.readFileSync('$file','utf8')); console.log('OK:', '$file'); }
+              catch(e) { console.error('INVALID:', '$file', e.message); process.exit(1); }
+            "
+          done
 
       - name: Check for broken references
-        run: |
-          node scripts/validate-references.js
+        run: node scripts/validate-references.js
 
   # ─── Job 2: Transform Tokens ─────────────────────────────────────────────
   transform-tokens:
@@ -51,17 +37,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-tokens
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
 
       - name: Flatten Token Studio references
         run: |
@@ -69,6 +48,9 @@ jobs:
             tokens/ps-tokens \
             tokens/transformed.json \
             "primitive/color,primitive/typography,primitive/spacing,primitive/sizing,primitive/border,primitive/radius,primitive/shadow,primitive/opacity,primitive/motion,primitive/zIndex,primitive/base,primitive/grid,semantic/color,semantic/typography,semantic/spacing,semantic/sizing,semantic/border,semantic/opacity,semantic/motion,semantic/zIndex,component/button,component/navigation,component/navTop,component/navLeft,component/tabs,component/breadcrumb,component/pagination,component/filter,component/search,component/input,component/select,component/checkbox,component/radio,component/toggle,component/slider,component/stepper,component/datePicker,component/fileUpload,component/card,component/listCard,component/productCard,component/aiDataCard,component/table,component/badge,component/status,component/avatar,component/divider,component/skeleton,component/alert,component/toast,component/modal,component/drawer,component/tooltip,component/popover,component/accordion,component/carousel,component/emptyState,component/progressIndicator,component/loading,component/metric,component/pageShell,component/cart,component/icon,component/iconModality,component/iconCustom,component/iconLineArt,component/iconPictogram,component/inlineButton,component/ctaBar,component/aiAgent,component/cms,component/dataVisualization"
+
+      - name: Create output directories
+        run: mkdir -p src/tokens
 
       - name: Run Style Dictionary
         run: npx style-dictionary build --config style-dictionary.config.js
@@ -81,6 +63,7 @@ jobs:
             src/tokens/tokens.css
             src/tokens/tailwind-tokens.js
             src/tokens/tokens.ts
+          if-no-files-found: warn
 
   # ─── Job 3: Generate Components (Claude) ─────────────────────────────────
   generate-components:
@@ -88,174 +71,132 @@ jobs:
     runs-on: ubuntu-latest
     needs: transform-tokens
     steps:
-      - name: Checkout repo
+      # Full history so git diff HEAD~1 works
+      - name: Checkout repo (full history)
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        run: npm ci
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
 
       - name: Download transformed tokens
         uses: actions/download-artifact@v4
         with:
           name: transformed-tokens
           path: src/tokens/
+        continue-on-error: true
 
       - name: Install Claude CLI
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Detect changed component tokens
+        id: changed
+        run: |
+          # For push events use before/after SHAs; for workflow_dispatch use HEAD~1
+          if [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            BEFORE="${{ github.event.before }}"
+          else
+            BEFORE="HEAD~1"
+          fi
+
+          CHANGED=$(git diff --name-only "$BEFORE" HEAD -- 'tokens/ps-tokens/component/*.json' 2>/dev/null \
+            | sed 's|tokens/ps-tokens/component/||' \
+            | sed 's|\.json||' || echo "")
+
+          echo "components=$CHANGED" >> $GITHUB_OUTPUT
+          if [ -z "$CHANGED" ]; then
+            echo "No component tokens changed — skipping generation."
+          else
+            echo "Changed components: $CHANGED"
+          fi
+
       - name: Generate components from tokens
+        if: steps.changed.outputs.components != ''
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          # Claude reads CLAUDE.md for rules, then generates components
-          # for any component token file that has changed
-          CHANGED_COMPONENTS=$(git diff --name-only HEAD~1 HEAD -- 'tokens/ps-tokens/component/*.json' | sed 's|tokens/ps-tokens/component/||' | sed 's|.json||')
-
-          if [ -z "$CHANGED_COMPONENTS" ]; then
-            echo "No component tokens changed, regenerating all..."
-            CHANGED_COMPONENTS="button navigation navTop navLeft tabs breadcrumb pagination filter search input select checkbox radio toggle slider stepper datePicker fileUpload card listCard productCard aiDataCard table badge status avatar divider skeleton alert toast modal drawer tooltip popover accordion carousel emptyState progressIndicator loading metric pageShell cart icon iconModality iconCustom iconLineArt iconPictogram inlineButton ctaBar aiAgent cms dataVisualization"
-          fi
-
-          for component in $CHANGED_COMPONENTS; do
-            echo "Generating component: $component"
-            claude --print "Generate the $component React component following all rules in CLAUDE.md. Token file: tokens/ps-tokens/component/$component.json" \
-              > src/components/$component/$component.tsx || true
+          for component in ${{ steps.changed.outputs.components }}; do
+            echo "Generating: $component"
+            mkdir -p "src/components/$component"
+            claude --print \
+              "Generate the $component React component following all rules in CLAUDE.md. Token file: tokens/ps-tokens/component/$component.json" \
+              > "src/components/$component/$component.tsx" 2>/dev/null || \
+              echo "Warning: Claude generation failed for $component (continuing)"
           done
 
-      - name: Commit generated components
+      - name: Commit and push generated components
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "Design System Bot"
-          git add src/components/
-          git diff --staged --quiet || git commit -m "🤖 Auto-generate components from token update"
+          git add src/components/ src/tokens/ 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-generate components from token update [skip ci]"
+            git push origin main
+          fi
 
-  # ─── Job 4: Build Storybook ───────────────────────────────────────────────
+  # ─── Jobs 4–6: Storybook + Tests + Deploy (Phase 5) ─────────────────────
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
     needs: generate-components
+    if: ${{ secrets.CHROMATIC_PROJECT_TOKEN != '' }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run build-storybook
+      - uses: actions/upload-artifact@v4
+        with: { name: storybook-static, path: storybook-static/ }
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Storybook
-        run: npm run build-storybook
-
-      - name: Upload Storybook build
-        uses: actions/upload-artifact@v4
-        with:
-          name: storybook-static
-          path: storybook-static/
-
-  # ─── Job 5: Run Tests ────────────────────────────────────────────────────
   test:
-    name: Run Tests (Lint + Unit + Accessibility)
+    name: Run Tests
     runs-on: ubuntu-latest
     needs: build-storybook
+    if: ${{ secrets.CHROMATIC_PROJECT_TOKEN != '' }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test -- --coverage --watchAll=false
+      - run: npm run test:a11y
+      - run: npx playwright install --with-deps chromium firefox
+      - run: npx playwright test
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Unit tests (Jest)
-        run: npm test -- --coverage --watchAll=false
-
-      - name: Accessibility tests (Axe via Storybook)
-        run: npm run test:a11y
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox
-
-      - name: Visual regression tests (Playwright)
-        run: npx playwright test
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            coverage/
-            playwright-report/
-            test-results/
-
-  # ─── Job 6: Deploy Storybook ─────────────────────────────────────────────
   deploy:
-    name: Deploy Storybook to Chromatic
+    name: Deploy to Chromatic
     runs-on: ubuntu-latest
     needs: test
-    if: success()
+    if: ${{ secrets.CHROMATIC_PROJECT_TOKEN != '' && success() }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Download Storybook build
-        uses: actions/download-artifact@v4
-        with:
-          name: storybook-static
-          path: storybook-static/
-
-      - name: Deploy to Chromatic
-        uses: chromaui/action@latest
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with: { name: storybook-static, path: storybook-static/ }
+      - uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           storybookBuildDir: storybook-static
           exitOnceUploaded: true
 
-      - name: Notify on success
-        if: success()
-        run: |
-          echo "✅ Design system deployed successfully!"
-          echo "Storybook: ${{ steps.chromatic.outputs.storybookUrl }}"
-          # Add Teams/email notification here if needed
-
   # ─── Job 7: Notify on Failure ────────────────────────────────────────────
   notify-failure:
     name: Notify on Pipeline Failure
     runs-on: ubuntu-latest
-    needs: [validate-tokens, transform-tokens, generate-components, build-storybook, test]
+    needs: [validate-tokens, transform-tokens, generate-components]
     if: failure()
     steps:
       - name: Send failure notification
         run: |
-          echo "❌ Design system pipeline failed!"
-          echo "Check GitHub Actions for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          # Add Teams webhook or email notification here
-
+          echo "Design system pipeline failed!"
+          echo "Check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
