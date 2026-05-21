@@ -1,0 +1,80 @@
+{
+  "grid": {
+    "$description": "Breakpoint System — verified against Figma 'Grids' page. Column counts, gutters, and margins for each breakpoint.",
+
+    "gutter": { "$value": "30px", "$type": "spacing", "$description": "Universal column gutter — 30px across all breakpoints" },
+
+    "breakpoint": {
+      "xs": {
+        "$description": "360dp — Mobile small. 2 cols, 20px margin, stretch.",
+        "width":   { "$value": "360px",  "$type": "sizing" },
+        "columns": { "$value": "2",      "$type": "other" },
+        "margin":  { "$value": "20px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "sm": {
+        "$description": "550dp — Mobile large. 2 cols, 20px margin, stretch.",
+        "width":   { "$value": "550px",  "$type": "sizing" },
+        "columns": { "$value": "2",      "$type": "other" },
+        "margin":  { "$value": "20px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "md": {
+        "$description": "768dp — Tablet. 6 cols, 50px margin, stretch.",
+        "width":   { "$value": "768px",  "$type": "sizing" },
+        "columns": { "$value": "6",      "$type": "other" },
+        "margin":  { "$value": "50px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "lg": {
+        "$description": "820dp — Tablet landscape. 6 cols, 50px margin, stretch.",
+        "width":   { "$value": "820px",  "$type": "sizing" },
+        "columns": { "$value": "6",      "$type": "other" },
+        "margin":  { "$value": "50px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "xl": {
+        "$description": "1150dp — Small desktop. 12 cols, 50px margin, stretch.",
+        "width":   { "$value": "1150px", "$type": "sizing" },
+        "columns": { "$value": "12",     "$type": "other" },
+        "margin":  { "$value": "50px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "2xl": {
+        "$description": "1440dp — Standard desktop. 12 cols, 50px margin, stretch.",
+        "width":   { "$value": "1440px", "$type": "sizing" },
+        "columns": { "$value": "12",     "$type": "other" },
+        "margin":  { "$value": "50px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "3xl": {
+        "$description": "1630dp — Large desktop. 12 cols, 50px margin, stretch.",
+        "width":   { "$value": "1630px", "$type": "sizing" },
+        "columns": { "$value": "12",     "$type": "other" },
+        "margin":  { "$value": "50px",   "$type": "spacing" },
+        "gutter":  { "$value": "30px",   "$type": "spacing" }
+      },
+      "4xl": {
+        "$description": "1920dp — Wide / full HD. 12 cols centered, 100px column width, 30px gutter.",
+        "width":      { "$value": "1920px", "$type": "sizing" },
+        "columns":    { "$value": "12",     "$type": "other" },
+        "columnWidth":{ "$value": "100px",  "$type": "sizing" },
+        "gutter":     { "$value": "30px",   "$type": "spacing" },
+        "alignment":  { "$value": "center", "$type": "other" }
+      },
+      "5xl": {
+        "$description": "3840dp — 4K. 12 cols centered, 100px column width, 30px gutter.",
+        "width":      { "$value": "3840px", "$type": "sizing" },
+        "columns":    { "$value": "12",     "$type": "other" },
+        "columnWidth":{ "$value": "100px",  "$type": "sizing" },
+        "gutter":     { "$value": "30px",   "$type": "spacing" },
+        "alignment":  { "$value": "center", "$type": "other" }
+      }
+    },
+
+    "maxContentWidth": {
+      "desktop": { "$value": "1440px", "$type": "sizing", "$description": "Standard max content width" },
+      "wide":    { "$value": "1920px", "$type": "sizing", "$description": "Wide screen max content width" }
+    }
+  }
+}
