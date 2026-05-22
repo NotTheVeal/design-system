@@ -123,63 +123,117 @@ const options = {
 console.log(`Generating ${component} component via GitHub Models (gpt-4o-mini)...`);
 console.log(`Prompt size: ${Buffer.byteLength(body)} bytes`);
 
-const req = https.request(options, (res) => {
-  let data = '';
-  res.on('data', (chunk) => { data += chunk; });
-  res.on('end', () => {
-    if (res.statusCode !== 200) {
-      console.error(`API error ${res.statusCode}: ${data}`);
-      process.exit(1);
-    }
+// ─── Retry config ─────────────────────────────────────────────────────────────
+const MAX_ATTEMPTS  = 4;
+const RETRY_DELAYS  = [15, 30, 60]; // seconds between attempts 1→2, 2→3, 3→4
 
-    let parsed;
-    try {
-      parsed = JSON.parse(data);
-    } catch (e) {
-      console.error('Failed to parse API response:', e.message);
-      process.exit(1);
-    }
+function sleep(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
 
-    // TO-SWAP (Claude): parsed?.content?.[0]?.text
-    const code = parsed?.choices?.[0]?.message?.content;
-    if (!code) {
-      console.error('No content in API response:', JSON.stringify(parsed).slice(0, 500));
-      process.exit(1);
-    }
+function makeRequest() {
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        if (res.statusCode === 429) {
+          // Rate limited — caller will retry
+          reject({ retryable: true, message: `Rate limited (429): ${data.slice(0, 200)}` });
+          return;
+        }
+        if (res.statusCode >= 500) {
+          // Server error — caller will retry
+          reject({ retryable: true, message: `Server error (${res.statusCode}): ${data.slice(0, 200)}` });
+          return;
+        }
+        if (res.statusCode !== 200) {
+          // Client error (4xx except 429) — do not retry
+          reject({ retryable: false, message: `API error ${res.statusCode}: ${data}` });
+          return;
+        }
+        resolve(data);
+      });
+    });
 
-    // Strip any accidental markdown fences
-    const cleaned = code
-      .replace(/^```(?:tsx?|typescript)?\s*\n?/m, '')
-      .replace(/\n?```\s*$/m, '')
-      .trim();
+    req.on('error', (e) => {
+      // Network error — caller will retry
+      reject({ retryable: true, message: `Network error: ${e.message}` });
+    });
 
-    // Validate it looks like TypeScript
-    const looksLikeTS =
-      cleaned.startsWith('import') ||
-      cleaned.startsWith('//') ||
-      cleaned.startsWith("'use") ||
-      cleaned.startsWith('"use');
-
-    if (!cleaned || !looksLikeTS) {
-      console.error('Output does not look like TypeScript.');
-      console.error('First line:', cleaned.split('\n')[0]);
-      console.error('Full output (first 500 chars):', cleaned.slice(0, 500));
-      process.exit(1);
-    }
-
-    // Write the file
-    const outDir  = `src/components/${component}`;
-    const outFile = `${outDir}/${component}.tsx`;
-    fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(outFile, cleaned + '\n');
-    console.log(`✅ Written: ${outFile} (${cleaned.split('\n').length} lines)`);
+    req.write(body);
+    req.end();
   });
-});
+}
 
-req.on('error', (e) => {
-  console.error('Request error:', e.message);
+async function run() {
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    if (attempt > 1) {
+      const delaySec = RETRY_DELAYS[attempt - 2];
+      console.log(`⏳ Retry ${attempt}/${MAX_ATTEMPTS} in ${delaySec}s...`);
+      await sleep(delaySec);
+    }
+
+    try {
+      const data = await makeRequest();
+
+      let parsed;
+      try {
+        parsed = JSON.parse(data);
+      } catch (e) {
+        // Malformed JSON — retry in case it was a partial response
+        lastError = { retryable: true, message: `Failed to parse API response: ${e.message}` };
+        console.error(lastError.message);
+        continue;
+      }
+
+      // TO-SWAP (Claude): parsed?.content?.[0]?.text
+      const code = parsed?.choices?.[0]?.message?.content;
+      if (!code) {
+        lastError = { retryable: true, message: `No content in API response: ${JSON.stringify(parsed).slice(0, 500)}` };
+        console.error(lastError.message);
+        continue;
+      }
+
+      // Strip any accidental markdown fences
+      const cleaned = code
+        .replace(/^```(?:tsx?|typescript)?\s*\n?/m, '')
+        .replace(/\n?```\s*$/m, '')
+        .trim();
+
+      // Validate it looks like TypeScript
+      const looksLikeTS =
+        cleaned.startsWith('import') ||
+        cleaned.startsWith('//') ||
+        cleaned.startsWith("'use") ||
+        cleaned.startsWith('"use');
+
+      if (!cleaned || !looksLikeTS) {
+        lastError = { retryable: true, message: `Output does not look like TypeScript. First line: ${cleaned.split('\n')[0]}` };
+        console.error(lastError.message);
+        continue;
+      }
+
+      // Write the file
+      const outDir  = `src/components/${component}`;
+      const outFile = `${outDir}/${component}.tsx`;
+      fs.mkdirSync(outDir, { recursive: true });
+      fs.writeFileSync(outFile, cleaned + '\n');
+      console.log(`✅ Written: ${outFile} (${cleaned.split('\n').length} lines)`);
+      return; // success
+
+    } catch (err) {
+      lastError = err;
+      console.error(`Attempt ${attempt} failed: ${err.message}`);
+      if (!err.retryable) break; // don't retry client errors
+    }
+  }
+
+  // All attempts exhausted
+  console.error(`❌ Failed to generate ${component} after ${MAX_ATTEMPTS} attempts: ${lastError?.message}`);
   process.exit(1);
-});
+}
 
-req.write(body);
-req.end();
+run();
