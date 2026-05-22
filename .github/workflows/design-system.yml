@@ -119,13 +119,4 @@ jobs:
         run: |
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
-            mkdir -p "src/components/$component"
-            claude --print \
-              "Complete this TypeScript React component file — output ONLY valid TypeScript/TSX code, no markdown, no explanation, starting exactly from where I left off:
-
-import React from "react";
-
-// $component component — generated from tokens/ps-tokens/component/$component.json
-// Follow all rules in CLAUDE.md
-
-Continue the implementation here:"
+            node scripts/generate-component.js "$component"
