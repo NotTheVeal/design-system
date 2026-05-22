@@ -1,68 +1,160 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const https = require('https');
+/**
+ * generate-component.js
+ * Uses the Claude Code CLI to generate a React component from design tokens.
+ * Authenticates via CLAUDE_CODE_OAUTH_TOKEN (written to ~/.claude/.credentials.json).
+ * Post-processes CLI output to extract clean TypeScript/TSX code.
+ *
+ * Usage: node scripts/generate-component.js <componentName>
+ * Output: writes src/components/<name>/<name>.tsx
+ */
 
+const fs   = require('fs');
+const path = require('path');
+const os   = require('os');
+const { spawnSync } = require('child_process');
+
+// ─── Args ────────────────────────────────────────────────────────────────────
 const component = process.argv[2];
-if (!component) { console.error('Usage: node scripts/generate-component.js <name>'); process.exit(1); }
+if (!component) {
+  console.error('Usage: node scripts/generate-component.js <componentName>');
+  process.exit(1);
+}
 
+// ─── Auth ────────────────────────────────────────────────────────────────────
 const token = process.env.CLAUDE_CODE_OAUTH_TOKEN;
-if (!token) { console.error('CLAUDE_CODE_OAUTH_TOKEN not set'); process.exit(1); }
+if (!token) {
+  console.error('Error: CLAUDE_CODE_OAUTH_TOKEN is not set');
+  process.exit(1);
+}
 
-const claudeMd = fs.existsSync('CLAUDE.md') ? fs.readFileSync('CLAUDE.md', 'utf8') : '';
+// Write OAuth token to the credentials file so the Claude CLI picks it up
+// in headless CI environments (no browser, no keychain).
+const claudeDir = path.join(os.homedir(), '.claude');
+const credFile  = path.join(claudeDir, '.credentials.json');
+fs.mkdirSync(claudeDir, { recursive: true });
+fs.writeFileSync(
+  credFile,
+  JSON.stringify({
+    claudeAiOauth: {
+      accessToken: token,
+      tokenType:   'Bearer',
+      // Generous expiry — the token itself governs real validity
+      expiresAt:   (Date.now() + 8 * 3600 * 1000).toString(),
+    },
+  }),
+  { mode: 0o600 }
+);
+
+// ─── Prompt ──────────────────────────────────────────────────────────────────
+const claudeMd  = fs.existsSync('CLAUDE.md')
+  ? fs.readFileSync('CLAUDE.md', 'utf8')
+  : '';
+
 const tokenFile = `tokens/ps-tokens/component/${component}.json`;
-const tokenJson = fs.existsSync(tokenFile) ? fs.readFileSync(tokenFile, 'utf8') : '{}';
+const tokenJson = fs.existsSync(tokenFile)
+  ? fs.readFileSync(tokenFile, 'utf8')
+  : '{}';
 
-const prompt = `${claudeMd}\n\n---\n\nGenerate the ${component} React component.\nToken file (${tokenFile}):\n${tokenJson}\n\nOutput ONLY raw TypeScript starting with: import React from 'react';`;
+const prompt = `\
+${claudeMd}
 
-const body = JSON.stringify({
-  model: 'claude-sonnet-4-6', max_tokens: 8192,
-  system: "Output ONLY valid TypeScript/TSX code. No markdown. No explanation. No backticks. First line must be: import React from 'react';",
-  messages: [{ role: 'user', content: prompt }]
-});
+---
 
-const req = https.request({
-  hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
-  headers: {
-# Copy the generation script to the repo
-cat > scripts/generate-component.js << 'SCRIPTEOF'
-#!/usr/bin/env node
-const fs = require('fs');
-const https = require('https');
+## Component to Generate: ${component}
 
-const component = process.argv[2];
-if (!component) { console.error('Usage: node scripts/generate-component.js <name>'); process.exit(1); }
+Token file (${tokenFile}):
+\`\`\`json
+${tokenJson}
+\`\`\`
 
-const token = process.env.CLAUDE_CODE_OAUTH_TOKEN;
-if (!token) { console.error('CLAUDE_CODE_OAUTH_TOKEN not set'); process.exit(1); }
+Generate the complete ${component} React component now.
+Rules:
+- Output ONLY valid TypeScript/TSX source code.
+- Do NOT include markdown fences, explanations, or commentary.
+- First line MUST be: import React from 'react';
+`;
 
-const claudeMd = fs.existsSync('CLAUDE.md') ? fs.readFileSync('CLAUDE.md', 'utf8') : '';
-const tokenFile = `tokens/ps-tokens/component/${component}.json`;
-const tokenJson = fs.existsSync(tokenFile) ? fs.readFileSync(tokenFile, 'utf8') : '{}';
+// ─── Run CLI ─────────────────────────────────────────────────────────────────
+console.log(`Generating ${component} component via claude CLI...`);
 
-const prompt = `${claudeMd}\n\n---\n\nGenerate the ${component} React component.\nToken file (${tokenFile}):\n${tokenJson}\n\nOutput ONLY raw TypeScript starting with: import React from 'react';`;
+// spawnSync passes the prompt as a direct process argument — no shell escaping.
+const result = spawnSync(
+  'claude',
+  ['--print', prompt],
+  {
+    encoding:  'utf8',
+    timeout:   180_000,           // 3 min — large components can be slow
+    maxBuffer: 10 * 1024 * 1024,  // 10 MB
+    env: { ...process.env, HOME: os.homedir() },
+  }
+);
 
-const body = JSON.stringify({
-  model: 'claude-sonnet-4-6', max_tokens: 8192,
-  system: "Output ONLY valid TypeScript/TSX code. No markdown. No explanation. No backticks. First line must be: import React from 'react';",
-  messages: [{ role: 'user', content: prompt }]
-});
+if (result.error) {
+  console.error('Failed to spawn claude CLI:', result.error.message);
+  console.error('Is the `claude` CLI installed? Run: npm install -g @anthropic-ai/claude-code');
+  process.exit(1);
+}
 
-const req = https.request({
-  hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
-  headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body),
-    'Authorization': `Bearer ${token}`, 'anthropic-version': '2023-06-01' }
-}, (res) => {
-  let data = '';
-  res.on('data', c => data += c);
-  res.on('end', () => {
-    if (res.statusCode !== 200) { console.error(`API error ${res.statusCode}:`, data); process.exit(1); }
-    const code = JSON.parse(data)?.content?.[0]?.text?.replace(/^```(?:tsx?)?\n?/m,'').replace(/\n?```\s*$/m,'').trim();
-    if (!code?.match(/^import|^\/\//)) { console.error('Output not TypeScript:', code?.substring(0,100)); process.exit(1); }
-    const dir = `src/components/${component}`;
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(`${dir}/${component}.tsx`, code + '\n');
-    console.log(`✅ ${dir}/${component}.tsx (${code.split('\n').length} lines)`);
-  });
-});
-req.on('error', e => { console.error(e.message); process.exit(1); });
-req.write(body); req.end();
+if (result.status !== 0) {
+  console.error(`claude CLI exited with code ${result.status}`);
+  console.error('stderr:', result.stderr?.slice(0, 1000));
+  process.exit(1);
+}
+
+const raw = result.stdout || '';
+
+// ─── Extract TypeScript from output ──────────────────────────────────────────
+// Claude CLI may wrap code in markdown fences even when asked not to.
+// Strategy 1 — grab the largest ```tsx / ```ts / ``` block.
+let code = '';
+
+const fenceRe = /```(?:tsx?|typescript)?\s*\n([\s\S]*?)\n```/g;
+let match;
+let bestLen = 0;
+while ((match = fenceRe.exec(raw)) !== null) {
+  if (match[1].length > bestLen) {
+    bestLen = match[1].length;
+    code    = match[1];
+  }
+}
+
+// Strategy 2 — if no fence found, slice from the first import statement.
+if (!code) {
+  const importIdx = raw.search(/^import\s+/m);
+  if (importIdx !== -1) {
+    code = raw.slice(importIdx);
+  }
+}
+
+// Strategy 3 — full output (last resort)
+if (!code) {
+  code = raw;
+}
+
+// Strip any stray leading/trailing fences that slipped through.
+const cleaned = code
+  .replace(/^```(?:tsx?|typescript)?\s*\n?/m, '')
+  .replace(/\n?```\s*$/m, '')
+  .trim();
+
+// ─── Validate ────────────────────────────────────────────────────────────────
+const looksLikeTS =
+  cleaned.startsWith('import') ||
+  cleaned.startsWith('//') ||
+  cleaned.startsWith("'use") ||
+  cleaned.startsWith('"use');
+
+if (!cleaned || !looksLikeTS) {
+  console.error('Error: extracted output does not look like TypeScript.');
+  console.error('First line :', cleaned.split('\n')[0]);
+  console.error('Raw output (first 800 chars):\n', raw.slice(0, 800));
+  process.exit(1);
+}
+
+// ─── Write file ───────────────────────────────────────────────────────────────
+const outDir  = `src/components/${component}`;
+const outFile = `${outDir}/${component}.tsx`;
+fs.mkdirSync(outDir, { recursive: true });
+fs.writeFileSync(outFile, cleaned + '\n');
+console.log(`✅ Written: ${outFile} (${cleaned.split('\n').length} lines)`);
