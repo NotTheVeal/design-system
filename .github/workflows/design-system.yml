@@ -120,7 +120,7 @@ jobs:
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
             node scripts/generate-component.js "$component"
-            sleep 10
+            sleep 15
           done
 
       - name: Commit generated components
