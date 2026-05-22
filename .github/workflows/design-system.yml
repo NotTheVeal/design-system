@@ -106,7 +106,7 @@ jobs:
           CHANGED=$(git diff --name-only "$BEFORE" HEAD -- 'tokens/ps-tokens/component/*.json' 2>/dev/null \
             | sed 's|tokens/ps-tokens/component/||' \
             | sed 's|\.json||' || echo "")
-          echo "components=$CHANGED" >> $GITHUB_OUTPUT
+          echo "components=$(echo $CHANGED | tr '\n' ' ')" >> $GITHUB_OUTPUT
           if [ -z "$CHANGED" ]; then
             echo "No component tokens changed — skipping generation."
           else
