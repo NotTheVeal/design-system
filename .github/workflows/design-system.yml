@@ -120,3 +120,4 @@ jobs:
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
             node scripts/generate-component.js "$component"
+          done
