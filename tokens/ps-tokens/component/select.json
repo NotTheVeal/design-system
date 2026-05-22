@@ -9,7 +9,7 @@
       "border": {
         "default": { "$value": "{semantic.color.border.default}", "$type": "color" },
         "focus": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
-        "error": { "$value": "{semantic.color.feedback.error}", "$type": "color" }
+        "error": { "$value": "{semantic.color.feedback.error.DEFAULT}", "$type": "color" }
       },
       "text": {
         "placeholder": { "$value": "{semantic.color.text.placeholder}", "$type": "color" },

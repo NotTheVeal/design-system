@@ -8,7 +8,7 @@
         "$type": "color"
       },
       "complete": {
-        "$value": "{semantic.color.feedback.success}",
+        "$value": "{semantic.color.feedback.success.DEFAULT}",
         "$type": "color"
       },
       "height": {
@@ -28,15 +28,15 @@
       },
       "finished": {
         "background": {
-          "$value": "{semantic.color.feedback.success}",
+          "$value": "{semantic.color.feedback.success.DEFAULT}",
           "$type": "color"
         },
         "border": {
-          "$value": "{semantic.color.feedback.success}",
+          "$value": "{semantic.color.feedback.success.DEFAULT}",
           "$type": "color"
         },
         "checkmark": {
-          "$value": "{semantic.color.feedback.success}",
+          "$value": "{semantic.color.feedback.success.DEFAULT}",
           "$type": "color"
         },
         "text": {
@@ -50,11 +50,11 @@
           "$type": "color"
         },
         "border": {
-          "$value": "{semantic.color.feedback.success}",
+          "$value": "{semantic.color.feedback.success.DEFAULT}",
           "$type": "color"
         },
         "text": {
-          "$value": "{semantic.color.feedback.success}",
+          "$value": "{semantic.color.feedback.success.DEFAULT}",
           "$type": "color"
         },
         "shadow": {
@@ -99,7 +99,7 @@
           "$type": "color"
         },
         "complete": {
-          "$value": "{semantic.color.feedback.success}",
+          "$value": "{semantic.color.feedback.success.DEFAULT}",
           "$type": "color"
         }
       }

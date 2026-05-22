@@ -69,11 +69,11 @@
         "$type": "color"
       },
       "border": {
-        "$value": "{semantic.color.feedback.success}",
+        "$value": "{semantic.color.feedback.success.DEFAULT}",
         "$type": "color"
       },
       "checkmark": {
-        "$value": "{semantic.color.feedback.success}",
+        "$value": "{semantic.color.feedback.success.DEFAULT}",
         "$type": "color"
       }
     },

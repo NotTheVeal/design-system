@@ -14,9 +14,9 @@
         "8": { "$value": "{primitive.color.amber.400}",      "$type": "color", "$description": "Amber" }
       },
       "feedback": {
-        "success": { "$value": "{semantic.color.feedback.success}", "$type": "color" },
-        "warning":  { "$value": "{semantic.color.feedback.warning}", "$type": "color" },
-        "error":    { "$value": "{semantic.color.feedback.error}",   "$type": "color" },
+        "success": { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" },
+        "warning":  { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" },
+        "error":    { "$value": "{semantic.color.feedback.error.DEFAULT}",   "$type": "color" },
         "info":     { "$value": "{semantic.color.brand.light}",      "$type": "color" }
       },
       "axis":       { "$value": "{semantic.color.border.default}",  "$type": "color" },

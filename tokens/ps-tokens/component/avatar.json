@@ -24,8 +24,8 @@
     },
     "status": {
       "$description": "Presence indicator dot",
-      "online":   { "$value": "{semantic.color.feedback.success}", "$type": "color" },
-      "away":     { "$value": "{semantic.color.feedback.warning}", "$type": "color" },
+      "online":   { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" },
+      "away":     { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" },
       "offline":  { "$value": "{semantic.color.text.tertiary}", "$type": "color" },
       "size":     { "$value": "10px", "$type": "sizing" },
       "border":   { "$value": "{semantic.color.surface.default}", "$type": "color" }

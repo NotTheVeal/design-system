@@ -7,9 +7,9 @@
       "radius":          { "$value": "100px", "$type": "borderRadius" },
       "background":      { "$value": "{primitive.color.neutral.200}", "$type": "color", "$description": "Track background" },
       "fill":            { "$value": "{semantic.color.brand.primary}", "$type": "color" },
-      "fillSuccess":     { "$value": "{semantic.color.feedback.success}", "$type": "color" },
-      "fillWarning":     { "$value": "{semantic.color.feedback.warning}", "$type": "color" },
-      "fillDanger":      { "$value": "{semantic.color.feedback.error}", "$type": "color" },
+      "fillSuccess":     { "$value": "{semantic.color.feedback.success.DEFAULT}", "$type": "color" },
+      "fillWarning":     { "$value": "{semantic.color.feedback.warning.DEFAULT}", "$type": "color" },
+      "fillDanger":      { "$value": "{semantic.color.feedback.error.DEFAULT}", "$type": "color" },
       "animation": {
         "duration": { "$value": "400ms", "$type": "other" },
         "easing":   { "$value": "ease-out", "$type": "other" }

@@ -394,7 +394,7 @@
         "$type": "color"
       },
       "trendPositive": {
-        "$value": "{semantic.color.feedback.success}",
+        "$value": "{semantic.color.feedback.success.DEFAULT}",
         "$type": "color"
       },
       "trendNegative": {
