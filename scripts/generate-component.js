@@ -79,6 +79,7 @@ Rules:
 console.log(`Generating ${component} component via claude CLI...`);
 
 // spawnSync passes the prompt as a direct process argument — no shell escaping.
+// Also set ANTHROPIC_API_KEY to the OAuth token — the CLI checks this env var.
 const result = spawnSync(
   'claude',
   ['--print', prompt],
@@ -86,7 +87,11 @@ const result = spawnSync(
     encoding:  'utf8',
     timeout:   180_000,           // 3 min — large components can be slow
     maxBuffer: 10 * 1024 * 1024,  // 10 MB
-    env: { ...process.env, HOME: os.homedir() },
+    env: {
+      ...process.env,
+      HOME: os.homedir(),
+      ANTHROPIC_API_KEY: token,   // fallback: CLI also checks this env var
+    },
   }
 );
 
@@ -98,7 +103,8 @@ if (result.error) {
 
 if (result.status !== 0) {
   console.error(`claude CLI exited with code ${result.status}`);
-  console.error('stderr:', result.stderr?.slice(0, 1000));
+  console.error('stderr:', result.stderr?.slice(0, 2000) || '(empty)');
+  console.error('stdout:', result.stdout?.slice(0, 2000) || '(empty)');
   process.exit(1);
 }
 
