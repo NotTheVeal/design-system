@@ -120,8 +120,8 @@ jobs:
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
             mkdir -p "src/components/$component"
-            claude --print \
-              "Generate the $component React component following all rules in CLAUDE.md. Token file: tokens/ps-tokens/component/$component.json" \
+            claude --dangerously-skip-permissions --print \
+              "Output ONLY raw TypeScript/TSX code with no markdown, no explanation, no descriptions, no backticks. Start with import React. Generate the complete $component React component per CLAUDE.md rules using tokens from tokens/ps-tokens/component/$component.json." \
               > "src/components/$component/$component.tsx" 2>/dev/null || \
               echo "Warning: Claude generation failed for $component"
           done
