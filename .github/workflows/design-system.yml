@@ -123,6 +123,24 @@ jobs:
             sleep 15
           done
 
+
+      - name: TypeScript check
+        if: always()
+        run: |
+          if [ -d src/components ] && [ "$(ls src/components/ 2>/dev/null | wc -l)" -gt 0 ]; then
+            echo "## TypeScript Check" >> $GITHUB_STEP_SUMMARY
+            npx tsc --noEmit 2>&1 | tee /tmp/ts-errors.txt || true
+            ERROR_COUNT=$(grep -c "error TS" /tmp/ts-errors.txt 2>/dev/null || echo "0")
+            if [ "$ERROR_COUNT" -gt 0 ]; then
+              echo "⚠️ Found ${ERROR_COUNT} TypeScript error(s)" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              head -50 /tmp/ts-errors.txt >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ No TypeScript errors" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
       - name: Commit generated components
         if: always()
         run: |
