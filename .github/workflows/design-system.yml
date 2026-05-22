@@ -120,80 +120,12 @@ jobs:
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
             mkdir -p "src/components/$component"
-            claude --dangerously-skip-permissions --print \
-              "Output ONLY raw TypeScript/TSX code with no markdown, no explanation, no descriptions, no backticks. Start with import React. Generate the complete $component React component per CLAUDE.md rules using tokens from tokens/ps-tokens/component/$component.json." \
-              > "src/components/$component/$component.tsx" 2>/dev/null || \
-              echo "Warning: Claude generation failed for $component"
-          done
+            claude --print \
+              "Complete this TypeScript React component file — output ONLY valid TypeScript/TSX code, no markdown, no explanation, starting exactly from where I left off:
 
-      - name: Commit and push generated components
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "Design System Bot"
-          git add src/components/ src/tokens/ 2>/dev/null || true
-          if git diff --staged --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Auto-generate components from token update [skip ci]"
-            git push origin main
-          fi
+import React from "react";
 
-  # ─── Jobs 4–6: Storybook + Tests + Deploy (Phase 5 — disabled until ready)
-  build-storybook:
-    name: Build Storybook
-    runs-on: ubuntu-latest
-    needs: generate-components
-    if: false  # Enable in Phase 5 when Storybook is configured
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - run: npm run build-storybook
-      - uses: actions/upload-artifact@v4
-        with: { name: storybook-static, path: storybook-static/ }
+// $component component — generated from tokens/ps-tokens/component/$component.json
+// Follow all rules in CLAUDE.md
 
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    needs: build-storybook
-    if: false  # Enable in Phase 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test -- --coverage --watchAll=false
-      - run: npm run test:a11y
-
-  deploy:
-    name: Deploy to Chromatic
-    runs-on: ubuntu-latest
-    needs: test
-    if: false  # Enable in Phase 5
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - uses: actions/download-artifact@v4
-        with: { name: storybook-static, path: storybook-static/ }
-      - uses: chromaui/action@latest
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          storybookBuildDir: storybook-static
-          exitOnceUploaded: true
-
-  # ─── Job 7: Notify on Failure ────────────────────────────────────────────
-  notify-failure:
-    name: Notify on Pipeline Failure
-    runs-on: ubuntu-latest
-    needs: [validate-tokens, transform-tokens, generate-components]
-    if: failure()
-    steps:
-      - name: Send failure notification
-        run: |
-          echo "Design system pipeline failed!"
-          echo "Check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+Continue the implementation here:"
