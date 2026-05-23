@@ -1,60 +1,34 @@
 {
   "toast": {
-    "color": {
-      "success": {
-        "background": { "$value": "#E2F5EE", "$type": "color" },
-        "text": { "$value": "#0E7C55", "$type": "color" },
-        "icon": { "$value": "#0E7C55", "$type": "color" }
-      },
-      "error": {
-        "background": { "$value": "#FEF0F0", "$type": "color" },
-        "text": { "$value": "#E00000", "$type": "color" },
-        "icon": { "$value": "#E00000", "$type": "color" }
-      },
-      "warning": {
-        "background": { "$value": "#FFF4E5", "$type": "color" },
-        "text": { "$value": "#B45309", "$type": "color" },
-        "icon": { "$value": "#B45309", "$type": "color" }
-      },
-      "info": {
-        "background": { "$value": "#EFF9FE", "$type": "color" },
-        "text": { "$value": "#005BA6", "$type": "color" },
-        "icon": { "$value": "#005BA6", "$type": "color" }
-      },
-      "dismiss": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
-    },
-    "sizing": {
-      "minHeight": { "$value": "56px", "$type": "sizing" },
-      "minWidth": { "$value": "300px", "$type": "sizing" },
-      "maxWidth": { "$value": "420px", "$type": "sizing" }
-    },
-    "spacing": {
-      "padding": { "$value": "16px", "$type": "spacing" },
-      "gap": { "$value": "12px", "$type": "spacing" },
-      "iconSize": { "$value": "24px", "$type": "sizing" }
-    },
-    "border": {
-      "radius": { "$value": "8px", "$type": "borderRadius" }
-    },
-    "shadow": { "$value": "0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)", "$type": "boxShadow" },
-    "position": {
-      "bottom": { "$value": "24px", "$type": "spacing" },
-      "right": { "$value": "24px", "$type": "spacing" }
-    },
-    "animation": {
-      "enter": { "$value": "250ms ease-out", "$type": "other", "$description": "Slide in from right" },
-      "autoDismiss": { "$value": "5000ms", "$type": "other", "$description": "Success/info auto-dismiss (errors: persistent)" }
-    },
-    "typography": {
-      "fontSize": { "$value": "14px", "$type": "fontSizes" },
-      "fontWeight": { "$value": "600", "$type": "fontWeights" }
-    }
+    "borderRadius": { "$value": "4px", "$type": "dimension" },
+    "height": { "$value": "40px", "$type": "dimension" },
+    "paddingX": { "$value": "16px", "$type": "dimension" },
+    "paddingY": { "$value": "10px", "$type": "dimension" },
+    "iconSize": { "$value": "18px", "$type": "dimension" },
+    "iconMarginRight": { "$value": "8px", "$type": "dimension" },
+    "textColor": { "$value": "#4A4A4A", "$type": "color" },
+    "textSize": { "$value": "14px", "$type": "dimension" },
+    "textWeight": { "$value": "400", "$type": "other" },
+    "dismissColor": { "$value": "#949494", "$type": "color" },
+    "dismissSize": { "$value": "16px", "$type": "dimension" },
+    "minWidth": { "$value": "280px", "$type": "dimension" },
+    "maxWidth": { "$value": "480px", "$type": "dimension" },
+    "shadow": { "$value": "0 2px 10px rgba(0,47,72,0.10)", "$type": "shadow" },
+    "errorBg": { "$value": "#FEF0F0", "$type": "color" },
+    "errorBorder": { "$value": "#FACBCB", "$type": "color" },
+    "errorIconColor": { "$value": "#E00000", "$type": "color" },
+    "errorTextColor": { "$value": "#4A4A4A", "$type": "color" },
+    "infoBg": { "$value": "#EFF9FE", "$type": "color" },
+    "infoBorder": { "$value": "#B0C6D3", "$type": "color" },
+    "infoIconColor": { "$value": "#005BA6", "$type": "color" },
+    "infoTextColor": { "$value": "#4A4A4A", "$type": "color" },
+    "successBg": { "$value": "#E2F5EE", "$type": "color" },
+    "successBorder": { "$value": "#17AB78", "$type": "color" },
+    "successIconColor": { "$value": "#0E7C55", "$type": "color" },
+    "successTextColor": { "$value": "#4A4A4A", "$type": "color" },
+    "warningBg": { "$value": "#FFF4E5", "$type": "color" },
+    "warningBorder": { "$value": "#E3A92D", "$type": "color" },
+    "warningIconColor": { "$value": "#B45309", "$type": "color" },
+    "warningTextColor": { "$value": "#4A4A4A", "$type": "color" }
   }
 }
-
-
-
-
-
-
-

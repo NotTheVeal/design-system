@@ -1,40 +1,48 @@
 {
   "listCard": {
-    "color": {
-      "background": {
-        "default": { "$value": "{semantic.color.surface.default}", "$type": "color" },
-        "hover": { "$value": "{semantic.color.surface.hover}", "$type": "color" },
-        "selected": { "$value": "{semantic.color.surface.selected}", "$type": "color" }
-      },
-      "border": {
-        "default": { "$value": "{semantic.color.border.default}", "$type": "color" },
-        "selected": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
-      },
-      "text": {
-        "primary": { "$value": "{semantic.color.text.primary}", "$type": "color" },
-        "secondary": { "$value": "{semantic.color.text.secondary}", "$type": "color" },
-        "link": { "$value": "{semantic.color.brand.primary}", "$type": "color" }
-      },
-      "icon": { "$value": "{semantic.color.text.secondary}", "$type": "color" }
-    },
-    "spacing": {
-      "padding": { "$value": "16px", "$type": "spacing" },
-      "gap": { "$value": "12px", "$type": "spacing" },
-      "avatarGap": { "$value": "8px", "$type": "spacing" }
-    },
-    "border": {
-      "radius": { "$value": "{semantic.border.radius.md}", "$type": "borderRadius" },
-      "width": { "$value": "1px", "$type": "borderWidth" }
-    },
-    "sizing": {
-      "avatarSize": { "$value": "40px", "$type": "sizing" },
-      "iconSize": { "$value": "20px", "$type": "sizing" }
-    }
+    "bgColor": { "$value": "#FFFFFF", "$type": "color" },
+    "borderColor": { "$value": "#DCDCDC", "$type": "color" },
+    "borderRadius": { "$value": "4px", "$type": "dimension" },
+    "padding": { "$value": "16px", "$type": "dimension" },
+    "shadow": { "$value": "none", "$type": "shadow" },
+    "hoverShadow": { "$value": "0 4px 12px rgba(0,0,0,0.1)", "$type": "shadow" },
+    "titleColor": { "$value": "#2B2B2B", "$type": "color" },
+    "titleSize": { "$value": "18px", "$type": "dimension" },
+    "titleWeight": { "$value": "400", "$type": "other" },
+    "subtitleColor": { "$value": "#777777", "$type": "color" },
+    "subtitleSize": { "$value": "14px", "$type": "dimension" },
+    "metaLabelColor": { "$value": "#4A4A4A", "$type": "color" },
+    "metaLabelWeight": { "$value": "700", "$type": "other" },
+    "metaValueColor": { "$value": "#4A4A4A", "$type": "color" },
+    "metaValueSize": { "$value": "14px", "$type": "dimension" },
+    "metaRowHeight": { "$value": "28px", "$type": "dimension" },
+    "footerBorderColor": { "$value": "#DCDCDC", "$type": "color" },
+    "footerPaddingY": { "$value": "12px", "$type": "dimension" },
+    "footerActionColor": { "$value": "#005BA6", "$type": "color" },
+    "footerActionSize": { "$value": "14px", "$type": "dimension" },
+    "footerActionWeight": { "$value": "600", "$type": "other" },
+    "footerActionIconColor": { "$value": "#005BA6", "$type": "color" },
+    "footerActionIconSize": { "$value": "16px", "$type": "dimension" },
+    "footerActionBg": { "$value": "#F1F1F1", "$type": "color" },
+    "footerShareColor": { "$value": "#949494", "$type": "color" },
+    "footerShareSize": { "$value": "14px", "$type": "dimension" },
+    "sortIconColor": { "$value": "#949494", "$type": "color" },
+    "badgePillRadius": { "$value": "100px", "$type": "dimension" },
+    "badgePillPaddingX": { "$value": "10px", "$type": "dimension" },
+    "badgePillPaddingY": { "$value": "4px", "$type": "dimension" },
+    "badgePillFontSize": { "$value": "11px", "$type": "dimension" },
+    "badgePillFontWeight": { "$value": "700", "$type": "other" },
+    "badgePillTransform": { "$value": "uppercase", "$type": "other" },
+    "badgePillShoppingBg": { "$value": "#EDE9FE", "$type": "color" },
+    "badgePillShoppingColor": { "$value": "#5B21B6", "$type": "color" },
+    "emptyIconBg": { "$value": "#17AB78", "$type": "color" },
+    "emptyIconColor": { "$value": "#FFFFFF", "$type": "color" },
+    "emptyIconSize": { "$value": "48px", "$type": "dimension" },
+    "emptyIconRadius": { "$value": "100px", "$type": "dimension" },
+    "emptyTitleColor": { "$value": "#2B2B2B", "$type": "color" },
+    "emptyTitleSize": { "$value": "16px", "$type": "dimension" },
+    "emptyDescColor": { "$value": "#777777", "$type": "color" },
+    "emptyDescSize": { "$value": "14px", "$type": "dimension" },
+    "emptyTextAlign": { "$value": "center", "$type": "other" }
   }
 }
-
-
-
-
-
-

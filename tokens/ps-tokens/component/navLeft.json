@@ -1,346 +1,38 @@
 {
   "navLeft": {
-    "$description": "Left Hand Navigation — dark navy sidebar. Figma: Navigation/LeftNav. States: expanded, collapsed. Items: default, hover, active, disabled.",
-
-    "container": {
-      "background": {
-        "$value": "{semantic.color.brand.navDark}",
-        "$type": "color",
-        "$description": "Dark navy sidebar background"
-      },
-      "border": {
-        "$value": "{semantic.color.brand.primary}",
-        "$type": "color",
-        "$description": "Right-edge accent border"
-      },
-      "divider": {
-        "$value": "{semantic.color.interactive.hoverDark}",
-        "$type": "color",
-        "$description": "Horizontal divider between sections"
-      },
-      "width": {
-        "$value": "240px",
-        "$type": "dimension",
-        "$description": "Expanded width"
-      },
-      "widthCollapsed": {
-        "$value": "64px",
-        "$type": "dimension",
-        "$description": "Collapsed/icon-only width"
-      },
-      "paddingV": {
-        "$value": "16px",
-        "$type": "dimension"
-      },
-      "paddingH": {
-        "$value": "16px",
-        "$type": "dimension"
-      }
-    },
-
-    "header": {
-      "$description": "Top of left nav — logo / product name area",
-      "background": {
-        "$value": "{semantic.color.brand.navDark}",
-        "$type": "color"
-      },
-      "logoText": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      },
-      "height": {
-        "$value": "64px",
-        "$type": "dimension"
-      },
-      "paddingH": {
-        "$value": "16px",
-        "$type": "dimension"
-      },
-      "typography": {
-        "$value": {
-          "fontFamily": "Source Sans Pro",
-          "fontWeight": 700,
-          "fontSize": "18px",
-          "lineHeight": "24px"
-        },
-        "$type": "typography"
-      }
-    },
-
-    "userBadge": {
-      "$description": "User avatar / initials badge at top or bottom of nav",
-      "background": {
-        "$value": "{semantic.color.brand.primary}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      },
-      "border": {
-        "$value": "{semantic.color.border.default}",
-        "$type": "color"
-      },
-      "size": {
-        "$value": "32px",
-        "$type": "dimension"
-      },
-      "radius": {
-        "$value": "100px",
-        "$type": "borderRadius"
-      },
-      "typography": {
-        "$value": {
-          "fontFamily": "Source Sans Pro",
-          "fontWeight": 400,
-          "fontSize": "18px"
-        },
-        "$type": "typography"
-      }
-    },
-
-    "collapseButton": {
-      "$description": "Collapse/expand toggle button on the nav edge",
-      "background": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      },
-      "container": {
-        "$value": "{semantic.color.brand.primary}",
-        "$type": "color"
-      },
-      "icon": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      },
-      "size": {
-        "$value": "24px",
-        "$type": "dimension"
-      },
-      "radius": {
-        "$value": "100px",
-        "$type": "borderRadius"
-      }
-    },
-
-    "section": {
-      "$description": "Section group label — small caps category heading",
-      "text": {
-        "$value": "{semantic.color.text.tertiary}",
-        "$type": "color"
-      },
-      "paddingV": {
-        "$value": "8px",
-        "$type": "dimension"
-      },
-      "paddingH": {
-        "$value": "16px",
-        "$type": "dimension"
-      },
-      "typography": {
-        "$value": {
-          "fontFamily": "Source Sans Pro",
-          "fontWeight": 600,
-          "fontSize": "11px",
-          "letterSpacing": "0.5px",
-          "textTransform": "uppercase"
-        },
-        "$type": "typography"
-      }
-    },
-
-    "item": {
-      "$description": "Individual nav item — icon + label row",
-      "height": {
-        "$value": "40px",
-        "$type": "dimension"
-      },
-      "paddingH": {
-        "$value": "16px",
-        "$type": "dimension"
-      },
-      "gap": {
-        "$value": "12px",
-        "$type": "dimension",
-        "$description": "Space between icon and label"
-      },
-      "itemGap": {
-        "$value": "4px",
-        "$type": "dimension",
-        "$description": "Space between nav items"
-      },
-      "radius": {
-        "$value": "4px",
-        "$type": "borderRadius"
-      },
-      "activeIndicatorWidth": {
-        "$value": "3px",
-        "$type": "dimension",
-        "$description": "Left border accent on active item"
-      },
-      "typography": {
-        "$value": {
-          "fontFamily": "Source Sans Pro",
-          "fontWeight": 400,
-          "fontSize": "14px",
-          "lineHeight": "20px"
-        },
-        "$type": "typography"
-      },
-      "default": {
-        "background": {
-          "$value": "transparent",
-          "$type": "color"
-        },
-        "text": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "icon": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        }
-      },
-      "hover": {
-        "background": {
-          "$value": "{semantic.color.interactive.hoverDark}",
-          "$type": "color"
-        },
-        "text": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "icon": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        }
-      },
-      "active": {
-        "background": {
-          "$value": "{semantic.color.interactive.hoverDark}",
-          "$type": "color"
-        },
-        "text": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "icon": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "borderLeft": {
-          "$value": "{semantic.color.brand.accent}",
-          "$type": "color",
-          "$description": "Teal left-edge active indicator"
-        }
-      },
-      "disabled": {
-        "background": {
-          "$value": "transparent",
-          "$type": "color"
-        },
-        "text": {
-          "$value": "{semantic.color.text.tertiary}",
-          "$type": "color"
-        },
-        "icon": {
-          "$value": "{semantic.color.text.tertiary}",
-          "$type": "color"
-        }
-      }
-    },
-
-    "subItem": {
-      "$description": "Nested child nav item — indented under a parent",
-      "height": {
-        "$value": "36px",
-        "$type": "dimension"
-      },
-      "paddingLeft": {
-        "$value": "44px",
-        "$type": "dimension",
-        "$description": "Indented to align past icon"
-      },
-      "paddingRight": {
-        "$value": "16px",
-        "$type": "dimension"
-      },
-      "typography": {
-        "$value": {
-          "fontFamily": "Source Sans Pro",
-          "fontWeight": 400,
-          "fontSize": "13px",
-          "lineHeight": "18px"
-        },
-        "$type": "typography"
-      },
-      "default": {
-        "text": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "background": {
-          "$value": "transparent",
-          "$type": "color"
-        }
-      },
-      "hover": {
-        "text": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "background": {
-          "$value": "{semantic.color.interactive.hoverDark}",
-          "$type": "color"
-        }
-      },
-      "active": {
-        "text": {
-          "$value": "{semantic.color.surface.default}",
-          "$type": "color"
-        },
-        "background": {
-          "$value": "{semantic.color.interactive.hoverDark}",
-          "$type": "color"
-        },
-        "borderLeft": {
-          "$value": "{semantic.color.brand.accent}",
-          "$type": "color"
-        }
-      }
-    },
-
-    "badge": {
-      "$description": "Notification count badge on a nav item",
-      "background": {
-        "$value": "{semantic.color.feedback.danger}",
-        "$type": "color"
-      },
-      "text": {
-        "$value": "{semantic.color.surface.default}",
-        "$type": "color"
-      },
-      "size": {
-        "$value": "18px",
-        "$type": "dimension"
-      },
-      "radius": {
-        "$value": "100px",
-        "$type": "borderRadius"
-      },
-      "typography": {
-        "$value": {
-          "fontFamily": "Source Sans Pro",
-          "fontWeight": 700,
-          "fontSize": "10px"
-        },
-        "$type": "typography"
-      }
-    }
+    "bgHeader": { "$value": "#005BA6", "$type": "color" },
+    "bgSubmenuHeader": { "$value": "#002F48", "$type": "color" },
+    "bgBody": { "$value": "#003A6B", "$type": "color" },
+    "textColor": { "$value": "#FFFFFF", "$type": "color" },
+    "iconColor": { "$value": "#FFFFFF", "$type": "color" },
+    "iconStroke": { "$value": "1.5px", "$type": "dimension" },
+    "expandedWidth": { "$value": "240px", "$type": "dimension" },
+    "collapsedWidth": { "$value": "64px", "$type": "dimension" },
+    "itemHeight": { "$value": "56px", "$type": "dimension" },
+    "itemPaddingX": { "$value": "20px", "$type": "dimension" },
+    "itemFontSize": { "$value": "16px", "$type": "dimension" },
+    "itemFontWeight": { "$value": "400", "$type": "other" },
+    "headerHeight": { "$value": "80px", "$type": "dimension" },
+    "headerPaddingX": { "$value": "16px", "$type": "dimension" },
+    "headerAvatarSize": { "$value": "40px", "$type": "dimension" },
+    "headerAvatarBg": { "$value": "#FFFFFF", "$type": "color" },
+    "headerAvatarTextColor": { "$value": "#005BA6", "$type": "color" },
+    "headerNameFontSize": { "$value": "18px", "$type": "dimension" },
+    "headerNameFontWeight": { "$value": "600", "$type": "other" },
+    "submenuHeaderBg": { "$value": "#002F48", "$type": "color" },
+    "submenuBackArrowColor": { "$value": "#FFFFFF", "$type": "color" },
+    "submenuHeaderFontSize": { "$value": "16px", "$type": "dimension" },
+    "submenuHeaderFontWeight": { "$value": "600", "$type": "other" },
+    "chevronColor": { "$value": "#FFFFFF", "$type": "color" },
+    "chevronSize": { "$value": "16px", "$type": "dimension" },
+    "toggleButtonBg": { "$value": "#005BA6", "$type": "color" },
+    "toggleButtonSize": { "$value": "48px", "$type": "dimension" },
+    "toggleButtonIconColor": { "$value": "#FFFFFF", "$type": "color" },
+    "toggleButtonRadius": { "$value": "100px", "$type": "dimension" },
+    "toggleButtonPosition": { "$value": "bottom-right", "$type": "other" },
+    "toggleButtonMargin": { "$value": "16px", "$type": "dimension" },
+    "itemHoverBg": { "$value": "rgba(255,255,255,0.08)", "$type": "color" },
+    "itemActiveBg": { "$value": "rgba(255,255,255,0.12)", "$type": "color" },
+    "dividerColor": { "$value": "rgba(255,255,255,0.15)", "$type": "color" }
   }
 }
-
-
-
-
-
