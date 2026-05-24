@@ -1,46 +1,177 @@
 {
   "cart": {
-    "iconContainerSize": { "$value": "42px", "$type": "dimension" },
-    "iconSize": { "$value": "28px", "$type": "dimension" },
-    "iconColor": { "$value": "#005BA6", "$type": "color" },
-    "iconStroke": { "$value": "1.5px", "$type": "dimension" },
-    "badgeSize": { "$value": "22px", "$type": "dimension" },
-    "badgeBg": { "$value": "#005BA6", "$type": "color" },
-    "badgeTextColor": { "$value": "#FFFFFF", "$type": "color" },
-    "badgeFontSize": { "$value": "11px", "$type": "dimension" },
-    "badgeFontWeight": { "$value": "700", "$type": "other" },
-    "badgeRadius": { "$value": "100px", "$type": "dimension" },
-    "badgeBorderColor": { "$value": "#FFFFFF", "$type": "color" },
-    "badgeBorderWidth": { "$value": "1.5px", "$type": "dimension" },
-    "badgeOffsetX": { "$value": "-6px", "$type": "dimension" },
-    "badgeOffsetY": { "$value": "-6px", "$type": "dimension" },
-    "itemCardBg": { "$value": "#FFFFFF", "$type": "color" },
-    "itemCardBorderColor": { "$value": "#DCDCDC", "$type": "color" },
-    "itemCardBorderRadius": { "$value": "4px", "$type": "dimension" },
-    "itemCardPadding": { "$value": "16px", "$type": "dimension" },
-    "itemImageHeight": { "$value": "160px", "$type": "dimension" },
-    "itemNameColor": { "$value": "#005BA6", "$type": "color" },
-    "itemNameSize": { "$value": "14px", "$type": "dimension" },
-    "itemNameWeight": { "$value": "700", "$type": "other" },
-    "itemNameTransform": { "$value": "uppercase", "$type": "other" },
-    "itemPriceColor": { "$value": "#2B2B2B", "$type": "color" },
-    "itemPriceSize": { "$value": "16px", "$type": "dimension" },
-    "itemPriceWeight": { "$value": "700", "$type": "other" },
-    "itemConditionColor": { "$value": "#4A4A4A", "$type": "color" },
-    "itemConditionSize": { "$value": "14px", "$type": "dimension" },
-    "itemQtyLabelColor": { "$value": "#4A4A4A", "$type": "color" },
-    "itemQtyInputWidth": { "$value": "64px", "$type": "dimension" },
-    "itemQtyInputHeight": { "$value": "36px", "$type": "dimension" },
-    "itemAddToBtnBg": { "$value": "#FF9505", "$type": "color", "$description": "Legacy orange CTA — deprecated for new work, use #005BA6 instead" },
-    "itemAddToBtnColor": { "$value": "#FFFFFF", "$type": "color" },
-    "itemAddToBtnSize": { "$value": "14px", "$type": "dimension" },
-    "itemAddToBtnWeight": { "$value": "700", "$type": "other" },
-    "itemAddToBtnTransform": { "$value": "uppercase", "$type": "other" },
-    "itemAddToBtnRadius": { "$value": "4px", "$type": "dimension" },
-    "itemAddToBtnHeight": { "$value": "40px", "$type": "dimension" },
-    "itemRemoveColor": { "$value": "#949494", "$type": "color" },
-    "itemRemoveSize": { "$value": "12px", "$type": "dimension" },
-    "itemRemoveWeight": { "$value": "600", "$type": "other" },
-    "itemRemoveTransform": { "$value": "uppercase", "$type": "other" }
+    "iconContainerSize": {
+      "$value": "42px",
+      "$type": "dimension"
+    },
+    "iconSize": {
+      "$value": "28px",
+      "$type": "dimension"
+    },
+    "iconColor": {
+      "$value": "#005BA6",
+      "$type": "color"
+    },
+    "iconStroke": {
+      "$value": "1.5px",
+      "$type": "dimension"
+    },
+    "badgeSize": {
+      "$value": "22px",
+      "$type": "dimension"
+    },
+    "badgeBg": {
+      "$value": "#005BA6",
+      "$type": "color"
+    },
+    "badgeTextColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "badgeFontSize": {
+      "$value": "11px",
+      "$type": "dimension"
+    },
+    "badgeFontWeight": {
+      "$value": "700",
+      "$type": "other"
+    },
+    "badgeRadius": {
+      "$value": "100px",
+      "$type": "dimension"
+    },
+    "badgeBorderColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "badgeBorderWidth": {
+      "$value": "1.5px",
+      "$type": "dimension"
+    },
+    "badgeOffsetX": {
+      "$value": "-6px",
+      "$type": "dimension"
+    },
+    "badgeOffsetY": {
+      "$value": "-6px",
+      "$type": "dimension"
+    },
+    "itemCardBg": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "itemCardBorderColor": {
+      "$value": "#DCDCDC",
+      "$type": "color"
+    },
+    "itemCardBorderRadius": {
+      "$value": "4px",
+      "$type": "dimension"
+    },
+    "itemCardPadding": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "itemImageHeight": {
+      "$value": "160px",
+      "$type": "dimension"
+    },
+    "itemNameColor": {
+      "$value": "#005BA6",
+      "$type": "color"
+    },
+    "itemNameSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "itemNameWeight": {
+      "$value": "700",
+      "$type": "other"
+    },
+    "itemNameTransform": {
+      "$value": "uppercase",
+      "$type": "other"
+    },
+    "itemPriceColor": {
+      "$value": "#2B2B2B",
+      "$type": "color"
+    },
+    "itemPriceSize": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "itemPriceWeight": {
+      "$value": "700",
+      "$type": "other"
+    },
+    "itemConditionColor": {
+      "$value": "#4A4A4A",
+      "$type": "color"
+    },
+    "itemConditionSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "itemQtyLabelColor": {
+      "$value": "#4A4A4A",
+      "$type": "color"
+    },
+    "itemQtyInputWidth": {
+      "$value": "64px",
+      "$type": "dimension"
+    },
+    "itemQtyInputHeight": {
+      "$value": "36px",
+      "$type": "dimension"
+    },
+    "itemAddToBtnBg": {
+      "$value": "#FF9505",
+      "$type": "color",
+      "$description": "Legacy orange CTA \u2014 deprecated for new work, use #005BA6 instead"
+    },
+    "itemAddToBtnColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "itemAddToBtnSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "itemAddToBtnWeight": {
+      "$value": "700",
+      "$type": "other"
+    },
+    "itemAddToBtnTransform": {
+      "$value": "uppercase",
+      "$type": "other"
+    },
+    "itemAddToBtnRadius": {
+      "$value": "4px",
+      "$type": "dimension"
+    },
+    "itemAddToBtnHeight": {
+      "$value": "40px",
+      "$type": "dimension"
+    },
+    "itemRemoveColor": {
+      "$value": "#949494",
+      "$type": "color"
+    },
+    "itemRemoveSize": {
+      "$value": "12px",
+      "$type": "dimension"
+    },
+    "itemRemoveWeight": {
+      "$value": "600",
+      "$type": "other"
+    },
+    "itemRemoveTransform": {
+      "$value": "uppercase",
+      "$type": "other"
+    },
+    "$description": {
+      "$value": "Cart icon badge and item card tokens \u2014 includes legacy orange CTA note",
+      "$type": "other"
+    }
   }
 }

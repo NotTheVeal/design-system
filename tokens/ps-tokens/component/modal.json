@@ -1,42 +1,160 @@
 {
   "modal": {
-    "bgColor": { "$value": "#FFFFFF", "$type": "color" },
-    "borderRadius": { "$value": "8px", "$type": "dimension" },
-    "maxWidth": { "$value": "540px", "$type": "dimension" },
-    "padding": { "$value": "24px", "$type": "dimension" },
-    "overlayBg": { "$value": "rgba(0,0,0,0.5)", "$type": "color" },
-    "headerTitleColor": { "$value": "#2B2B2B", "$type": "color" },
-    "headerTitleSize": { "$value": "20px", "$type": "dimension" },
-    "headerTitleWeight": { "$value": "600", "$type": "other" },
-    "headerSubtitleColor": { "$value": "#777777", "$type": "color" },
-    "headerSubtitleSize": { "$value": "14px", "$type": "dimension" },
-    "closeIconColor": { "$value": "#949494", "$type": "color" },
-    "closeIconSize": { "$value": "18px", "$type": "dimension" },
-    "footerBorderColor": { "$value": "#DCDCDC", "$type": "color" },
-    "footerPaddingX": { "$value": "24px", "$type": "dimension" },
-    "footerPaddingY": { "$value": "16px", "$type": "dimension" },
-    "sectionHeaderColor": { "$value": "#949494", "$type": "color" },
-    "sectionHeaderSize": { "$value": "11px", "$type": "dimension" },
-    "sectionHeaderWeight": { "$value": "600", "$type": "other" },
-    "sectionHeaderLetterSpacing": { "$value": "0.08em", "$type": "other" },
-    "sectionDividerColor": { "$value": "#DCDCDC", "$type": "color" },
-    "detailLabelColor": { "$value": "#777777", "$type": "color" },
-    "detailLabelSize": { "$value": "14px", "$type": "dimension" },
-    "detailValueColor": { "$value": "#2B2B2B", "$type": "color" },
-    "detailValueWeight": { "$value": "600", "$type": "other" },
-    "detailRowHeight": { "$value": "40px", "$type": "dimension" },
-    "confirmIconBg": { "$value": "#FACBCB", "$type": "color" },
-    "confirmIconColor": { "$value": "#E00000", "$type": "color" },
-    "confirmIconSize": { "$value": "48px", "$type": "dimension" },
-    "confirmIconRadius": { "$value": "100px", "$type": "dimension" },
-    "confirmTitleColor": { "$value": "#2B2B2B", "$type": "color" },
-    "confirmTitleSize": { "$value": "18px", "$type": "dimension" },
-    "confirmDescColor": { "$value": "#777777", "$type": "color" },
-    "confirmDescSize": { "$value": "14px", "$type": "dimension" },
-    "loadingSpinnerColor": { "$value": "#DCDCDC", "$type": "color" },
-    "loadingSpinnerSize": { "$value": "40px", "$type": "dimension" },
-    "loadingTextColor": { "$value": "#949494", "$type": "color" },
-    "stepIndicatorColor": { "$value": "#777777", "$type": "color" },
-    "stepIndicatorSize": { "$value": "14px", "$type": "dimension" }
+    "bgColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "borderRadius": {
+      "$value": "8px",
+      "$type": "dimension"
+    },
+    "maxWidth": {
+      "$value": "540px",
+      "$type": "dimension"
+    },
+    "padding": {
+      "$value": "24px",
+      "$type": "dimension"
+    },
+    "overlayBg": {
+      "$value": "rgba(0,0,0,0.5)",
+      "$type": "color"
+    },
+    "headerTitleColor": {
+      "$value": "#2B2B2B",
+      "$type": "color"
+    },
+    "headerTitleSize": {
+      "$value": "20px",
+      "$type": "dimension"
+    },
+    "headerTitleWeight": {
+      "$value": "600",
+      "$type": "other"
+    },
+    "headerSubtitleColor": {
+      "$value": "#777777",
+      "$type": "color"
+    },
+    "headerSubtitleSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "closeIconColor": {
+      "$value": "#949494",
+      "$type": "color"
+    },
+    "closeIconSize": {
+      "$value": "18px",
+      "$type": "dimension"
+    },
+    "footerBorderColor": {
+      "$value": "#DCDCDC",
+      "$type": "color"
+    },
+    "footerPaddingX": {
+      "$value": "24px",
+      "$type": "dimension"
+    },
+    "footerPaddingY": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "sectionHeaderColor": {
+      "$value": "#949494",
+      "$type": "color"
+    },
+    "sectionHeaderSize": {
+      "$value": "11px",
+      "$type": "dimension"
+    },
+    "sectionHeaderWeight": {
+      "$value": "600",
+      "$type": "other"
+    },
+    "sectionHeaderLetterSpacing": {
+      "$value": "0.08em",
+      "$type": "other"
+    },
+    "sectionDividerColor": {
+      "$value": "#DCDCDC",
+      "$type": "color"
+    },
+    "detailLabelColor": {
+      "$value": "#777777",
+      "$type": "color"
+    },
+    "detailLabelSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "detailValueColor": {
+      "$value": "#2B2B2B",
+      "$type": "color"
+    },
+    "detailValueWeight": {
+      "$value": "600",
+      "$type": "other"
+    },
+    "detailRowHeight": {
+      "$value": "40px",
+      "$type": "dimension"
+    },
+    "confirmIconBg": {
+      "$value": "#FACBCB",
+      "$type": "color"
+    },
+    "confirmIconColor": {
+      "$value": "#E00000",
+      "$type": "color"
+    },
+    "confirmIconSize": {
+      "$value": "48px",
+      "$type": "dimension"
+    },
+    "confirmIconRadius": {
+      "$value": "100px",
+      "$type": "dimension"
+    },
+    "confirmTitleColor": {
+      "$value": "#2B2B2B",
+      "$type": "color"
+    },
+    "confirmTitleSize": {
+      "$value": "18px",
+      "$type": "dimension"
+    },
+    "confirmDescColor": {
+      "$value": "#777777",
+      "$type": "color"
+    },
+    "confirmDescSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "loadingSpinnerColor": {
+      "$value": "#DCDCDC",
+      "$type": "color"
+    },
+    "loadingSpinnerSize": {
+      "$value": "40px",
+      "$type": "dimension"
+    },
+    "loadingTextColor": {
+      "$value": "#949494",
+      "$type": "color"
+    },
+    "stepIndicatorColor": {
+      "$value": "#777777",
+      "$type": "color"
+    },
+    "stepIndicatorSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "$description": {
+      "$value": "Modal/dialog tokens \u2014 standard, confirm, loading, and multi-step variants",
+      "$type": "other"
+    }
   }
 }

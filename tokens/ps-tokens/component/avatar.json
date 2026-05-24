@@ -1,34 +1,120 @@
 {
   "avatar": {
-    "bgColor": { "$value": "#005BA6", "$type": "color" },
-    "textColor": { "$value": "#FFFFFF", "$type": "color" },
-    "textWeight": { "$value": "700", "$type": "other" },
-    "borderRadius": { "$value": "100px", "$type": "dimension" },
-    "sizeSm": { "$value": "32px", "$type": "dimension" },
-    "sizeMd": { "$value": "56px", "$type": "dimension" },
-    "sizeLg": { "$value": "80px", "$type": "dimension" },
-    "fontSizeSm": { "$value": "12px", "$type": "dimension" },
-    "fontSizeMd": { "$value": "20px", "$type": "dimension" },
-    "fontSizeLg": { "$value": "28px", "$type": "dimension" },
-    "statusDotSizeSm": { "$value": "10px", "$type": "dimension" },
-    "statusDotSizeMd": { "$value": "16px", "$type": "dimension" },
-    "statusDotSizeLg": { "$value": "22px", "$type": "dimension" },
-    "statusDotBorderWidth": { "$value": "2px", "$type": "dimension" },
-    "statusDotBorderColor": { "$value": "#FFFFFF", "$type": "color" },
-    "statusDotRadius": { "$value": "100px", "$type": "dimension" },
-    "statusOnlineColor": { "$value": "#17AB78", "$type": "color" },
-    "statusAwayColor": { "$value": "#E3A92D", "$type": "color" },
-    "statusOfflineColor": { "$value": "#FF0000", "$type": "color" },
-    "stackedBorderWidth": { "$value": "2px", "$type": "dimension" },
-    "stackedBorderColor": { "$value": "#FFFFFF", "$type": "color" },
-    "stackedOverlapOffset": { "$value": "-10px", "$type": "dimension" },
-    "stackedOverflowBg": { "$value": "#949494", "$type": "color" },
-    "stackedOverflowTextColor": { "$value": "#FFFFFF", "$type": "color" },
-    "stackedOverflowFontSize": { "$value": "14px", "$type": "dimension" },
+    "bgColor": {
+      "$value": "#005BA6",
+      "$type": "color"
+    },
+    "textColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "textWeight": {
+      "$value": "700",
+      "$type": "other"
+    },
+    "borderRadius": {
+      "$value": "100px",
+      "$type": "dimension"
+    },
+    "sizeSm": {
+      "$value": "32px",
+      "$type": "dimension"
+    },
+    "sizeMd": {
+      "$value": "56px",
+      "$type": "dimension"
+    },
+    "sizeLg": {
+      "$value": "80px",
+      "$type": "dimension"
+    },
+    "fontSizeSm": {
+      "$value": "12px",
+      "$type": "dimension"
+    },
+    "fontSizeMd": {
+      "$value": "20px",
+      "$type": "dimension"
+    },
+    "fontSizeLg": {
+      "$value": "28px",
+      "$type": "dimension"
+    },
+    "statusDotSizeSm": {
+      "$value": "10px",
+      "$type": "dimension"
+    },
+    "statusDotSizeMd": {
+      "$value": "16px",
+      "$type": "dimension"
+    },
+    "statusDotSizeLg": {
+      "$value": "22px",
+      "$type": "dimension"
+    },
+    "statusDotBorderWidth": {
+      "$value": "2px",
+      "$type": "dimension"
+    },
+    "statusDotBorderColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "statusDotRadius": {
+      "$value": "100px",
+      "$type": "dimension"
+    },
+    "statusOnlineColor": {
+      "$value": "#17AB78",
+      "$type": "color"
+    },
+    "statusAwayColor": {
+      "$value": "#E3A92D",
+      "$type": "color"
+    },
+    "statusOfflineColor": {
+      "$value": "#FF0000",
+      "$type": "color"
+    },
+    "stackedBorderWidth": {
+      "$value": "2px",
+      "$type": "dimension"
+    },
+    "stackedBorderColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "stackedOverlapOffset": {
+      "$value": "-10px",
+      "$type": "dimension"
+    },
+    "stackedOverflowBg": {
+      "$value": "#949494",
+      "$type": "color"
+    },
+    "stackedOverflowTextColor": {
+      "$value": "#FFFFFF",
+      "$type": "color"
+    },
+    "stackedOverflowFontSize": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
     "colorPalette": {
-      "$value": ["#005BA6", "#5B21B6", "#15803D", "#B45309", "#0E7490", "#9D174D"],
+      "$value": [
+        "#005BA6",
+        "#5B21B6",
+        "#15803D",
+        "#B45309",
+        "#0E7490",
+        "#9D174D"
+      ],
       "$type": "other",
       "$description": "Auto-assigned background colors for stacked/group avatars when no image is provided"
+    },
+    "$description": {
+      "$value": "Avatar tokens \u2014 single sm/md/lg, status dots, stacked group with overflow",
+      "$type": "other"
     }
   }
 }
