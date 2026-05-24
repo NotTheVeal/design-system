@@ -30,7 +30,7 @@
     "toggleButtonIconColor": { "$value": "#FFFFFF", "$type": "color" },
     "toggleButtonRadius": { "$value": "100px", "$type": "dimension" },
     "toggleButtonPosition": { "$value": "bottom-right", "$type": "other" },
-    "toggleButtonMargin": { "$value": "16px", "$type": "dimension" t,
+    "toggleButtonMargin": { "$value": "16px", "$type": "dimension" },
     "itemHoverBg": { "$value": "rgba(255,255,255,0.08)", "$type": "color" },
     "itemActiveBg": { "$value": "rgba(255,255,255,0.12)", "$type": "color" },
     "dividerColor": { "$value": "rgba(255,255,255,0.15)", "$type": "color" }
