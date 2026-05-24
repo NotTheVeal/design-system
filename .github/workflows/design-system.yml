@@ -152,5 +152,6 @@ jobs:
             echo "No new components to commit"
           else
             git commit -m "feat: auto-generate components [skip ci]"
-            git push
+            git pull --rebase origin main
+          git push
           fi
