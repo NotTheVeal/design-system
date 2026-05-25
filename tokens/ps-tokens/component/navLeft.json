@@ -139,6 +139,10 @@
     "$description": {
       "$value": "Left navigation panel tokens \u2014 expanded/collapsed states, header, submenus",
       "$type": "other"
+    },
+    "$version": {
+      "$value": "1.0.0",
+      "$type": "other"
     }
   }
 }
