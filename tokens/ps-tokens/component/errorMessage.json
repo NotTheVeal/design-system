@@ -1,0 +1,29 @@
+{
+  "errorMessage": {
+    "inlineBorderColor": { "$value": "#D32F2F", "$type": "color", "$description": "Red border on invalid input fields" },
+    "inlineTextColor": { "$value": "#D32F2F", "$type": "color", "$description": "Validation error text below input" },
+    "inlineFontSize": { "$value": "12px", "$type": "dimension", "$description": "Error message font size below input" },
+    "inlineFontWeight": { "$value": "400", "$type": "other", "$description": "Regular weight for inline error text" },
+    "inlineIconColor": { "$value": "#D32F2F", "$type": "color", "$description": "Error icon color (if shown inline)" },
+    "inlineIconSize": { "$value": "14px", "$type": "dimension", "$description": "Inline error icon size" },
+    "inlineIconGap": { "$value": "4px", "$type": "dimension", "$description": "Gap between error icon and message text" },
+    "inlineMarginTop": { "$value": "4px", "$type": "dimension", "$description": "Space between input field and error message" },
+    "bannerBg": { "$value": "#FEF0F0", "$type": "color", "$description": "Page/section-level error banner background" },
+    "bannerBorderColor": { "$value": "#FACBCB", "$type": "color", "$description": "Error banner border color" },
+    "bannerBorderRadius": { "$value": "4px", "$type": "dimension", "$description": "Error banner corner radius" },
+    "bannerPaddingX": { "$value": "16px", "$type": "dimension", "$description": "Horizontal padding inside banner" },
+    "bannerPaddingY": { "$value": "12px", "$type": "dimension", "$description": "Vertical padding inside banner" },
+    "bannerIconColor": { "$value": "#E00000", "$type": "color", "$description": "Alert icon inside banner" },
+    "bannerIconSize": { "$value": "20px", "$type": "dimension", "$description": "Banner icon size" },
+    "bannerTitleColor": { "$value": "#E00000", "$type": "color", "$description": "Banner title/heading color" },
+    "bannerTitleSize": { "$value": "14px", "$type": "dimension", "$description": "Banner title font size" },
+    "bannerTitleWeight": { "$value": "600", "$type": "other", "$description": "Semibold banner title" },
+    "bannerBodyColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Banner body/description text color" },
+    "bannerBodySize": { "$value": "14px", "$type": "dimension", "$description": "Banner body font size" },
+    "toastBg": { "$value": "#FEF0F0", "$type": "color", "$description": "Error toast background (maps to toast.errorBg)" },
+    "toastBorderColor": { "$value": "#FACBCB", "$type": "color", "$description": "Error toast border" },
+    "toastIconColor": { "$value": "#E00000", "$type": "color", "$description": "Error toast icon color" },
+    "toastTextColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Error toast message text" },
+    "fieldLabelErrorColor": { "$value": "#D32F2F", "$type": "color", "$description": "Floating label color when field has an error" }
+  }
+}

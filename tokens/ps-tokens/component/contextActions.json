@@ -1,0 +1,32 @@
+{
+  "contextActions": {
+    "menuBg": { "$value": "#FFFFFF", "$type": "color", "$description": "Dropdown menu background" },
+    "menuBorderColor": { "$value": "#DCDCDC", "$type": "color", "$description": "Menu border" },
+    "menuBorderRadius": { "$value": "4px", "$type": "dimension", "$description": "Menu corner radius" },
+    "menuShadow": { "$value": "0 2px 10px rgba(0,47,72,0.10)", "$type": "other", "$description": "ps-shadow-md on dropdown" },
+    "menuMinWidth": { "$value": "160px", "$type": "dimension", "$description": "Minimum dropdown width" },
+    "menuPaddingY": { "$value": "4px", "$type": "dimension", "$description": "Top/bottom padding inside menu" },
+    "itemHeight": { "$value": "40px", "$type": "dimension", "$description": "Height of each menu item row" },
+    "itemPaddingX": { "$value": "16px", "$type": "dimension", "$description": "Horizontal padding inside each item" },
+    "itemColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Default menu item text color" },
+    "itemFontSize": { "$value": "14px", "$type": "dimension", "$description": "Menu item font size" },
+    "itemFontWeight": { "$value": "400", "$type": "other", "$description": "Regular weight for menu items" },
+    "itemBg": { "$value": "transparent", "$type": "color", "$description": "Default item background" },
+    "itemHoverBg": { "$value": "#F1F1F1", "$type": "color", "$description": "Item background on hover" },
+    "itemHoverColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Item text color on hover" },
+    "itemIconColor": { "$value": "#777777", "$type": "color", "$description": "Leading icon color on default items" },
+    "itemIconSize": { "$value": "16px", "$type": "dimension", "$description": "Icon size inside menu items" },
+    "itemIconGap": { "$value": "8px", "$type": "dimension", "$description": "Gap between icon and label" },
+    "destructiveColor": { "$value": "#E00000", "$type": "color", "$description": "Text color for destructive actions (Delete, Remove)" },
+    "destructiveIconColor": { "$value": "#E00000", "$type": "color", "$description": "Icon color for destructive actions" },
+    "destructiveHoverBg": { "$value": "#FEF0F0", "$type": "color", "$description": "Hover background for destructive items" },
+    "dividerColor": { "$value": "#DCDCDC", "$type": "color", "$description": "Horizontal rule between item groups" },
+    "dividerMarginY": { "$value": "4px", "$type": "dimension", "$description": "Top/bottom margin on divider" },
+    "triggerIconColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Three-dot / kebab trigger icon color" },
+    "triggerIconSize": { "$value": "20px", "$type": "dimension", "$description": "Trigger icon size" },
+    "triggerHoverBg": { "$value": "#F1F1F1", "$type": "color", "$description": "Trigger button hover background" },
+    "triggerSize": { "$value": "32px", "$type": "dimension", "$description": "Trigger button size (width and height)" },
+    "triggerBorderRadius": { "$value": "4px", "$type": "dimension", "$description": "Trigger button corner radius" },
+    "zIndex": { "$value": "500", "$type": "other", "$description": "Stacking context for open menu" }
+  }
+}
