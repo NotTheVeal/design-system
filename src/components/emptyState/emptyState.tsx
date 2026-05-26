@@ -2,102 +2,95 @@ import React from 'react';
 
 interface EmptyStateProps {
   title: string;
-  body: string;
-  icon: React.ReactNode;
-  illustration: React.ReactNode;
+  description: string;
+  icon?: React.ReactNode;
+  onPrimaryActionClick?: () => void;
   className?: string;
-  onPrimaryAction?: () => void;
-  onSecondaryAction?: () => void;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   title,
-  body,
+  description,
   icon,
-  illustration,
+  onPrimaryActionClick,
   className,
-  onPrimaryAction,
-  onSecondaryAction,
 }) => {
   return (
-    <div className={`empty-state ${className}`} role="alert">
-      <style>
-        {`
-          :root {
-            --ps-background: {semantic.color.surface.default};
-            --ps-padding-v: 48px;
-            --ps-padding-h: 24px;
-            --ps-icon-size: 64px;
-            --ps-icon-color: {semantic.color.text.tertiary};
-            --ps-illustration-size: 120px;
-            --ps-title-color: {semantic.color.text.primary};
-            --ps-title-font-size: 18px;
-            --ps-title-font-weight: 600;
-            --ps-title-margin-t: 16px;
-            --ps-body-color: {semantic.color.text.secondary};
-            --ps-body-font-size: 14px;
-            --ps-body-font-weight: 400;
-            --ps-body-max-width: 400px;
-            --ps-body-margin-t: 8px;
-            --ps-action-margin-t: 24px;
-            --ps-action-gap: 12px;
-          }
-          .empty-state {
-            background: var(--ps-background);
-            padding: var(--ps-padding-v) var(--ps-padding-h);
-            text-align: center;
-          }
-          .icon {
-            width: var(--ps-icon-size);
-            height: var(--ps-icon-size);
-            color: var(--ps-icon-color);
-          }
-          .title {
-            color: var(--ps-title-color);
-            font-size: var(--ps-title-font-size);
-            font-weight: var(--ps-title-font-weight);
-            margin-top: var(--ps-title-margin-t);
-          }
-          .body {
-            color: var(--ps-body-color);
-            font-size: var(--ps-body-font-size);
-            font-weight: var(--ps-body-font-weight);
-            max-width: var(--ps-body-max-width);
-            margin-top: var(--ps-body-margin-t);
-          }
-          .actions {
-            margin-top: var(--ps-action-margin-t);
-            gap: var(--ps-action-gap);
-          }
-          .primary-button {
-            background: white;
-            border: 1px solid #005BA6;
-            color: #005BA6;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-          }
-          .primary-button:hover {
-            background: #005BA6;
-            color: white;
-          }
-          .secondary-button {
-            background: transparent;
-            border: 1px solid #DCDCDC;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-          }
-        `}
-      </style>
-      <div className="icon">{icon}</div>
-      <div className="illustration">{illustration}</div>
-      <h2 className="title">{title}</h2>
-      <p className="body">{body}</p>
-      <div className="actions">
-        {onPrimaryAction && <button className="primary-button" onClick={onPrimaryAction}>Primary Action</button>}
-        {onSecondaryAction && <button className="secondary-button" onClick={onSecondaryAction}>Secondary Action</button>}
-      </div>
+    <div className={`empty-state ${className}`} role="alert" tabIndex={0}>
+      <style>{`
+        :root {
+          --ps-primary-color: #005BA6;
+          --ps-midnight: #002F48;
+          --ps-title-color: #4A4A4A;
+          --ps-description-color: #777777;
+          --ps-icon-size: 40px;
+          --ps-icon-circle-size: 80px;
+          --ps-icon-circle-radius: 50%;
+          --ps-neutral-icon-bg: #F1F1F1;
+          --ps-neutral-icon-color: #949494;
+          --ps-container-bg: #FFFFFF;
+          --ps-container-border-color: #DCDCDC;
+          --ps-container-border-radius: 4px;
+          --ps-container-padding: 32px;
+          --ps-spacing: 16px;
+          --ps-title-size: 16px;
+          --ps-description-size: 14px;
+          --ps-title-weight: 600;
+        }
+        .empty-state {
+          background: var(--ps-container-bg);
+          border: 1px solid var(--ps-container-border-color);
+          border-radius: var(--ps-container-border-radius);
+          padding: var(--ps-container-padding);
+          text-align: center;
+        }
+        .icon {
+          background: var(--ps-neutral-icon-bg);
+          border-radius: var(--ps-icon-circle-radius);
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          height: var(--ps-icon-circle-size);
+          width: var(--ps-icon-circle-size);
+          margin-bottom: var(--ps-spacing);
+        }
+        .icon > svg {
+          width: var(--ps-icon-size);
+          height: var(--ps-icon-size);
+          color: var(--ps-neutral-icon-color);
+        }
+        .title {
+          color: var(--ps-title-color);
+          font-size: var(--ps-title-size);
+          font-weight: var(--ps-title-weight);
+          margin-bottom: var(--ps-spacing);
+        }
+        .description {
+          color: var(--ps-description-color);
+          font-size: var(--ps-description-size);
+          margin-bottom: var(--ps-spacing);
+        }
+        .primary-button {
+          background: white;
+          border: 1px solid var(--ps-primary-color);
+          color: var(--ps-primary-color);
+          height: 48px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .primary-button:hover {
+          background: var(--ps-primary-color);
+          color: white;
+        }
+      `}</style>
+      {icon && <div className="icon">{icon}</div>}
+      <div className="title">{title}</div>
+      <div className="description">{description}</div>
+      {onPrimaryActionClick && (
+        <button className="primary-button" onClick={onPrimaryActionClick} aria-label="Primary action">
+          Take Action
+        </button>
+      )}
     </div>
   );
 };

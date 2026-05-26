@@ -1,75 +1,81 @@
 import React from 'react';
 
+const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
+    return (
+        <nav className={`breadcrumb ${className}`} aria-label="Breadcrumb">
+            <ol>
+                {items.map((item, index) => (
+                    <li key={index} className="breadcrumb-item">
+                        {item.isCurrent ? (
+                            <span className="current">{item.label}</span>
+                        ) : (
+                            <>
+                                <a href={item.href} className="link">
+                                    {item.label}
+                                </a>
+                                {index < items.length - 1 && (
+                                    <span className="separator">/</span>
+                                )}
+                            </>
+                        )}
+                    </li>
+                ))}
+            </ol>
+        </nav>
+    );
+};
+
 interface BreadcrumbItem {
-  label: string;
-  href?: string;
+    label: string;
+    href?: string;
+    isCurrent?: boolean;
 }
 
 interface BreadcrumbProps {
-  items: BreadcrumbItem[];
-  className?: string;
+    items: BreadcrumbItem[];
+    className?: string;
 }
 
-const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
-  return (
-    <nav aria-label="Breadcrumb" className={className}>
-      <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', gap: 'var(--ps-spacing-gap)' }}>
-        {items.map((item, index) => (
-          <li key={index}>
-            {item.href ? (
-              <a
-                href={item.href}
-                aria-current={index === items.length - 1 ? 'page' : undefined}
-                style={{
-                  color: 'var(--ps-breadcrumb-color-text-default)',
-                  fontSize: 'var(--ps-breadcrumb-typography-fontSize)',
-                  fontWeight: index === items.length - 1 ? 'var(--ps-breadcrumb-typography-fontWeight-active)' : 'var(--ps-breadcrumb-typography-fontWeight-default)',
-                  textDecoration: 'none',
-                  transition: 'color 0.3s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--ps-breadcrumb-color-text-hover)'}
-                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--ps-breadcrumb-color-text-default)'}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <span
-                style={{
-                  color: 'var(--ps-breadcrumb-color-text-active)',
-                  fontWeight: 'var(--ps-breadcrumb-typography-fontWeight-active)',
-                }}
-              >
-                {item.label}
-              </span>
-            )}
-            {index < items.length - 1 && (
-              <span
-                aria-hidden="true"
-                style={{
-                  margin: '0 8px',
-                  color: 'var(--ps-breadcrumb-color-separator)',
-                }}
-              >
-                /
-              </span>
-            )}
-          </li>
-        ))}
-      </ol>
-      <style jsx>{`
-        :root {
-          --ps-breadcrumb-color-text-default: ${breadcrumb.color.text.default};
-          --ps-breadcrumb-color-text-hover: ${breadcrumb.color.text.hover};
-          --ps-breadcrumb-color-text-active: ${breadcrumb.color.text.active};
-          --ps-breadcrumb-color-separator: ${breadcrumb.color.separator};
-          --ps-breadcrumb-typography-fontSize: ${breadcrumb.typography.fontSize};
-          --ps-breadcrumb-typography-fontWeight-default: ${breadcrumb.typography.fontWeight.default};
-          --ps-breadcrumb-typography-fontWeight-active: ${breadcrumb.typography.fontWeight.active};
-          --ps-spacing-gap: ${breadcrumb.spacing.gap};
-        }
-      `}</style>
-    </nav>
-  );
-};
-
 export default Breadcrumb;
+
+// Styles (in a corresponding CSS file or styled-components)
+// :root {
+//     --ps-primary-color: #005BA6;
+//     --ps-link-color: #009CF4;
+//     --ps-link-hover-color: #005BA6;
+//     --ps-current-color: #777777;
+//     --ps-separator-color: #949494;
+//     --ps-font-size: 16px;
+//     --ps-line-height: 24px;
+//     --ps-item-spacing: 8px;
+// }
+
+// .breadcrumb {
+//     font-family: 'Source Sans Pro', sans-serif;
+//     font-size: var(--ps-font-size);
+//     line-height: var(--ps-line-height);
+// }
+
+// .breadcrumb-item {
+//     display: inline-block;
+//     margin-right: var(--ps-item-spacing);
+// }
+
+// .link {
+//     color: var(--ps-link-color);
+//     text-decoration: none;
+// }
+
+// .link:hover {
+//     color: var(--ps-link-hover-color);
+// }
+
+// .current {
+//     color: var(--ps-current-color);
+// }
+
+// .separator {
+//     color: var(--ps-separator-color);
+//     margin-left: 4px;
+//     margin-right: 4px;
+// }
