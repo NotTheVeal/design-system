@@ -1,38 +1,28 @@
 {
   "emptyState": {
-    "$description": "Empty State — zero-data views with illustration, message, and optional CTA.",
-    "background":    { "$value": "{semantic.color.surface.default}", "$type": "color" },
-    "paddingV":      { "$value": "48px", "$type": "spacing" },
-    "paddingH":      { "$value": "24px", "$type": "spacing" },
-    "icon": {
-      "size":        { "$value": "64px", "$type": "sizing" },
-      "color":       { "$value": "{semantic.color.text.tertiary}", "$type": "color" }
-    },
-    "illustration": {
-      "size":        { "$value": "120px", "$type": "sizing" }
-    },
-    "title": {
-      "color":       { "$value": "{semantic.color.text.primary}", "$type": "color" },
-      "fontSize":    { "$value": "18px", "$type": "fontSizes" },
-      "fontWeight":  { "$value": "600", "$type": "fontWeights" },
-      "marginT":     { "$value": "16px", "$type": "spacing" }
-    },
-    "body": {
-      "color":       { "$value": "{semantic.color.text.secondary}", "$type": "color" },
-      "fontSize":    { "$value": "14px", "$type": "fontSizes" },
-      "fontWeight":  { "$value": "400", "$type": "fontWeights" },
-      "maxWidth":    { "$value": "400px", "$type": "sizing" },
-      "marginT":     { "$value": "8px", "$type": "spacing" }
-    },
-    "action": {
-      "marginT":     { "$value": "24px", "$type": "spacing" },
-      "gap":         { "$value": "12px", "$type": "spacing" }
-    }
+    "titleColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Heading text for all empty state variants" },
+    "descriptionColor": { "$value": "#777777", "$type": "color", "$description": "Body/description text below heading" },
+    "iconSize": { "$value": "40px", "$type": "dimension", "$description": "Icon size inside circle — large variant" },
+    "iconSizeSm": { "$value": "24px", "$type": "dimension", "$description": "Icon size inside circle — small/compact variant" },
+    "iconCircleSize": { "$value": "80px", "$type": "dimension", "$description": "Icon container circle — large variant" },
+    "iconCircleSizeSm": { "$value": "56px", "$type": "dimension", "$description": "Icon container circle — small/compact variant" },
+    "iconCircleRadius": { "$value": "50%", "$type": "other", "$description": "Full circle" },
+    "neutralIconBg": { "$value": "#F1F1F1", "$type": "color", "$description": "Gray circle bg — No results found variant" },
+    "neutralIconColor": { "$value": "#949494", "$type": "color", "$description": "Gray search icon — No results found" },
+    "infoIconBg": { "$value": "#DCEAED", "$type": "color", "$description": "Light blue circle bg — No data available and Get started variants" },
+    "infoIconColor": { "$value": "#009CF4", "$type": "color", "$description": "Azure Blue icon — No data / Get started" },
+    "errorIconBg": { "$value": "#FACBCB", "$type": "color", "$description": "Pink circle bg — Something went wrong variant" },
+    "errorIconColor": { "$value": "#E00000", "$type": "color", "$description": "Red icon — Something went wrong" },
+    "titleSize": { "$value": "16px", "$type": "dimension", "$description": "Title font size" },
+    "titleWeight": { "$value": "600", "$type": "other", "$description": "Semibold title" },
+    "descriptionSize": { "$value": "14px", "$type": "dimension", "$description": "Description font size" },
+    "spacing": { "$value": "16px", "$type": "dimension", "$description": "Vertical gap between icon, title, description, button" },
+    "primaryButtonVariant": { "$value": "filled", "$type": "other", "$description": "Get started and Something went wrong use filled blue primary button" },
+    "neutralButtonVariant": { "$value": "outlined", "$type": "other", "$description": "No results found uses outlined button (e.g. CHECKOUT AS A GUEST)" },
+    "noDataButtonVariant": { "$value": "none", "$type": "other", "$description": "No data available has no action button" },
+    "containerPadding": { "$value": "32px", "$type": "dimension", "$description": "Inner padding of the white card container" },
+    "containerBg": { "$value": "#FFFFFF", "$type": "color", "$description": "White card background" },
+    "containerBorderColor": { "$value": "#DCDCDC", "$type": "color", "$description": "Card border" },
+    "containerBorderRadius": { "$value": "4px", "$type": "dimension", "$description": "Card corner radius" }
   }
 }
-
-
-
-
-
-

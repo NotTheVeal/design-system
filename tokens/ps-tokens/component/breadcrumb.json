@@ -1,28 +1,20 @@
 {
   "breadcrumb": {
-    "color": {
-      "text": {
-        "default": { "$value": "{semantic.color.text.secondary}", "$type": "color" },
-        "hover": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
-        "active": { "$value": "{semantic.color.text.primary}", "$type": "color" }
-      },
-      "separator": { "$value": "{semantic.color.text.disabled}", "$type": "color" }
-    },
-    "typography": {
-      "fontSize": { "$value": "{semantic.typography.body.sm.fontSize}", "$type": "fontSizes" },
-      "fontWeight": {
-        "default": { "$value": "{primitive.typography.fontWeight.regular}", "$type": "fontWeights" },
-        "active": { "$value": "{primitive.typography.fontWeight.semibold}", "$type": "fontWeights" }
-      }
-    },
-    "spacing": {
-      "gap": { "$value": "6px", "$type": "spacing" }
-    }
+    "linkColor": { "$value": "#009CF4", "$type": "color", "$description": "Azure Blue — active/ancestor level links" },
+    "linkHoverColor": { "$value": "#005BA6", "$type": "color", "$description": "PS Blue on hover" },
+    "currentColor": { "$value": "#777777", "$type": "color", "$description": "Current (last) page — non-interactive gray" },
+    "separatorColor": { "$value": "#949494", "$type": "color", "$description": "Chevron > separator color" },
+    "separatorSize": { "$value": "16px", "$type": "dimension", "$description": "Chevron icon size" },
+    "fontSize": { "$value": "16px", "$type": "dimension", "$description": "Inline horizontal breadcrumb font size" },
+    "fontWeight": { "$value": "400", "$type": "other", "$description": "Regular weight for all levels" },
+    "lineHeight": { "$value": "24px", "$type": "dimension" },
+    "itemSpacing": { "$value": "8px", "$type": "dimension", "$description": "Horizontal gap between label and chevron" },
+    "backIconColor": { "$value": "#949494", "$type": "color", "$description": "Back chevron < color in stacked/mobile variant" },
+    "backLabelColor": { "$value": "#777777", "$type": "color", "$description": "Back label text color" },
+    "stackedFontSize": { "$value": "32px", "$type": "dimension", "$description": "Larger font size used in stacked/page-header variant" },
+    "stackedFontWeight": { "$value": "300", "$type": "other", "$description": "Light weight for stacked variant headings" },
+    "stackedActiveLinkColor": { "$value": "#009CF4", "$type": "color", "$description": "Active level link color in stacked variant" },
+    "stackedCurrentColor": { "$value": "#777777", "$type": "color", "$description": "Current page color in stacked variant" },
+    "stackedItemSpacing": { "$value": "12px", "$type": "dimension", "$description": "Vertical gap between stacked levels" }
   }
 }
-
-
-
-
-
-
