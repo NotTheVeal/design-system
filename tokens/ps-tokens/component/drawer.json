@@ -1,53 +1,40 @@
 {
   "drawer": {
-    "$description": "Drawer / Sheet — slides in from right. Widths: Narrow 320px, Default 480px, Wide 600px.",
-    "background":  { "$value": "{semantic.color.surface.default}", "$type": "color" },
-    "overlay":     { "$value": "rgba(0,47,72,0.40)", "$type": "color" },
-    "border":      { "$value": "{semantic.color.border.default}", "$type": "color" },
-    "borderWidth": { "$value": "1px", "$type": "borderWidth" },
-    "shadow":      { "$value": "{semantic.shadow.lg}", "$type": "boxShadow" },
-    "radius":      { "$value": "0", "$type": "borderRadius" },
-    "zIndex":      { "$value": "400", "$type": "other" },
-    "width": {
-      "narrow":  { "$value": "320px", "$type": "sizing" },
-      "default": { "$value": "480px", "$type": "sizing" },
-      "wide":    { "$value": "600px", "$type": "sizing" }
-    },
-    "header": {
-      "height":     { "$value": "64px", "$type": "sizing" },
-      "paddingH":   { "$value": "24px", "$type": "spacing" },
-      "background": { "$value": "{semantic.color.surface.default}", "$type": "color" },
-      "border":     { "$value": "{semantic.color.border.default}", "$type": "color" },
-      "title": {
-        "color":      { "$value": "{semantic.color.text.primary}", "$type": "color" },
-        "fontSize":   { "$value": "18px", "$type": "fontSizes" },
-        "fontWeight": { "$value": "600", "$type": "fontWeights" }
-      },
-      "close": {
-        "color":      { "$value": "{semantic.color.text.secondary}", "$type": "color" },
-        "colorHover": { "$value": "{semantic.color.brand.primary}", "$type": "color" },
-        "size":       { "$value": "24px", "$type": "sizing" }
-      }
-    },
-    "body": {
-      "paddingH": { "$value": "24px", "$type": "spacing" },
-      "paddingV": { "$value": "24px", "$type": "spacing" }
-    },
-    "footer": {
-      "height":   { "$value": "72px", "$type": "sizing" },
-      "paddingH": { "$value": "24px", "$type": "spacing" },
-      "border":   { "$value": "{semantic.color.border.default}", "$type": "color" },
-      "gap":      { "$value": "12px", "$type": "spacing" }
-    },
-    "animation": {
-      "duration": { "$value": "250ms", "$type": "other" },
-      "easing":   { "$value": "cubic-bezier(0.4, 0, 0.2, 1)", "$type": "other" }
-    }
+    "width": { "$value": "480px", "$type": "dimension", "$description": "Default drawer width — forms, quick actions, contextual detail" },
+    "widthWide": { "$value": "600px", "$type": "dimension", "$description": "Wide variant — complex forms, multi-step flows" },
+    "widthNarrow": { "$value": "320px", "$type": "dimension", "$description": "Narrow variant — confirmations, simple inputs" },
+    "bg": { "$value": "#FFFFFF", "$type": "color", "$description": "Drawer panel background" },
+    "borderRadius": { "$value": "0px", "$type": "dimension", "$description": "Flush edges — no radius on drawer panel" },
+    "shadow": { "$value": "0 0 32px rgba(0,0,0,0.18)", "$type": "other", "$description": "Left-edge shadow on drawer panel" },
+    "zIndex": { "$value": "1000", "$type": "other", "$description": "Stacking context for drawer + backdrop" },
+    "animationOpen": { "$value": "250ms ease-out", "$type": "other", "$description": "Slides in from right" },
+    "animationClose": { "$value": "300ms ease-in", "$type": "other", "$description": "Slides out to right" },
+    "overlayBg": { "$value": "rgba(0,0,0,0.32)", "$type": "other", "$description": "Full-viewport semi-transparent backdrop at 32% opacity" },
+    "headerHeight": { "$value": "56px", "$type": "dimension", "$description": "Fixed header zone height" },
+    "headerBg": { "$value": "#FFFFFF", "$type": "color", "$description": "Header background" },
+    "headerBorderColor": { "$value": "#DCDCDC", "$type": "color", "$description": "1px bottom border separating header from body" },
+    "headerPaddingX": { "$value": "24px", "$type": "dimension", "$description": "Horizontal padding in header" },
+    "titleColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Drawer title text color" },
+    "titleSize": { "$value": "17px", "$type": "dimension", "$description": "Title font size" },
+    "titleWeight": { "$value": "700", "$type": "other", "$description": "Bold title" },
+    "subtitleColor": { "$value": "#777777", "$type": "color", "$description": "Optional subtitle text (e.g. Step 1 of 3)" },
+    "subtitleSize": { "$value": "14px", "$type": "dimension", "$description": "Subtitle font size" },
+    "closeButtonSize": { "$value": "28px", "$type": "dimension", "$description": "X close button width and height" },
+    "closeButtonColor": { "$value": "#4A4A4A", "$type": "color", "$description": "X icon color" },
+    "bodyPadding": { "$value": "24px", "$type": "dimension", "$description": "Body scrollable area padding on all sides" },
+    "bodyBg": { "$value": "#FFFFFF", "$type": "color", "$description": "Scrollable body background" },
+    "footerHeight": { "$value": "64px", "$type": "dimension", "$description": "Sticky footer zone height" },
+    "footerBg": { "$value": "#FFFFFF", "$type": "color", "$description": "Footer background" },
+    "footerBorderColor": { "$value": "#DCDCDC", "$type": "color", "$description": "1px top border separating footer from body" },
+    "footerPaddingX": { "$value": "24px", "$type": "dimension", "$description": "Horizontal padding in footer" },
+    "footerButtonGap": { "$value": "12px", "$type": "dimension", "$description": "Gap between Cancel and primary action button" },
+    "sectionHeaderColor": { "$value": "#949494", "$type": "color", "$description": "Section label color in detail views (e.g. ITEM DETAILS, AVAILABILITY)" },
+    "sectionHeaderSize": { "$value": "11px", "$type": "dimension", "$description": "Section label font size — uppercase small caps" },
+    "sectionHeaderWeight": { "$value": "600", "$type": "other", "$description": "Semibold section labels" },
+    "sectionHeaderLetterSpacing": { "$value": "0.08em", "$type": "other", "$description": "Tracking for uppercase section labels" },
+    "rowLabelColor": { "$value": "#777777", "$type": "color", "$description": "Detail row label text" },
+    "rowValueColor": { "$value": "#4A4A4A", "$type": "color", "$description": "Detail row value text" },
+    "rowValueWeight": { "$value": "700", "$type": "other", "$description": "Bold values in detail rows" },
+    "rowDividerColor": { "$value": "#F1F1F1", "$type": "color", "$description": "Subtle divider between detail rows" }
   }
 }
-
-
-
-
-
-
