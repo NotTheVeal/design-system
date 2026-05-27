@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import './Drawer.css';
+
 
 interface DrawerProps {
   isOpen: boolean;

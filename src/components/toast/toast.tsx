@@ -77,31 +77,3 @@ const Toast: React.FC<ToastProps> = ({ type, message, onDismiss, className }) =>
 };
 
 export default Toast;
-
-:root {
-  --ps-font-family: 'Source Sans Pro', sans-serif;
-  --ps-color-primary: #005BA6;
-  --ps-color-midnight: #002F48;
-  --ps-toast-color-success-background: #E2F5EE;
-  --ps-toast-color-success-text: #0E7C55;
-  --ps-toast-color-error-background: #FEF0F0;
-  --ps-toast-color-error-text: #E00000;
-  --ps-toast-color-warning-background: #FFF4E5;
-  --ps-toast-color-warning-text: #B45309;
-  --ps-toast-color-info-background: #EFF9FE;
-  --ps-toast-color-info-text: #005BA6;
-  --ps-toast-color-dismiss: var(--semantic-color-text-secondary);
-  --ps-toast-sizing-minHeight: 56px;
-  --ps-toast-sizing-minWidth: 300px;
-  --ps-toast-sizing-maxWidth: 420px;
-  --ps-toast-spacing-padding: 16px;
-  --ps-toast-spacing-gap: 12px;
-  --ps-toast-spacing-iconSize: 24px;
-  --ps-toast-border-radius: 8px;
-  --ps-toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  --ps-toast-position-bottom: 24px;
-  --ps-toast-position-right: 24px;
-  --ps-toast-animation-enter: 250ms ease-out;
-  --ps-toast-typography-fontSize: 14px;
-  --ps-toast-typography-fontWeight: 600;
-}

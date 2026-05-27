@@ -80,28 +80,3 @@ const IconModality: React.FC<IconModalityProps> = ({ type, icon, size = 'md', cl
 };
 
 export default IconModality;
-
-:root {
-  --ps-iconModality-size-sm: 16px;
-  --ps-iconModality-size-md: 24px;
-  --ps-iconModality-size-lg: 32px;
-  --ps-iconModality-size-xl: 48px;
-  --ps-iconModality-squareFilled-background: #005BA6;
-  --ps-iconModality-squareFilled-icon: white;
-  --ps-iconModality-squareFilled-radius: 4px;
-  --ps-iconModality-squareFilled-padding: 8px;
-  --ps-iconModality-squareOutline-background: white;
-  --ps-iconModality-squareOutline-icon: #005BA6;
-  --ps-iconModality-squareOutline-border: #005BA6;
-  --ps-iconModality-squareOutline-radius: 4px;
-  --ps-iconModality-squareOutline-padding: 8px;
-  --ps-iconModality-circleFilled-background: #005BA6;
-  --ps-iconModality-circleFilled-icon: white;
-  --ps-iconModality-circleFilled-radius: 100px;
-  --ps-iconModality-circleFilled-padding: 8px;
-  --ps-iconModality-circleOutline-background: white;
-  --ps-iconModality-circleOutline-icon: #005BA6;
-  --ps-iconModality-circleOutline-border: #005BA6;
-  --ps-iconModality-circleOutline-radius: 100px;
-  --ps-iconModality-circleOutline-padding: 8px;
-}
