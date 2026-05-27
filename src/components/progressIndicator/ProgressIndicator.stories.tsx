@@ -6,7 +6,9 @@ const meta: Meta<typeof ProgressIndicator> = {
   component: ProgressIndicator,
   tags: ['autodocs'],
   argTypes: {
-    steps: { control: 'select', options: ["{ label: string; status: complete","active","inactive"] },
+    value: { control: 'number' },
+    max: { control: 'number' },
+    variant: { control: 'select', options: ['linear', 'circular'] },
   },
 };
 
@@ -15,7 +17,7 @@ type Story = StoryObj<typeof ProgressIndicator>;
 
 export const Default: Story = {
   args: {
-    steps: { label: string; status: 'complete',
+    value: 60,
+    max: 100,
   },
 };
-
