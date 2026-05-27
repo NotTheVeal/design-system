@@ -6,13 +6,30 @@
     "build": "node style-dictionary.config.js",
     "validate": "node validate-references.js",
     "build:validate": "npm run validate && npm run build",
-    "build:tokens": "style-dictionary build --config style-dictionary.config.js"
+    "build:tokens": "style-dictionary build --config style-dictionary.config.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "devDependencies": {
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "style-dictionary": "^3.9.2",
-    "token-transformer": "^0.0.33"
+    "token-transformer": "^0.0.33",
+    "typescript": "^6.0.3",
+    "storybook": "^10.4.1",
+    "@storybook/react-vite": "^10.4.1",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.4.1",
+    "@storybook/addon-a11y": "^10.4.1",
+    "@storybook/addon-docs": "^10.4.1",
+    "@storybook/addon-mcp": "^0.6.0",
+    "vitest": "^4.1.7",
+    "playwright": "^1.60.0",
+    "@vitest/browser-playwright": "^4.1.7",
+    "@vitest/coverage-v8": "^4.1.7"
   },
   "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {}
+  "private": true
 }
