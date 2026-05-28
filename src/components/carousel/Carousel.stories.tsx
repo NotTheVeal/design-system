@@ -16,7 +16,7 @@ type Story = StoryObj<typeof Carousel>;
 
 export const Default: Story = {
   args: {
-    items: 'Sample content',
+    items: ['Slide 1', 'Slide 2', 'Slide 3'],
     className: 'className',
   },
 };

@@ -4,11 +4,19 @@ import ProgressIndicator from './progressIndicator';
 const meta: Meta<typeof ProgressIndicator> = {
   title: 'Components/ProgressIndicator',
   component: ProgressIndicator,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'ProgressIndicator component from the PartsSource design system.',
+      },
+    },
+  },
   tags: ['autodocs'],
   argTypes: {
-    value: { control: 'number' },
-    max: { control: 'number' },
-    variant: { control: 'select', options: ['linear', 'circular'] },
+    steps: { control: 'object' },
+    currentStep: { control: 'number' },
+    className: { control: 'text' },
   },
 };
 
@@ -17,7 +25,22 @@ type Story = StoryObj<typeof ProgressIndicator>;
 
 export const Default: Story = {
   args: {
-    value: 60,
-    max: 100,
+    steps: [
+      { label: 'Step 1', status: 'complete' },
+      { label: 'Step 2', status: 'active' },
+      { label: 'Step 3', status: 'inactive' },
+    ],
+    currentStep: 1,
+  },
+};
+
+export const AllComplete: Story = {
+  args: {
+    steps: [
+      { label: 'Step 1', status: 'complete' },
+      { label: 'Step 2', status: 'complete' },
+      { label: 'Step 3', status: 'complete' },
+    ],
+    currentStep: 2,
   },
 };
