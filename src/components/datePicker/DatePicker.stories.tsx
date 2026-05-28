@@ -4,11 +4,12 @@ import DatePicker from './datePicker';
 const meta: Meta<typeof DatePicker> = {
   title: 'Components/DatePicker',
   component: DatePicker,
+  parameters: { layout: 'centered', docs: { description: { component: 'DatePicker component from the PartsSource design system.' } } },
   tags: ['autodocs'],
   argTypes: {
-    className: { control: 'text' },
-    selectedDate: { control: 'text' },
+    selectedDate: { control: 'date' },
     onDateSelect: { action: 'called' },
+    className: { control: 'text' },
     ariaLabel: { control: 'text' },
   },
 };
@@ -18,10 +19,16 @@ type Story = StoryObj<typeof DatePicker>;
 
 export const Default: Story = {
   args: {
-    className: 'className',
-    selectedDate: 'selectedDate',
+    selectedDate: new Date(2024, 0, 15),
     onDateSelect: () => {},
-    ariaLabel: 'ariaLabel',
+    ariaLabel: 'Select date',
   },
 };
 
+export const NoSelection: Story = {
+  args: {
+    selectedDate: undefined,
+    onDateSelect: () => {},
+    ariaLabel: 'Select date',
+  },
+};
