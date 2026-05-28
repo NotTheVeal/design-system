@@ -1,90 +1,67 @@
 import React from 'react';
 
 interface ToggleProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+  label?: string;
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onChange?: (checked: boolean) => void;
   disabled?: boolean;
-  label: string;
+  size?: 'sm' | 'md';
   className?: string;
+  id?: string;
 }
 
-const Toggle: React.FC<ToggleProps> = ({ checked, onChange, disabled = false, label, className }) => {
+const Toggle: React.FC<ToggleProps> = ({
+  label,
+  checked,
+  defaultChecked = false,
+  onChange,
+  disabled = false,
+  size = 'md',
+  className = '',
+  id,
+}) => {
+  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
+  const controlled = checked !== undefined;
+  const isChecked = controlled ? checked : internalChecked;
+  const inputId = id ?? `toggle-${Math.random().toString(36).slice(2)}`;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!controlled) setInternalChecked(e.target.checked);
+    onChange?.(e.target.checked);
+  };
+
+  const trackW = size === 'sm' ? 'w-[40px]' : 'w-[48px]';
+  const trackH = size === 'sm' ? 'h-[22px]' : 'h-[26px]';
+  const thumbSize = size === 'sm' ? 'w-[16px] h-[16px]' : 'w-[20px] h-[20px]';
+  const thumbTranslate = isChecked
+    ? (size === 'sm' ? 'translate-x-[20px]' : 'translate-x-[24px]')
+    : 'translate-x-[3px]';
+
   return (
-    <div className={`toggle-container ${className}`}>
-      <style>{`
-        :root {
-          --ps-primary-color: #005BA6;
-          --ps-track-off-color: #DCDCDC;
-          --ps-track-on-color: var(--ps-primary-color);
-          --ps-thumb-color: #ffffff;
-          --ps-thumb-disabled-color: var(--ps-track-off-color);
-          --ps-label-color: #002F48;
-          --ps-label-disabled-color: var(--ps-track-off-color);
-          --ps-track-width: 44px;
-          --ps-track-height: 24px;
-          --ps-thumb-size: 18px;
-          --ps-thumb-offset: 3px;
-          --ps-label-gap: 8px;
-          --ps-border-radius-track: 30px;
-          --ps-border-radius-thumb: 50%;
-          --ps-transition-duration: 200ms;
-        }
-        .toggle-container {
-          display: flex;
-          align-items: center;
-          cursor: ${disabled ? 'not-allowed' : 'pointer'};
-          opacity: ${disabled ? '0.5' : '1'};
-        }
-        .toggle-label {
-          margin-left: var(--ps-label-gap);
-          color: ${disabled ? 'var(--ps-label-disabled-color)' : 'var(--ps-label-color)'};
-        }
-        .toggle-track {
-          width: var(--ps-track-width);
-          height: var(--ps-track-height);
-          background-color: ${checked ? 'var(--ps-track-on-color)' : 'var(--ps-track-off-color)'};
-          border-radius: var(--ps-border-radius-track);
-          position: relative;
-          transition: background-color var(--ps-transition-duration);
-        }
-        .toggle-thumb {
-          width: var(--ps-thumb-size);
-          height: var(--ps-thumb-size);
-          background-color: ${disabled ? 'var(--ps-thumb-disabled-color)' : 'var(--ps-thumb-color)'};
-          border-radius: var(--ps-border-radius-thumb);
-          position: absolute;
-          top: 50%;
-          left: ${checked ? `calc(100% - var(--ps-thumb-size) - var(--ps-thumb-offset))` : '0'};
-          transform: translateY(-50%);
-          transition: left var(--ps-transition-duration);
-        }
-        .toggle-track:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 3px rgba(0, 147, 244, 0.3);
-        }
-        .toggle-track:hover {
-          background-color: ${checked ? 'var(--ps-primary-color)' : 'var(--ps-track-off-color)'};
-        }
-      `}</style>
+    <label
+      htmlFor={inputId}
+      className={`inline-flex items-center gap-3 cursor-pointer select-none ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+    >
       <div
-        className="toggle-track"
-        role="switch"
-        aria-checked={checked}
-        aria-label={label}
-        tabIndex={0}
-        onClick={() => !disabled && onChange(!checked)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            !disabled && onChange(!checked);
-          }
-        }}
-        disabled={disabled}
+        className={`relative ${trackW} ${trackH} rounded-full transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]
+          ${isChecked ? 'bg-[#005BA6]' : 'bg-[#DCDCDC]'}
+          ${disabled ? 'cursor-not-allowed' : ''}`}
       >
-        <div className="toggle-thumb" />
+        <input
+          id={inputId}
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleChange}
+          disabled={disabled}
+          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+        />
+        <div
+          className={`absolute top-1/2 -translate-y-1/2 ${thumbSize} rounded-full bg-white shadow-sm transition-transform duration-200 ${thumbTranslate}`}
+        />
       </div>
-      <span className="toggle-label">{label}</span>
-    </div>
+      {label && <span className="text-[16px] text-[#4A4A4A]">{label}</span>}
+    </label>
   );
 };
 

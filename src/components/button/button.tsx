@@ -5,6 +5,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'lg' | 'sm';
   disabled?: boolean;
   className?: string;
+  children?: React.ReactNode;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -16,46 +18,55 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   ...rest
 }) => {
-  const baseStyle = "border rounded transition-all focus:outline-none";
-  const disabledStyle = disabled ? "cursor-not-allowed opacity-50" : "";
-  
-  const variantStyles = {
-    primary: {
-      normal: `bg-white border-2 border-transparent text-[#005BA6]`,
-      hover: `hover:bg-[#005BA6] hover:text-white`,
-      focus: `focus:bg-[#005BA6] focus:text-white focus:ring-0 focus:ring-[#0093F4]`,
-    },
-    secondary: {
-      lg: {
-        normal: `bg-white border-2 border-[#005BA6] text-[#005BA6]`,
-        hover: `hover:bg-[#005BA6] hover:text-white`,
-      },
-      sm: {
-        normal: `bg-white border border-[#DCDCDC] text-black`,
-        hover: `hover:bg-[#005BA6] hover:text-white`,
-      }
-    },
-    tertiary: {
-      lg: {
-        normal: `bg-[#F0F0F0] text-black border-transparent`,
-        hover: `hover:bg-[#DCDCDC]`,
-      }
+
+  if (disabled) {
+    const sizeStyle = size === 'lg'
+      ? 'h-[50px] px-6 text-[15px] font-semibold uppercase tracking-wide'
+      : size === 'sm'
+      ? 'h-[32px] px-4 text-[14px] font-semibold'
+      : 'h-[40px] px-6 text-[15px] font-semibold';
+    return (
+      <button
+        className={`border rounded-[4px] transition-all cursor-not-allowed bg-[#DCDCDC] border-[#777777] text-[#777777] ${sizeStyle} ${className ?? ''}`}
+        disabled
+        tabIndex={-1}
+        {...rest}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  const getStyles = () => {
+    if (variant === 'secondary' && size === 'sm') {
+      return {
+        base: 'border rounded-[4px] transition-all duration-200 focus:outline-none',
+        visual: 'bg-white border-[#DCDCDC] text-[#4A4A4A] hover:bg-[#005BA6] hover:border-[#005BA6] hover:text-white active:bg-[#004A84] active:border-[#004A84] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
+        sizing: 'h-[32px] px-4 text-[14px] font-semibold',
+      };
     }
+    if (variant === 'tertiary') {
+      return {
+        base: 'rounded-full border-0 transition-all duration-200 focus:outline-none',
+        visual: 'bg-[#F1F1F1] text-[#2B2B2B] hover:bg-[#DCDCDC] active:bg-[#CCCCCC] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
+        sizing: 'h-[40px] px-6 text-[15px] font-semibold',
+      };
+    }
+    return {
+      base: 'border-2 rounded-[4px] transition-all duration-200 focus:outline-none',
+      visual: 'bg-white border-[#005BA6] text-[#005BA6] hover:bg-[#005BA6] hover:border-[#009CF4] hover:text-white active:bg-[#004A84] active:border-[#004A84] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
+      sizing: 'h-[50px] px-6 text-[15px] font-semibold uppercase tracking-wide',
+    };
   };
 
-  const style = variant === 'primary' ? variantStyles.primary :
-                variant === 'secondary' && size === 'lg' ? variantStyles.secondary.lg :
-                variant === 'secondary' && size === 'sm' ? variantStyles.secondary.sm :
-                variantStyles.tertiary.lg;
+  const { base, visual, sizing } = getStyles();
 
   return (
     <button
-      className={`${baseStyle} ${style.normal} ${disabledStyle} ${className}`}
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
+      className={`${base} ${visual} ${sizing} ${className ?? ''}`}
+      onClick={onClick}
       {...rest}
-      aria-label={rest['aria-label']}
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={0}
     >
       {children}
     </button>

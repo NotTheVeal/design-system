@@ -1,95 +1,80 @@
 import React from 'react';
 
-interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+interface CheckboxProps {
+  label?: string;
   checked?: boolean;
-  indeterminate?: boolean;
+  defaultChecked?: boolean;
+  onChange?: (checked: boolean) => void;
   disabled?: boolean;
+  indeterminate?: boolean;
   className?: string;
+  id?: string;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, checked, indeterminate, disabled, className, ...props }) => {
+const Checkbox: React.FC<CheckboxProps> = ({
+  label,
+  checked,
+  defaultChecked = false,
+  onChange,
+  disabled = false,
+  indeterminate = false,
+  className = '',
+  id,
+}) => {
+  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
+  const controlled = checked !== undefined;
+  const isChecked = controlled ? checked : internalChecked;
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  
+  const inputId = id ?? `checkbox-${Math.random().toString(36).slice(2)}`;
+  
+  React.useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!controlled) setInternalChecked(e.target.checked);
+    onChange?.(e.target.checked);
+  };
+  
+  const isActive = isChecked || indeterminate;
+  
   return (
-    <label className={`checkbox ${className}`}>
-      <input
-        type="checkbox"
-        checked={checked}
-        aria-checked={indeterminate ? 'mixed' : checked}
-        disabled={disabled}
-        {...props}
-      />
-      <span className="custom-checkbox" />
-      <span className="label">{label}</span>
-      <style jsx>{`
-        :root {
-          --ps-blue: #005BA6;
-          --ps-midnight: #002F48;
-          --ps-border-radius: 4px;
-          --ps-background-default: #fff;
-          --ps-border-color: #DCDCDC;
-          --ps-hover-border: #005BA6;
-          --ps-checked-background: #ff9505;
-          --ps-checked-border: #ec8000;
-          --ps-disabled-background: #f0f0f0;
-          --ps-disabled-border: #DCDCDC;
-          --ps-focus-shadow: 0 0 10px 5px rgba(0, 91, 166, 0.5);
-        }
-        .checkbox {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        input[type='checkbox'] {
-          appearance: none;
-          width: 24px;
-          height: 24px;
-          border: 1px solid var(--ps-border-color);
-          border-radius: var(--ps-border-radius);
-          cursor: pointer;
-          outline: none;
-          transition: border-color 0.2s;
-        }
-        input[type='checkbox']:focus {
-          box-shadow: var(--ps-focus-shadow);
-        }
-        input[type='checkbox']:hover {
-          border-color: var(--ps-hover-border);
-        }
-        input[type='checkbox']:checked {
-          background: var(--ps-checked-background);
-          border-color: var(--ps-checked-border);
-        }
-        .custom-checkbox {
-          display: inline-block;
-          width: 24px;
-          height: 24px;
-          background-color: var(--ps-background-default);
-          border: 1px solid var(--ps-border-color);
-          border-radius: var(--ps-border-radius);
-          position: relative;
-        }
-        .custom-checkbox::after {
-          content: '';
-          display: ${checked ? 'block' : 'none'};
-          width: 10px;
-          height: 10px;
-          background-color: var(--ps-checked-background);
-          border-radius: var(--ps-border-radius);
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
-        .label {
-          font-family: 'Source Sans Pro', sans-serif;
-          color: var(--ps-midnight);
-        }
-        input[type='checkbox']:disabled {
-          cursor: not-allowed;
-          background: var(--ps-disabled-background);
-          border: var(--ps-disabled-border);
-        }
-      `}</style>
+    <label
+      htmlFor={inputId}
+      className={`inline-flex items-center gap-2 cursor-pointer select-none ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+    >
+      <div className={`relative flex-shrink-0 w-[24px] h-[24px] rounded-[2px] border-[1.5px] transition-all duration-150
+        ${isActive
+          ? 'bg-[#005BA6] border-[#005BA6]'
+          : 'bg-white border-[#DCDCDC] hover:border-[#005BA6]'}
+        focus-within:shadow-[0_0_10px_5px_rgba(0,91,166,0.3)]`}
+      >
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleChange}
+          disabled={disabled}
+          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+        />
+        {isChecked && !indeterminate && (
+          <svg className="absolute inset-0 m-auto w-[14px] h-[14px] text-white" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+        {indeterminate && (
+          <svg className="absolute inset-0 m-auto w-[10px] h-[2px] text-white" viewBox="0 0 10 2" fill="none">
+            <rect width="10" height="2" rx="1" fill="currentColor"/>
+          </svg>
+        )}
+      </div>
+      {label && (
+        <span className="text-[16px] text-[#4A4A4A]">{label}</span>
+      )}
     </label>
   );
 };
