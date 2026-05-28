@@ -22,7 +22,7 @@ export const Default: Story = {
     className: 'className',
     height: 1,
     width: 1,
-    style: 'style',
+    style: {},
     animate: true,
   },
 };

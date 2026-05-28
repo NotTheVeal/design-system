@@ -18,7 +18,7 @@ type Story = StoryObj<typeof Table>;
 export const Default: Story = {
   args: {
     className: 'className',
-    headers: 'headers',
+    headers: [],
     data: [],
   },
 };
