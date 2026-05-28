@@ -20,7 +20,7 @@ type Story = StoryObj<typeof Select>;
 
 export const Default: Story = {
   args: {
-    options: 'options',
+    options: [],
     value: 'value',
     onChange: () => {},
     className: 'className',

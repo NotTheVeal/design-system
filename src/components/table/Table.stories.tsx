@@ -19,7 +19,7 @@ export const Default: Story = {
   args: {
     className: 'className',
     headers: 'headers',
-    data: 'data',
+    data: [],
   },
 };
 

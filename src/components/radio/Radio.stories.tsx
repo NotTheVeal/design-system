@@ -18,7 +18,7 @@ type Story = StoryObj<typeof Radio>;
 
 export const Default: Story = {
   args: {
-    options: 'options',
+    options: [],
     selectedValue: 'selectedValue',
     onChange: () => {},
     className: 'className',

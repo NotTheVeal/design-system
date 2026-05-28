@@ -17,7 +17,7 @@ type Story = StoryObj<typeof ContextActions>;
 
 export const Default: Story = {
   args: {
-    items: 'items',
+    items: [],
     className: 'className',
     trigger: 'Sample content',
   },

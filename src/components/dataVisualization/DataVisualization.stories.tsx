@@ -17,7 +17,7 @@ type Story = StoryObj<typeof DataVisualization>;
 export const Default: Story = {
   args: {
     title: 'Sample Title',
-    data: 'data',
+    data: [],
   },
 };
 

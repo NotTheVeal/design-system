@@ -18,7 +18,7 @@ type Story = StoryObj<typeof Tabs>;
 
 export const Default: Story = {
   args: {
-    tabs: 'tabs',
+    tabs: [],
     activeTabIndex: 1,
     onTabChange: () => {},
     className: 'className',

@@ -17,7 +17,7 @@ type Story = StoryObj<typeof Stepper>;
 
 export const Default: Story = {
   args: {
-    steps: 'steps',
+    steps: [],
     currentStep: 1,
     className: 'className',
   },

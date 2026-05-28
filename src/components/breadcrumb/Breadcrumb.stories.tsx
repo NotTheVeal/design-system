@@ -16,7 +16,7 @@ type Story = StoryObj<typeof Breadcrumb>;
 
 export const Default: Story = {
   args: {
-    items: 'items',
+    items: [],
     className: 'className',
   },
 };
