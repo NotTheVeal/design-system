@@ -1,71 +1,100 @@
 import React from 'react';
 
+interface DataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
 interface DataVisualizationProps {
-  title: string;
-  data: Array<{ label: string; value: number }>;
+  type?: 'bar' | 'donut' | 'line';
+  data: DataPoint[];
+  title?: string;
+  subtitle?: string;
+  height?: number;
+  showLegend?: boolean;
   className?: string;
 }
 
-const DataVisualization: React.FC<DataVisualizationProps> = ({ title, data, className }) => {
-  return (
-    <div className={`data-visualization ${className}`} role="region" aria-label={title} tabIndex={0}>
-      <style>
-        {`
-          :root {
-            --ps-font-family: 'Source Sans Pro', sans-serif;
-            --ps-primary-color: #005BA6;
-            --ps-midnight: #002F48;
-            --ps-spacing-4: 4px;
-            --ps-spacing-8: 8px;
-            --ps-spacing-12: 12px;
-            --ps-spacing-16: 16px;
-            --ps-spacing-20: 20px;
-            --ps-spacing-24: 24px;
-            --ps-spacing-32: 32px;
-            --ps-spacing-40: 40px;
-            --ps-spacing-48: 48px;
-            --ps-spacing-64: 64px;
-            --ps-border-radius: 4px;
-            --ps-modal-border-radius: 8px;
-            --ps-pill-border-radius: 100px;
-            --ps-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --ps-focus-ring: 0 0 0 3px rgba(0, 147, 244, 0.3);
-            --ps-input-height: 48px;
-            --ps-input-border: 1px solid #DCDCDC;
-            --ps-input-focus-border: 1px solid #005BA6;
-            --ps-button-primary-background: white;
-            --ps-button-primary-border: #005BA6;
-            --ps-button-primary-hover: #005BA6;
-          }
+const DEFAULT_COLORS = ['#005BA6','#009CF4','#17AB78','#E3A92D','#E00000','#777777','#002F48','#DCEAED'];
 
-          .data-visualization {
-            font-family: var(--ps-font-family);
-            margin: var(--ps-spacing-50) var(--ps-spacing-60);
-            padding: var(--ps-spacing-16);
-            background-color: var(--ps-midnight);
-            border-radius: var(--ps-border-radius);
-          }
+const DataVisualization: React.FC<DataVisualizationProps> = ({
+  type = 'bar', data, title, subtitle, height = 300, showLegend = true, className = '',
+}) => {
+  const max = Math.max(...data.map(d => d.value), 1);
 
-          .data-visualization-title {
-            font-size: var(--ps-typography-title-fontSize);
-            font-weight: var(--ps-typography-title-fontWeight);
-            color: var(--ps-primary-color);
-          }
-
-          .data-visualization-chart {
-            display: flex;
-            gap: var(--ps-spacing-8);
-          }
-        `}
-      </style>
-      <h2 className="data-visualization-title">{title}</h2>
-      <div className="data-visualization-chart">
-        {data.map((item, index) => (
-          <div key={index} style={{ width: `${item.value}%`, backgroundColor: 'var(--ps-primary-color)', borderRadius: 'var(--ps-bar-border-radius)' }}>
-            {item.label}: {item.value}
+  const renderBar = () => (
+    <div className="flex items-end gap-2 w-full" style={{ height }}>
+      {data.map((d, i) => {
+        const pct = (d.value / max) * 100;
+        const color = d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+        return (
+          <div key={i} className="flex flex-col items-center flex-1 gap-1">
+            <span className="text-xs text-gray-600">{d.value}</span>
+            <div className="w-full rounded-t-sm" style={{ height: `${pct}%`, background: color, minHeight: 4 }} />
+            <span className="text-xs text-gray-500 truncate w-full text-center">{d.label}</span>
           </div>
-        ))}
+        );
+      })}
+    </div>
+  );
+
+  const renderDonut = () => {
+    const total = data.reduce((s, d) => s + d.value, 0) || 1;
+    const r = 80; const cx = 100; const cy = 100;
+    let offset = -Math.PI / 2;
+    const slices = data.map((d, i) => {
+      const angle = (d.value / total) * 2 * Math.PI;
+      const x1 = cx + r * Math.cos(offset); const y1 = cy + r * Math.sin(offset);
+      offset += angle;
+      const x2 = cx + r * Math.cos(offset); const y2 = cy + r * Math.sin(offset);
+      const large = angle > Math.PI ? 1 : 0;
+      return { d: `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z`, color: d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length] };
+    });
+    return (
+      <div className="flex items-center justify-center" style={{ height }}>
+        <svg viewBox="0 0 200 200" width={height} height={height}>
+          {slices.map((s, i) => <path key={i} d={s.d} fill={s.color} stroke="white" strokeWidth="2" />)}
+          <circle cx={cx} cy={cy} r={50} fill="white" />
+        </svg>
       </div>
+    );
+  };
+
+  const renderLine = () => {
+    const w = 400; const h = height;
+    const pad = 32;
+    const pts = data.map((d, i) => ({ x: pad + (i / Math.max(data.length - 1, 1)) * (w - pad * 2), y: h - pad - ((d.value / max) * (h - pad * 2)) }));
+    const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+    return (
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height }}>
+        <path d={pathD} fill="none" stroke="#005BA6" strokeWidth="2" strokeLinejoin="round" />
+        {pts.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={4} fill="#005BA6" />)}
+      </svg>
+    );
+  };
+
+  return (
+    <div className={`bg-white rounded-lg border border-gray-200 p-4 ${className}`}>
+      {(title || subtitle) && (
+        <div className="mb-4">
+          {title && <h3 className="text-base font-semibold text-gray-800">{title}</h3>}
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        </div>
+      )}
+      {type === 'bar' && renderBar()}
+      {type === 'donut' && renderDonut()}
+      {type === 'line' && renderLine()}
+      {showLegend && (
+        <div className="flex flex-wrap gap-3 mt-4">
+          {data.map((d, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length] }} />
+              <span className="text-xs text-gray-600">{d.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

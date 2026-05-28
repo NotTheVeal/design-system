@@ -1,57 +1,27 @@
 import React from 'react';
 
 interface LoadingProps {
-  className?: string;
   size?: 'sm' | 'md' | 'lg';
-  ariaLabel?: string;
+  label?: string;
+  className?: string;
 }
 
-const Loading: React.FC<LoadingProps> = ({ className = '', size = 'md', ariaLabel = 'Loading...' }) => {
-  const spinnerSize = size === 'sm' ? 'var(--ps-loading-spinner-sizing-sm)' : size === 'lg' ? 'var(--ps-loading-spinner-sizing-lg)' : 'var(--ps-loading-spinner-sizing-md)';
+const sizeMap = { sm: 'w-4 h-4', md: 'w-8 h-8', lg: 'w-12 h-12' };
 
+const Loading: React.FC<LoadingProps> = ({ size = 'md', label, className = '' }) => {
   return (
-    <>
-      <style>
-        {`
-          :root {
-            --ps-font: 'Source Sans Pro', sans-serif;
-            --ps-blue: #005BA6;
-            --ps-midnight: #002F48;
-            --ps-loading-spinner-sizing-sm: 16px;
-            --ps-loading-spinner-sizing-md: 20px;
-            --ps-loading-spinner-sizing-lg: 32px;
-            --ps-loading-button-background: #005BA6;
-            --ps-loading-button-border: #005BA6;
-            --ps-loading-button-text: #FFFFFF;
-            --ps-loading-skeleton-color-base: #F1F1F1;
-            --ps-loading-skeleton-color-highlight: #FAFAFA;
-          }
-          .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--ps-font);
-            color: var(--ps-blue);
-            min-height: 48px;
-          }
-          .spinner {
-            width: ${spinnerSize};
-            height: ${spinnerSize};
-            border: 4px solid var(--ps-loading-button-border);
-            border-top: 4px solid var(--ps-loading-button-text);
-            border-radius: 50%;
-            animation: spin var(--ps-loading-spinner-animation-duration) var(--ps-loading-spinner-animation-timing) var(--ps-loading-spinner-animation-iteration);
-          }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
-      <div className={`loading ${className}`} role="status" aria-label={ariaLabel}>
-        <div className="spinner" aria-hidden="true"></div>
-      </div>
-    </>
+    <div className={`flex flex-col items-center justify-center gap-2 ${className}`} role="status" aria-label={label || 'Loading'}>
+      <svg
+        className={`animate-spin text-blue-600 ${sizeMap[size]}`}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      </svg>
+      {label && <span className="text-sm text-gray-600">{label}</span>}
+    </div>
   );
 };
 

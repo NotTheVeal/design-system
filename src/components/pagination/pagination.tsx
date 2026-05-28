@@ -4,6 +4,7 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  showFirstLast?: boolean;
   className?: string;
 }
 
@@ -11,98 +12,72 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   onPageChange,
+  showFirstLast = true,
   className = '',
 }) => {
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      onPageChange(page);
-    }
+  const getPages = (): (number | string)[] => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages: (number | string)[] = [1];
+    if (currentPage > 3) pages.push('...');
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (currentPage < totalPages - 2) pages.push('...');
+    pages.push(totalPages);
+    return pages;
   };
 
-  return (
-    <div className={`pagination ${className}`} role="navigation" aria-label="Pagination">
-      <button
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        aria-label="Previous"
-      >
-        &lt;
-      </button>
-      {Array.from({ length: totalPages }, (_, index) => (
-        <button
-          key={index + 1}
-          onClick={() => handlePageChange(index + 1)}
-          className={currentPage === index + 1 ? 'active' : ''}
-          aria-label={`Go to page ${index + 1}`}
-        >
-          {index + 1}
-        </button>
-      ))}
-      <button
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        aria-label="Next"
-      >
-        &gt;
-      </button>
-      <style jsx>{`
-        :root {
-          --ps-font: 'Source Sans Pro', sans-serif;
-          --ps-primary-color: #005BA6;
-          --ps-midnight: #002F48;
-          --ps-pagination-gap: 4px;
-          --ps-pagination-item-size: 32px;
-          --ps-pagination-item-radius: 4px;
-          --ps-pagination-item-background-default: transparent;
-          --ps-pagination-item-background-hover: #f0f0f0;
-          --ps-pagination-item-background-active: #005BA6;
-          --ps-pagination-item-border-default: transparent;
-          --ps-pagination-item-border-hover: #DCDCDC;
-          --ps-pagination-item-border-active: #005BA6;
-          --ps-pagination-item-border-width: 1px;
-          --ps-pagination-item-text-default: #000;
-          --ps-pagination-item-text-hover: #005BA6;
-          --ps-pagination-item-text-active: #fff;
-          --ps-pagination-item-text-disabled: #DCDCDC;
-          --ps-pagination-arrow-color: #999;
-          --ps-pagination-arrow-color-hover: #005BA6;
-          --ps-pagination-arrow-color-disabled: #DCDCDC;
-          --ps-pagination-arrow-size: 16px;
-          --ps-pagination-ellipsis-color: #ccc;
-          --ps-pagination-per-page-font-size: 13px;
-          --ps-pagination-per-page-color: #999;
-        }
+  const btnBase = 'min-w-[32px] h-8 px-2 rounded text-sm font-medium transition-colors flex items-center justify-center';
 
-        .pagination {
-          display: flex;
-          gap: var(--ps-pagination-gap);
-        }
-        button {
-          width: var(--ps-pagination-item-size);
-          height: var(--ps-pagination-item-size);
-          border-radius: var(--ps-pagination-item-radius);
-          border: var(--ps-pagination-item-border-width) solid var(--ps-pagination-item-border-default);
-          background: var(--ps-pagination-item-background-default);
-          color: var(--ps-pagination-item-text-default);
-          font-size: var(--ps-pagination-item-text-font-size);
-          font-weight: var(--ps-pagination-item-text-font-weight);
-          cursor: pointer;
-          transition: background 0.3s, color 0.3s;
-        }
-        button:hover {
-          background: var(--ps-pagination-item-background-hover);
-          color: var(--ps-pagination-item-text-hover);
-        }
-        button:disabled {
-          cursor: not-allowed;
-          color: var(--ps-pagination-item-text-disabled);
-        }
-        .active {
-          background: var(--ps-pagination-item-background-active);
-          color: var(--ps-pagination-item-text-active);
-        }
-      `}</style>
-    </div>
+  return (
+    <nav className={`flex items-center gap-1 ${className}`} aria-label="Pagination">
+      {showFirstLast && (
+        <button
+          onClick={() => onPageChange(1)}
+          disabled={currentPage === 1}
+          className={`${btnBase} text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          «
+        </button>
+      )}
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`${btnBase} text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed`}
+      >
+        ‹
+      </button>
+      {getPages().map((p, i) =>
+        typeof p === 'string' ? (
+          <span key={`e${i}`} className={`${btnBase} text-gray-400 cursor-default`}>…</span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onPageChange(p)}
+            className={`${btnBase} ${currentPage === p ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+            aria-current={currentPage === p ? 'page' : undefined}
+          >
+            {p}
+          </button>
+        )
+      )}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`${btnBase} text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed`}
+      >
+        ›
+      </button>
+      {showFirstLast && (
+        <button
+          onClick={() => onPageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          className={`${btnBase} text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          »
+        </button>
+      )}
+    </nav>
   );
 };
 

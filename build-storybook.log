@@ -1,0 +1,220 @@
+
+> @partssource/design-tokens@1.0.0 build-storybook
+> storybook build --output-dir=/tmp/chromatic--48358-3VZ5HikyKZ0p
+
+
+[90m┌[39m  Building storybook v10.4.1
+[90m│[39m
+[32m◇[39m  Cleaning outputDir: [36m../../tmp/chromatic--48358-3VZ5HikyKZ0p[39m
+[90m│[39m
+[32m◇[39m  Loading presets
+[90m│[39m
+[32m◇[39m  Building manager..
+[90m│[39m
+[34m●[39m  Building preview..
+[90m│[39m  [43mVite[49m [36mvite v8.0.14 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 283 modules transformed.
+rendering chunks...
+computing gzip size...
+[90m│[39m  [43mVite[49m
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/context-C0qIqeS4.png
+[90m│[39m  6.11 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/styling-Bk6zjRzU.png
+[90m│[39m  7.23 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/iframe.html
+[90m│[39m  18.95 kB │ gzip:   5.28 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/docs---vsFbMi.png
+[90m│[39m  27.87 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/share-DGA-UcQf.png
+[90m│[39m  40.76 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/accessibility-W_h2acOZ.png
+[90m│[39m  42.33 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/figma-plugin-CH2hELiO.png
+[90m│[39m  44.24 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/theming-D6WJLNoW.png
+[90m│[39m  44.37 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/testing-cbzR9l9r.png
+[90m│[39m  49.31 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/addon-library-BWUCAmyN.png
+[90m│[39m  467.36 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Header-CzZBVs_w.css
+[90m│[39m  0.50 kB │ gzip:   0.29 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Button-C9QAnAgh.css
+[90m│[39m  0.51 kB │ gzip:   0.28 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Page-R7v0XIE6.css
+[90m│[39m  0.91 kB │ gzip:   0.39 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/iframe-CuqDsQ55.css
+[90m│[39m  10.23 kB │ gzip:   2.00 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/formatter-EIJCOSYU-mYJAMYHT.js
+[90m│[39m  0.26 kB │ gzip:   0.21 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/jsx-runtime-CaZkqeYb.js
+[90m│[39m  0.43 kB │ gzip:   0.30 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Button-sWpvDJ9k.js
+[90m│[39m  0.49 kB │ gzip:   0.32 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Header.stories-DPBMCO4C.js
+[90m│[39m  0.73 kB │ gzip:   0.42 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Status.stories-Cy_iLWT4.js
+[90m│[39m  0.90 kB │ gzip:   0.50 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Breadcrumb.stories-BN9z6LSK.js
+[90m│[39m  1.05 kB │ gzip:   0.54 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/ContextActions.stories-CcgpEbP1.js
+[90m│[39m  1.16 kB │ gzip:   0.59 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Badge.stories-B11WEPMV.js
+[90m│[39m  1.16 kB │ gzip:   0.64 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Radio.stories-D66yON0y.js
+[90m│[39m  1.24 kB │ gzip:   0.58 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Button.stories-DZAGeiCe.js
+[90m│[39m  1.26 kB │ gzip:   0.51 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Popover.stories-DpuR2l_Z.js
+[90m│[39m  1.30 kB │ gzip:   0.65 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/ErrorMessage.stories-B12s3kxM.js
+[90m│[39m  1.31 kB │ gzip:   0.62 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Header-1d3ztO3c.js
+[90m│[39m  1.33 kB │ gzip:   0.67 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/DocsRenderer-LL677BLK-hIakIGcR.js
+[90m│[39m  1.36 kB │ gzip:   0.74 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/IconPictogram.stories-ckRe5YyV.js
+[90m│[39m  1.39 kB │ gzip:   0.76 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/ListCard.stories-dp8Q7LaA.js
+[90m│[39m  1.41 kB │ gzip:   0.69 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Button.stories-BdAzizlC.js
+[90m│[39m  1.45 kB │ gzip:   0.71 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Card.stories-B8dZmnCI.js
+[90m│[39m  1.64 kB │ gzip:   0.76 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Icon.stories-D5pL6nZH.js
+[90m│[39m  1.67 kB │ gzip:   0.76 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Modal.stories-CzYDMoNG.js
+[90m│[39m  1.67 kB │ gzip:   0.73 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/IconLineArt.stories-Cuc8_2Yr.js
+[90m│[39m  1.73 kB │ gzip:   0.78 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Select.stories-D-_UWcWK.js
+[90m│[39m  1.78 kB │ gzip:   0.81 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Accordion.stories-kMmJsf2p.js
+[90m│[39m  1.79 kB │ gzip:   0.76 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Divider.stories-DcIVPlq6.js
+[90m│[39m  1.90 kB │ gzip:   0.78 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Drawer.stories-CQdr3aTR.js
+[90m│[39m  1.97 kB │ gzip:   0.84 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Skeleton.stories-ClFugsCM.js
+[90m│[39m  1.99 kB │ gzip:   0.88 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Alert.stories-P3guEyfb.js
+[90m│[39m  2.16 kB │ gzip:   0.89 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Avatar.stories-C_ofAd8_.js
+[90m│[39m  2.20 kB │ gzip:   0.99 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/InlineButton.stories-CfrvRiRr.js
+[90m│[39m  2.29 kB │ gzip:   0.76 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Filter.stories-hce7ofgP.js
+[90m│[39m  2.29 kB │ gzip:   1.05 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Cart.stories-DSrQpMxb.js
+[90m│[39m  2.32 kB │ gzip:   0.99 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/preload-helper-xPQekRTU.js
+[90m│[39m  2.34 kB │ gzip:   1.24 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Toast.stories-EC9SKvCa.js
+[90m│[39m  2.39 kB │ gzip:   0.99 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/PageShell.stories-DkJ_6Ld-.js
+[90m│[39m  2.47 kB │ gzip:   0.79 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Loading.stories-D0BUq7wn.js
+[90m│[39m  2.47 kB │ gzip:   0.96 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/IconModality.stories-BdgSL946.js
+[90m│[39m  2.51 kB │ gzip:   0.91 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Search.stories-B-3R9NWa.js
+[90m│[39m  2.58 kB │ gzip:   1.04 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/IconCustom.stories-DHhRFsSi.js
+[90m│[39m  2.65 kB │ gzip:   0.94 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Metric.stories-Bi2c7tlC.js
+[90m│[39m  2.77 kB │ gzip:   0.96 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/DataVisualization.stories-CttFSec2.js
+[90m│[39m  2.78 kB │ gzip:   1.01 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Checkbox.stories-IPIlTU1T.js
+[90m│[39m  3.06 kB │ gzip:   1.04 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Navigation.stories-Drzx_TZy.js
+[90m│[39m  3.09 kB │ gzip:   1.10 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Tooltip.stories-DuNTsRNf.js
+[90m│[39m  3.10 kB │ gzip:   1.05 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/ProductCard.stories-ChJRpANh.js
+[90m│[39m  3.22 kB │ gzip:   1.04 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/NavLeft.stories-Bej9vEEo.js
+[90m│[39m  3.29 kB │ gzip:   1.10 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/FileUpload.stories-Cw9WXYyb.js
+[90m│[39m  3.36 kB │ gzip:   1.24 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Table.stories-juY1RXns.js
+[90m│[39m  3.45 kB │ gzip:   0.99 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Stepper.stories-CGn5XilC.js
+[90m│[39m  3.51 kB │ gzip:   1.13 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Page.stories-EkRCdVYb.js
+[90m│[39m  3.56 kB │ gzip:   1.54 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/EmptyState.stories-CITRKv6O.js
+[90m│[39m  3.57 kB │ gzip:   1.11 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/react-dom-Df7vL7u5.js
+[90m│[39m  3.58 kB │ gzip:   1.36 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Toggle.stories-ByOpPNXt.js
+[90m│[39m  3.62 kB │ gzip:   1.24 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Slider.stories-xLdDiOdh.js
+[90m│[39m  3.66 kB │ gzip:   1.28 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/ProgressIndicator.stories-C930EgX3.js
+[90m│[39m  3.70 kB │ gzip:   1.17 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Pagination.stories-BG_nSufC.js
+[90m│[39m  3.73 kB │ gzip:   1.13 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Cms.stories-DUFgtc2c.js
+[90m│[39m  3.79 kB │ gzip:   1.22 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Input.stories-C7RwXL0w.js
+[90m│[39m  3.82 kB │ gzip:   1.33 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/DatePicker.stories-Dj4832AF.js
+[90m│[39m  3.90 kB │ gzip:   1.29 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/CtaBar.stories-Coa4HO7i.js
+[90m│[39m  3.91 kB │ gzip:   1.24 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/AiAgent.stories-CENaR9xT.js
+[90m│[39m  3.96 kB │ gzip:   1.46 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Tabs.stories-D4h3esTg.js
+[90m│[39m  4.11 kB │ gzip:   1.34 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/NavTop.stories-DZZUq_Ee.js
+[90m│[39m  4.29 kB │ gzip:   1.19 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/AiDataCard.stories-kqv8T-x_.js
+[90m│[39m  4.98 kB │ gzip:   1.36 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Carousel.stories-CeYrKaHF.js
+[90m│[39m  5.43 kB │ gzip:   1.51 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Configure-Dt4CmKKH.js
+[90m│[39m  26.86 kB │ gzip:  11.30 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/vite-inject-mocker-entry.js
+[90m│[39m  27.81 kB │ gzip:   9.63 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/matchers-5TDFFDYO-DZaugxP0.js
+[90m│[39m  28.76 kB │ gzip:   9.66 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/Color-23OOGO2C-N68qkoO9.js
+[90m│[39m  30.86 kB │ gzip:  11.58 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/WithTooltip-65CFNBJE-BGfi850L.js
+[90m│[39m  33.15 kB │ gzip:  11.63 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/syntaxhighlighter-W7WJGI2T-CMDQIQJW.js
+[90m│[39m  76.40 kB │ gzip:  27.48 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/react-18-B6poRXE_.js
+[90m│[39m  179.12 kB │ gzip:  56.70 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/axe-8XbconSs.js
+[90m│[39m  571.05 kB │ gzip: 155.78 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/blocks-BP6kPlMt.js
+[90m│[39m  813.89 kB │ gzip: 261.40 kB
+[90m│[39m  ../../tmp/chromatic--48358-3VZ5HikyKZ0p/assets/iframe-BRiQfvk1.js
+[90m│[39m  1,098.38 kB │ gzip: 310.43 kB
+
+[90m│[39m
+[33m▲[39m  [43mVite[49m [33m[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins.
+[90m│[39m  Here is a breakdown:
+[90m│[39m  - storybook:project-annotations-plugin (33%)
+[90m│[39m  - plugin-csf (18%)
+[90m│[39m  - storybook:code-generator-plugin (15%)
+[90m│[39m  - vite:css-post (9%)
+[90m│[39m  - storybook:inject-export-order-plugin (7%)
+[90m│[39m  See ]8;;https://rolldown.rs/options/checks#plugintimingshttps://rolldown.rs/options/checks#plugintimings]8;; for more details.
+[90m│[39m  [39m
+[90m│[39m
+[33m▲[39m  [43mVite[49m [33m[plugin builtin:vite-reporter]
+[90m│[39m  (!) Some chunks are larger than 500 kB after minification. Consider:
+[90m│[39m  - Using dynamic import() to code-split the application
+[90m│[39m  - Use build.rolldownOptions.output.codeSplitting to improve chunking:
+[90m│[39m  ]8;;https://rolldown.rs/reference/OutputOptions.codeSplittinghttps://rolldown.rs/reference/OutputOptions.codeSplitting]8;;
+[90m│[39m  - Adjust chunk size limit for this warning via
+[90m│[39m  build.chunkSizeWarningLimit.[39m
+[90m│[39m  [43mVite[49m [32m✓ built in 8.70s[39m
+[90m│[39m
+[32m◇[39m  Output directory: /tmp/chromatic--48358-3VZ5HikyKZ0p
+[90m│[39m
+[90m└[39m  Storybook build completed successfully
+

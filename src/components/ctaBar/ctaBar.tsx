@@ -1,91 +1,54 @@
 import React from 'react';
 
 interface CtaBarProps {
-  title: string;
+  title?: string;
   description?: string;
-  primaryButtonLabel: string;
-  secondaryButtonLabel?: string;
-  onPrimaryButtonClick: () => void;
-  onSecondaryButtonClick?: () => void;
+  primaryAction?: React.ReactNode;
+  secondaryAction?: React.ReactNode;
+  variant?: 'default' | 'info' | 'success' | 'warning';
+  dismissible?: boolean;
+  onDismiss?: () => void;
   className?: string;
 }
 
 const CtaBar: React.FC<CtaBarProps> = ({
   title,
   description,
-  primaryButtonLabel,
-  secondaryButtonLabel,
-  onPrimaryButtonClick,
-  onSecondaryButtonClick,
-  className,
+  primaryAction,
+  secondaryAction,
+  variant = 'default',
+  dismissible = false,
+  onDismiss,
+  className = '',
 }) => {
+  const variantStyles: Record<string, { bg: string; border: string; text: string }> = {
+    default: { bg: 'bg-[#002F48]', border: 'border-[#004A84]', text: 'text-white' },
+    info:    { bg: 'bg-[#EFF9FE]', border: 'border-[#009CF4]', text: 'text-[#005BA6]' },
+    success: { bg: 'bg-[#E2F5EE]', border: 'border-[#0E7C55]', text: 'text-[#0E7C55]' },
+    warning: { bg: 'bg-[#FFF4E5]', border: 'border-[#E3A92D]', text: 'text-[#B45309]' },
+  };
+
+  const styles = variantStyles[variant];
+
   return (
-    <div className={`cta-bar ${className}`} role="banner" aria-labelledby="ctaBarTitle">
-      <style jsx>{`
-        :root {
-          --ps-color-background-default: #ffffff;
-          --ps-color-background-sticky: #ffffff;
-          --ps-color-border: #dcdcdc;
-          --ps-color-text-primary: #000000;
-          --ps-color-text-secondary: #586067;
-          --ps-spacing-padding-x: 24px;
-          --ps-spacing-padding-y: 16px;
-          --ps-spacing-button-gap: 12px;
-          --ps-border-width: 1px;
-          --ps-border-radius: 4px;
-          --ps-shadow-sticky: 0 4px 12px rgba(0,0,0,0.1);
-          --ps-sizing-min-height: 72px;
-        }
-        .cta-bar {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          background-color: var(--ps-color-background-default);
-          padding: var(--ps-spacing-padding-y) var(--ps-spacing-padding-x);
-          min-height: var(--ps-sizing-min-height);
-          border-radius: var(--ps-border-radius);
-          box-shadow: var(--ps-shadow-sticky);
-          border: var(--ps-border-width) solid var(--ps-color-border);
-        }
-        .cta-bar__title {
-          font-family: 'Source Sans Pro', sans-serif;
-          font-weight: bold;
-          color: var(--ps-color-text-primary);
-          margin-bottom: var(--ps-spacing-button-gap);
-        }
-        .cta-bar__description {
-          font-family: 'Source Sans Pro', sans-serif;
-          color: var(--ps-color-text-secondary);
-          margin-bottom: var(--ps-spacing-button-gap);
-        }
-        .cta-bar__button {
-          height: 48px;
-          padding: 0 16px;
-          border: 1px solid #005BA6;
-          background: white;
-          color: #005BA6;
-          border-radius: var(--ps-border-radius);
-          cursor: pointer;
-          transition: background 0.3s;
-        }
-        .cta-bar__button:hover {
-          background: #005BA6;
-          color: white;
-        }
-        .cta-bar__button:focus {
-          outline: none;
-          box-shadow: 0 0 0 3px rgba(0, 147, 244, 0.3);
-        }
-      `}</style>
-      <h2 id="ctaBarTitle" className="cta-bar__title">{title}</h2>
-      {description && <p className="cta-bar__description">{description}</p>}
-      <div className="cta-bar__button-container" style={{ gap: 'var(--ps-spacing-button-gap)', display: 'flex' }}>
-        <button className="cta-bar__button" onClick={onPrimaryButtonClick} aria-label={primaryButtonLabel}>{primaryButtonLabel}</button>
-        {secondaryButtonLabel && onSecondaryButtonClick && (
-          <button className="cta-bar__button" onClick={onSecondaryButtonClick} aria-label={secondaryButtonLabel}>{secondaryButtonLabel}</button>
-        )}
+    <div className={`w-full px-6 py-3 border-b flex items-center gap-4 ${styles.bg} ${styles.border} ${className}`}>
+      <div className="flex-1 min-w-0">
+        {title && <p className={`text-[14px] font-semibold ${styles.text}`}>{title}</p>}
+        {description && <p className={`text-[13px] ${styles.text} opacity-80`}>{description}</p>}
       </div>
+      {(secondaryAction || primaryAction) && (
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {secondaryAction}
+          {primaryAction}
+        </div>
+      )}
+      {dismissible && (
+        <button onClick={onDismiss} aria-label="Dismiss" className={`flex-shrink-0 ${styles.text} opacity-60 hover:opacity-100 transition-opacity`}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+          </svg>
+        </button>
+      )}
     </div>
   );
 };

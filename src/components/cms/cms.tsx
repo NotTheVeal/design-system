@@ -1,111 +1,93 @@
 import React from 'react';
 
-interface CmsProps {
+interface CmsBlockProps {
+  type: 'hero' | 'text' | 'image' | 'cta' | 'grid' | 'divider';
+  title?: string;
+  subtitle?: string;
+  body?: string;
+  image?: { src: string; alt: string };
+  action?: { label: string; href?: string; onClick?: () => void };
+  items?: Array<{ title: string; body: string; icon?: React.ReactNode }>;
   className?: string;
 }
 
-const Cms: React.FC<CmsProps> = ({ className }) => {
+const CmsBlock: React.FC<CmsBlockProps> = ({
+  type,
+  title,
+  subtitle,
+  body,
+  image,
+  action,
+  items = [],
+  className = '',
+}) => {
+  const Action = action ? (
+    <a href={action.href} onClick={action.onClick}
+      className="inline-flex items-center h-[50px] px-8 bg-[#005BA6] text-white text-[16px] font-semibold rounded-[4px] hover:bg-[#004A84] transition-colors border-2 border-[#005BA6]">
+      {action.label}
+    </a>
+  ) : null;
+
+  if (type === 'hero') {
+    return (
+      <section className={`w-full py-20 px-6 text-center bg-[#002F48] text-white ${className}`}>
+        {subtitle && <p className="text-[14px] font-semibold text-[#009CF4] uppercase tracking-widest mb-4">{subtitle}</p>}
+        {title && <h1 className="text-[48px] font-light text-white mb-6 leading-tight max-w-[800px] mx-auto">{title}</h1>}
+        {body && <p className="text-[18px] text-white opacity-80 mb-8 max-w-[600px] mx-auto">{body}</p>}
+        {Action}
+      </section>
+    );
+  }
+
+  if (type === 'image') {
+    return (
+      <div className={`w-full overflow-hidden rounded-[4px] ${className}`}>
+        {image && <img src={image.src} alt={image.alt} className="w-full h-auto object-cover" />}
+        {title && <p className="mt-2 text-[12px] text-[#777777] text-center">{title}</p>}
+      </div>
+    );
+  }
+
+  if (type === 'cta') {
+    return (
+      <section className={`w-full py-16 px-6 text-center bg-[#EFF9FE] rounded-[8px] ${className}`}>
+        {title && <h2 className="text-[32px] font-light text-[#002F48] mb-4">{title}</h2>}
+        {body && <p className="text-[16px] text-[#777777] mb-8 max-w-[500px] mx-auto">{body}</p>}
+        {Action}
+      </section>
+    );
+  }
+
+  if (type === 'grid') {
+    return (
+      <section className={`w-full py-12 px-6 ${className}`}>
+        {title && <h2 className="text-[28px] font-semibold text-[#002F48] mb-8 text-center">{title}</h2>}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {items.map((item, i) => (
+            <div key={i} className="flex flex-col gap-3 p-6 bg-white border border-[#DCDCDC] rounded-[8px] shadow-[0_1px_4px_rgba(0,47,72,0.08)]">
+              {item.icon && <div className="w-[48px] h-[48px] rounded-full bg-[#EFF9FE] flex items-center justify-center text-[#005BA6]">{item.icon}</div>}
+              <h3 className="text-[16px] font-semibold text-[#4A4A4A]">{item.title}</h3>
+              <p className="text-[14px] text-[#777777] leading-relaxed">{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (type === 'divider') {
+    return <div className={`w-full h-[1px] bg-[#DCDCDC] ${className}`} />;
+  }
+
+  // default: text
   return (
-    <div className={`cms ${className}`}>
-      <style jsx>{`
-        :root {
-          --ps-font: 'Source Sans Pro', sans-serif;
-          --ps-primary-color: #005BA6;
-          --ps-midnight-color: #002F48;
-          --ps-banner-height: 93px;
-          --ps-banner-gradient-start: #005BA6;
-          --ps-banner-gradient-end: #009CF4;
-          --ps-banner-overlay: rgba(0, 0, 0, 0.45);
-          --ps-input-height: 48px;
-          --ps-input-border: #DCDCDC;
-          --ps-input-focus: #005BA6;
-          --ps-card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          --ps-focus-ring: 0 0 0 3px rgba(0, 147, 244, 0.3);
-          --ps-border-radius: 4px;
-          --ps-modal-border-radius: 8px;
-          --ps-pill-border-radius: 100px;
-        }
-        .cms {
-          font-family: var(--ps-font);
-        }
-        .banner {
-          height: var(--ps-banner-height);
-          background: linear-gradient(to right, var(--ps-banner-gradient-start), var(--ps-banner-gradient-end));
-          border-radius: var(--ps-border-radius);
-          position: relative;
-        }
-        .banner::after {
-          content: '';
-          background: var(--ps-banner-overlay);
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border-radius: var(--ps-border-radius);
-        }
-        .image-block {
-          display: flex;
-          gap: 24px;
-        }
-        .image-block img {
-          height: 200px;
-          border-radius: var(--ps-border-radius);
-          object-fit: cover;
-        }
-        .text-block {
-          max-width: 860px;
-          padding: 32px;
-          color: var(--ps-midnight-color);
-        }
-        .text-block h1 {
-          font-size: 20px;
-          font-weight: 600;
-          color: var(--ps-midnight-color);
-        }
-        .text-block p {
-          font-size: 14px;
-          line-height: 1.6;
-          color: #4A4A4A;
-        }
-        .cta-button {
-          height: 40px;
-          padding: 0 24px;
-          font-size: 14px;
-          font-weight: 600;
-          border: 1px solid var(--ps-primary-color);
-          background-color: white;
-          color: var(--ps-primary-color);
-          border-radius: var(--ps-border-radius);
-          transition: background-color 0.3s;
-        }
-        .cta-button:hover {
-          background-color: var(--ps-primary-color);
-          color: white;
-        }
-        input {
-          height: var(--ps-input-height);
-          border: 1px solid var(--ps-input-border);
-          outline: none;
-          transition: border-color 0.3s;
-        }
-        input:focus {
-          border-color: var(--ps-input-focus);
-          box-shadow: var(--ps-focus-ring);
-        }
-      `}</style>
-      <div className="banner" role="banner" aria-label="CMS Banner"></div>
-      <div className="image-block" role="region" aria-label="Image Block">
-        {/* Example image blocks can be added here */}
-        <img src="#" alt="Example" />
-      </div>
-      <div className="text-block">
-        <h1>Title goes here</h1>
-        <p>Description goes here</p>
-        <button className="cta-button" aria-label="Call to Action">Click Me</button>
-      </div>
-    </div>
+    <section className={`w-full py-8 px-6 ${className}`}>
+      {title && <h2 className="text-[28px] font-semibold text-[#002F48] mb-4">{title}</h2>}
+      {subtitle && <p className="text-[16px] font-semibold text-[#005BA6] mb-3">{subtitle}</p>}
+      {body && <p className="text-[16px] text-[#4A4A4A] leading-relaxed mb-6">{body}</p>}
+      {Action}
+    </section>
   );
 };
 
-export default Cms;
+export default CmsBlock;

@@ -2,68 +2,55 @@ import React from 'react';
 
 interface MetricProps {
   value: string | number;
-  label: string;
-  trend?: 'positive' | 'negative' | 'neutral';
+  label?: string;
+  trend?: 'up' | 'down' | 'neutral';
+  trendValue?: string;
+  prefix?: string;
+  suffix?: string;
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-const Metric: React.FC<MetricProps> = ({ value, label, trend, className }) => {
-  const trendColors = {
-    positive: 'var(--ps-metric-color-trend-positive)',
-    negative: 'var(--ps-metric-color-trend-negative)',
-    neutral: 'var(--ps-metric-color-trend-neutral)',
-  };
+const TrendUpIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M2 11l4-4 3 3 5-5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M10 5h4v4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+const TrendDownIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M2 5l4 4 3-3 5 5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M10 11h4V7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const Metric: React.FC<MetricProps> = ({
+  value,
+  label,
+  trend,
+  trendValue,
+  prefix,
+  suffix,
+  size = 'md',
+  className = '',
+}) => {
+  const valueSizes: Record<string, string> = { sm: 'text-[24px]', md: 'text-[32px]', lg: 'text-[48px]' };
+  const trendColors: Record<string, string> = { up: 'text-[#0E7C55]', down: 'text-[#E00000]', neutral: 'text-[#777777]' };
 
   return (
-    <div className={`metric ${className}`} role="metric" aria-label={`${label}: ${value}`}>
-      <style>
-        {`
-          :root {
-            --ps-font: 'Source Sans Pro', sans-serif;
-            --ps-color-primary: #005BA6;
-            --ps-color-midnight: #002F48;
-            --ps-color-background: var(--ps-metric-color-background);
-            --ps-color-border: var(--ps-metric-color-border);
-            --ps-spacing-padding: 16px;
-            --ps-border-radius: 4px;
-            --ps-border-width: 1px;
-            --ps-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --ps-focus-ring: 0 0 0 3px rgba(0, 147, 244, 0.3);
-          }
-          .metric {
-            font-family: var(--ps-font);
-            background: var(--ps-color-background);
-            padding: var(--ps-spacing-padding);
-            border-radius: var(--ps-border-radius);
-            border: var(--ps-border-width) solid var(--ps-color-border);
-            transition: box-shadow 0.2s;
-          }
-          .metric:hover {
-            box-shadow: var(--ps-shadow-hover);
-          }
-          .value {
-            font-size: var(--ps-metric-typography-value-fontSize);
-            font-weight: var(--ps-metric-typography-value-fontWeight);
-            color: var(--ps-metric-color-text-primary);
-          }
-          .label {
-            font-size: var(--ps-metric-typography-label-fontSize);
-            font-weight: var(--ps-metric-typography-label-fontWeight);
-            color: var(--ps-metric-color-label);
-          }
-          .trend-positive {
-            color: var(--ps-metric-color-trend-positive);
-          }
-          .trend-negative {
-            color: var(--ps-metric-color-trend-negative);
-          }
-          .trend-neutral {
-            color: var(--ps-metric-color-trend-neutral);
-          }
-        `}
-      </style>
-      <span className={`value ${trend ? `trend-${trend}` : ''}`}>{value}</span>
-      <span className="label">{label}</span>
+    <div className={`flex flex-col gap-1 ${className}`}>
+      {label && <span className="text-[12px] font-semibold text-[#777777] uppercase tracking-wide">{label}</span>}
+      <div className="flex items-baseline gap-1">
+        {prefix && <span className="text-[16px] font-semibold text-[#4A4A4A]">{prefix}</span>}
+        <span className={`${valueSizes[size]} font-bold text-[#002F48]`}>{value}</span>
+        {suffix && <span className="text-[16px] font-semibold text-[#4A4A4A]">{suffix}</span>}
+      </div>
+      {trend && trendValue && (
+        <div className={`flex items-center gap-1 ${trendColors[trend]}`}>
+          {trend === 'up' ? <TrendUpIcon /> : trend === 'down' ? <TrendDownIcon /> : null}
+          <span className="text-[14px] font-semibold">{trendValue}</span>
+        </div>
+      )}
     </div>
   );
 };
