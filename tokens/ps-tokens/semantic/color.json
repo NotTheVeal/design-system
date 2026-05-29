@@ -15,27 +15,27 @@
         "navDark": {
           "$value": "{primitive.color.blue.900}",
           "$type": "color",
-          "$description": "Dark navy — left navigation background"
+          "$description": "Dark navy \u2014 left navigation background"
         },
         "navMid": {
           "$value": "{primitive.color.blue.800}",
           "$type": "color",
-          "$description": "Mid navy — navigation hover/active states"
+          "$description": "Mid navy \u2014 navigation hover/active states"
         },
         "accent": {
           "$value": "{primitive.color.teal.500}",
           "$type": "color",
-          "$description": "Azure Blue — info state, link hover, gradient accent"
+          "$description": "Azure Blue \u2014 info state, link hover, gradient accent"
         },
         "light": {
           "$value": "{primitive.color.blue.100}",
           "$type": "color",
-          "$description": "Brand light blue — info borders, accent badge backgrounds"
+          "$description": "Brand light blue \u2014 info borders, accent badge backgrounds"
         },
         "tint": {
           "$value": "{primitive.color.blue.50}",
           "$type": "color",
-          "$description": "Faintest brand tint — 'New' badge background, hover fills"
+          "$description": "Faintest brand tint \u2014 'New' badge background, hover fills"
         },
         "airway": {
           "$value": "#dceaed",
@@ -130,7 +130,7 @@
         "default": {
           "$value": "{primitive.color.neutral.0}",
           "$type": "color",
-          "$description": "Default white surface — buttons, inputs, cards"
+          "$description": "Default white surface \u2014 buttons, inputs, cards"
         },
         "page": {
           "$value": "{primitive.color.neutral.0}",
@@ -140,22 +140,22 @@
         "subtle": {
           "$value": "{primitive.color.neutral.100}",
           "$type": "color",
-          "$description": "Subtle tinted surface — tertiary button, chip, disabled"
+          "$description": "Subtle tinted surface \u2014 tertiary button, chip, disabled"
         },
         "overlay": {
           "$value": "{primitive.color.neutral.50}",
           "$type": "color",
-          "$description": "Subtle surface — card footer, sidebar"
+          "$description": "Subtle surface \u2014 card footer, sidebar"
         },
         "raised": {
           "$value": "{primitive.color.neutral.0}",
           "$type": "color",
-          "$description": "Raised elements — cards, dropdowns"
+          "$description": "Raised elements \u2014 cards, dropdowns"
         },
         "muted": {
           "$value": "{primitive.color.neutral.100}",
           "$type": "color",
-          "$description": "Muted fill — tertiary button, disabled input"
+          "$description": "Muted fill \u2014 tertiary button, disabled input"
         },
         "hover": {
           "$value": "{primitive.color.neutral.100}",
@@ -174,17 +174,17 @@
         "default": {
           "$value": "{primitive.color.neutral.200}",
           "$type": "color",
-          "$description": "Card borders, dividers, inputs at rest — #DCDCDC"
+          "$description": "Card borders, dividers, inputs at rest \u2014 #DCDCDC"
         },
         "subtle": {
           "$value": "{primitive.color.neutral.100}",
           "$type": "color",
-          "$description": "Subtle separators — #F1F1F1 (table stripes, accordion)"
+          "$description": "Subtle separators \u2014 #F1F1F1 (table stripes, accordion)"
         },
         "strong": {
           "$value": "{primitive.color.neutral.400}",
           "$type": "color",
-          "$description": "Strong border — #949494 (checkbox border, input hover)"
+          "$description": "Strong border \u2014 #949494 (checkbox border, input hover)"
         },
         "brand": {
           "$value": "{primitive.color.blue.500}",
@@ -275,17 +275,17 @@
         "successDark": {
           "$value": "#0e7c55",
           "$type": "color",
-          "$description": "Dark green — success alert text/icon (Figma exact: #0e7c55)"
+          "$description": "Dark green \u2014 success alert text/icon (Figma exact: #0e7c55)"
         },
         "dangerDark": {
           "$value": "#e00000",
           "$type": "color",
-          "$description": "Dark red — error alert text/icon (Figma exact: #e00000)"
+          "$description": "Dark red \u2014 error alert text/icon (Figma exact: #e00000)"
         },
         "warningDark": {
           "$value": "#b45309",
           "$type": "color",
-          "$description": "Dark amber — warning alert text/icon (Figma exact: #b45309)"
+          "$description": "Dark amber \u2014 warning alert text/icon (Figma exact: #b45309)"
         },
         "alertSuccessBg": {
           "$value": "#e2f5ee",
@@ -323,5 +323,6 @@
         }
       }
     }
-  }
+  },
+  "$pipeline-validated": "2026-05-29T20:08:40Z"
 }
