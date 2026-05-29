@@ -27,7 +27,7 @@
   ],
   "sideEffects": ["*.css"],
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build --config vite.lib.config.ts",
     "build:tokens": "node style-dictionary.config.js",
     "validate": "node validate-references.js",
     "storybook": "storybook dev -p 6006",
