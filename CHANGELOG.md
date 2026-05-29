@@ -1,0 +1,88 @@
+# Changelog
+
+All notable changes to `@partssource/react-ui-core` are documented here.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+---
+
+## [1.0.0] — 2026-05-29
+
+### Phase 5 — Publishing & Documentation
+
+- Configured `package.json` for npm publish as `@partssource/react-ui-core`
+- Added `vite.lib.config.ts` for library build with dual ESM/CJS output
+- Added `.github/workflows/publish.yml` — auto-publishes on `v*` git tags
+- Added comprehensive README with install guide, token table, and component catalogue
+- Added this CHANGELOG
+
+---
+
+## [0.5.0] — 2026-05-29
+
+### Phase 4 — Token Substitution Pass
+
+Replaced hardcoded hex values with `--ps-*` CSS custom properties across 5 components:
+
+- **toggle** — `#005BA6` → `--ps-brand-primary`, `#DCDCDC` → `--ps-neutral-200`, `#4A4A4A` → `--ps-fg-primary`
+- **input** — error/focus/default borders and label color tokenized
+- **fileUpload** — drag border, background, and error text tokenized
+- **listCard** — outer border, dividers, and shadow → `--ps-border-default`, `--ps-shadow-sm`
+- **productCard** — inline CSS vars reference `--ps-brand-primary` globally
+
+---
+
+## [0.4.0] — 2026-05-28
+
+### Phase 3 — Storybook Audit & Fixes
+
+- Audited all 57 Storybook components against Figma designs
+- Fixed 13 component render errors (zero-byte files, array prop mismatches, date picker type errors)
+- Aligned button, input, badge, checkbox, radio, toggle, toast, and divider to PS Design System spec
+- Fixed status, errorMessage, and popover with correct PS tokens and Tailwind
+- Added `.github/workflows/chromatic.yml` for visual regression testing on every PR
+- Added Chromatic + Storybook addon integrations
+
+---
+
+## [0.3.0] — 2026-05-25 — 2026-05-27
+
+### Phase 2 — Component Generation
+
+- Auto-generated 57 React components via GitHub Actions pipeline
+- All components use Source Sans Pro, `--ps-*` tokens, and Tailwind arbitrary value classes
+- Added Storybook 10.4.1 with Vite, stories for all 53+ components
+- Fixed syntax errors in aiAgent, progressIndicator, and carousel stories
+
+---
+
+## [0.2.0] — 2026-05-22 — 2026-05-24
+
+### Token Pipeline
+
+- Built full Token Studio → Style Dictionary → CSS/JS pipeline
+- Created 57 component token JSON files covering all PS Design System components
+- Validated cross-references and semantic token aliases
+- GitHub Actions workflow triggers token build and component generation on every push
+
+---
+
+## [0.1.0] — 2026-05-20 — 2026-05-22
+
+### Figma Design System Audit
+
+- Audited PS Design System Figma file — identified all gaps vs. existing component library
+- Built 10 missing Figma pages: Loading States, Table, Sheet/Drawer, Pagination, Progress Indicator, Pie Graph, 10 Nivo chart types, Search Bar
+- Cross-referenced PS Design System vs. Figma and updated 6 component token files
+- Established project phases and CLAUDE.md rules for AI-assisted generation
+
+---
+
+## Types of changes
+
+- **Added** — new features or components
+- **Changed** — changes to existing functionality
+- **Fixed** — bug fixes
+- **Deprecated** — soon-to-be removed features
+- **Removed** — removed features
+- **Security** — security patches
