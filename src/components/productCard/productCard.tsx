@@ -15,13 +15,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ title, subtitle, price, image
         :root {
           --ps-background: #ffffff;
           --ps-border-default: 1px solid #dcdcdc;
-          --ps-border-hover: 1px solid #005ba6;
+          --ps-border-hover: 1px solid var(--ps-brand-primary, #005ba6);
           --ps-text-title: #333333;
           --ps-text-subtitle: #666666;
           --ps-text-price: #333333;
           --ps-text-priceLabel: #666666;
           --ps-badge-background: rgba(0, 91, 166, 0.1);
-          --ps-badge-text: #005ba6;
+          --ps-badge-text: var(--ps-brand-primary, #005ba6);
           --ps-image-background: rgba(238, 238, 238, 1);
           --ps-padding: 16px;
           --ps-gap: 8px;
