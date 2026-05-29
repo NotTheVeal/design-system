@@ -45,7 +45,7 @@ const Toggle: React.FC<ToggleProps> = ({
     >
       <div
         className={`relative ${trackW} ${trackH} rounded-full transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]
-          ${isChecked ? 'bg-[#005BA6]' : 'bg-[#DCDCDC]'}
+          ${isChecked ? 'bg-[color:var(--ps-brand-primary)]' : 'bg-[color:var(--ps-neutral-200)]'}
           ${disabled ? 'cursor-not-allowed' : ''}`}
       >
         <input
@@ -60,7 +60,7 @@ const Toggle: React.FC<ToggleProps> = ({
           className={`absolute top-1/2 -translate-y-1/2 ${thumbSize} rounded-full bg-white shadow-sm transition-transform duration-200 ${thumbTranslate}`}
         />
       </div>
-      {label && <span className="text-[16px] text-[#4A4A4A]">{label}</span>}
+      {label && <span className="text-[16px] text-[color:var(--ps-fg-primary)]">{label}</span>}
     </label>
   );
 };
