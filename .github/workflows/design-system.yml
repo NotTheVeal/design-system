@@ -82,6 +82,7 @@ jobs:
         if: steps.changed.outputs.components != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           for component in ${{ steps.changed.outputs.components }}; do
             echo "Generating: $component"
