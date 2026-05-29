@@ -71,8 +71,7 @@ jobs:
         id: changed
         run: |
           CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'tokens/**' | grep -oP '(?<=components/)[^/]+(?=\.json)' | sort -u || true)
-          echo "components=$(echo $CHANGED | tr '
-' ' ')" >> $GITHUB_OUTPUT
+          echo "components=$(echo $CHANGED | tr '\n' ' ')" >> $GITHUB_OUTPUT
           if [ -z "$CHANGED" ]; then
             echo "No component tokens changed — skipping generation."
           else
