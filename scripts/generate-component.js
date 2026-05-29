@@ -5,10 +5,10 @@
  * Called by the GitHub Actions design-system.yml workflow.
  *
  * Usage: node scripts/generate-component.js <componentName>
- * Env:   GITHUB_TOKEN (GitHub Models) -OR- ANTHROPIC_API_KEY
+ * Env: GITHUB_TOKEN (GitHub Models) -OR- ANTHROPIC_API_KEY
  */
 
-const fs   = require('fs');
+const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
@@ -22,7 +22,7 @@ if (!component) {
 const tokenFile = `tokens/ps-tokens/components/${component}.json`;
 let tokenSummary = '(no component token file found)' ;
 try {
-  const raw  = fs.readFileSync(tokenFile, 'utf8');
+  const raw = fs.readFileSync(tokenFile, 'utf8');
   const json = JSON.parse(raw);
   const lines = JSON.stringify(json, null, 2).split('\n');
   tokenSummary = lines.length > 80
@@ -64,7 +64,7 @@ First line MUST be: import React from 'react';
 // ── API configuration ─────────────────────────────────────────────────────────
 // Prefer ANTHROPIC_API_KEY; fall back to GITHUB_TOKEN (GitHub Models)
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
-const GITHUB_TOKEN  = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 if (!ANTHROPIC_KEY && !GITHUB_TOKEN) {
   console.error('ERROR: Set ANTHROPIC_API_KEY or GITHUB_TOKEN');
@@ -75,32 +75,32 @@ const useAnthropic = !!ANTHROPIC_KEY;
 
 const options = useAnthropic ? {
   hostname: 'api.anthropic.com',
-  path:     '/v1/messages',
-  method:   'POST',
+  path: '/v1/messages',
+  method: 'POST',
   headers: {
-    'content-type':      'application/json',
-    'x-api-key':         ANTHROPIC_KEY,
+    'content-type': 'application/json',
+    'x-api-key': ANTHROPIC_KEY,
     'anthropic-version': '2023-06-01',
   },
 } : {
   hostname: 'models.inference.ai.azure.com',
-  path:     '/chat/completions',
-  method:   'POST',
+  path: '/chat/completions',
+  method: 'POST',
   headers: {
-    'Content-Type':   'application/json',
-    'Authorization':  `Bearer ${GITHUB_TOKEN}`,
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${GITHUB_TOKEN}`,
   },
 };
 
 const body = useAnthropic
   ? JSON.stringify({
-      model:      'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system:     systemPrompt,
-      messages:   [{ role: 'user', content: userPrompt }],
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
     })
   : JSON.stringify({
-      model:      'gpt-4o',
+      model: 'gpt-4o',
       max_tokens: 4096,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -112,8 +112,8 @@ console.log(`Generating ${component} via ${useAnthropic ? 'Anthropic Claude Sonn
 console.log(`Prompt size: ${Buffer.byteLength(body)} bytes`);
 
 // ── Retry config ──────────────────────────────────────────────────────────────
-const MAX_ATTEMPTS  = 4;
-const RETRY_DELAYS  = [15, 30, 60]; // seconds between attempts 1-2, 2-3, 3-4
+const MAX_ATTEMPTS = 4;
+const RETRY_DELAYS = [15, 30, 60]; // seconds between attempts 1-2, 2-3, 3-4
 
 function sleep(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -190,12 +190,49 @@ async function run() {
         continue;
       }
 
-      // Write the file
-      const outDir  = `src/components/${component}`;
+      // Write the component file
+      const outDir = `src/components/${component}`;
       const outFile = `${outDir}/${component}.tsx`;
       fs.mkdirSync(outDir, { recursive: true });
       fs.writeFileSync(outFile, cleaned + '\n');
       console.log(`✅ Written: ${outFile} (${cleaned.split('\n').length} lines)`);
+
+      // ── Phase 9: Generate companion test file ──────────────────────────────
+      const testFile = `${outDir}/${component}.test.tsx`;
+      if (!fs.existsSync(testFile)) {
+        const testContent = [
+          `import React from 'react';`,
+          `import { render } from '@testing-library/react';`,
+          `import { axe, toHaveNoViolations } from 'jest-axe';`,
+          `import ${component} from './${component}';`,
+          ``,
+          `expect.extend(toHaveNoViolations);`,
+          ``,
+          `describe('${component}', () => {`,
+          `  it('renders without crashing', () => {`,
+          `    const { container } = render(<${component} />);`,
+          `    expect(container).toBeTruthy();`,
+          `  });`,
+          ``,
+          `  it('has no accessibility violations', async () => {`,
+          `    const { container } = render(<${component} />);`,
+          `    const results = await axe(container);`,
+          `    expect(results).toHaveNoViolations();`,
+          `  });`,
+          ``,
+          `  it('matches snapshot', () => {`,
+          `    const { container } = render(<${component} />);`,
+          `    expect(container.firstChild).toMatchSnapshot();`,
+          `  });`,
+          `});`,
+          ``,
+        ].join('\n');
+        fs.writeFileSync(testFile, testContent);
+        console.log(`✅ Written: ${testFile}`);
+      } else {
+        console.log(`ℹ️  Test file already exists, skipping: ${testFile}`);
+      }
+
       return; // success
 
     } catch (err) {
