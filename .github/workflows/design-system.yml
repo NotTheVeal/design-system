@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - name: Validate token JSON syntax
         run: |
           find tokens/ -name "*.json" ! -name '\$metadata.json' | while read file; do
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - name: Flatten Token Studio references
         run: |
           npx token-transformer tokens/ps-tokens tokens/transformed.json             "global/colors,global/typography,global/spacing,global/border-radius,global/shadows,global/motion,semantic/colors,semantic/typography,semantic/spacing,semantic/border-radius,semantic/shadows,components/button,components/badge,components/alert,components/card,components/input,components/checkbox,components/modal,components/toast,components/table,components/navigation,components/pagination,components/tooltip,components/tag,components/avatar,components/progress,components/toggle,components/accordion"             "global/colors"
@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - name: Download token artifacts
         uses: actions/download-artifact@v4
         with: { name: design-tokens }
@@ -126,7 +126,7 @@ jobs:
         with: { ref: main }
       - uses: actions/setup-node@v4
         with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - name: ESLint
         run: |
           echo "## ESLint" >> $GITHUB_STEP_SUMMARY
@@ -180,7 +180,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - name: Build Storybook
         run: |
           echo "## Storybook Build" >> $GITHUB_STEP_SUMMARY
