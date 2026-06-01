@@ -7,7 +7,7 @@
   "homepage": "https://partssourceinc.github.io/react-ui-core",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NotTheVeal/design-system.git"
+    "url": "https://github.com/NotTheVeal/design-systm.git"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -39,6 +39,9 @@
     "test:coverage": "jest --coverage --passWithNoTests",
     "lint": "eslint src/ --ext .ts,.tsx",
     "lint:fix": "eslint src/ --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "lucide-react": "^0.383.0"
   },
   "peerDependencies": {
     "react": ">=18",
