@@ -173,7 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Slack alert
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        continue-on-error: true
         uses: slackapi/slack-github-action@v2
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
