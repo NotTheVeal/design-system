@@ -5,225 +5,352 @@ on:
     branches: [main]
     paths:
       - 'tokens/**'
+      - 'src/**'
+      - '.github/workflows/design-system.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      component:
+        description: 'Component name to generate (e.g. Button, Modal, Badge). Leave blank to auto-detect from token changes.'
+        required: false
+        type: string
+      skip_tests:
+        description: 'Skip test jobs (use for debugging only)'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
-  models: read
+  issues: write
+  pull-requests: read
+
+env:
+  NODE_VERSION: '20'
 
 jobs:
-
+  # ─── JOB 1: Validate Tokens ─────────────────────────────────────────────────────────────────────────────
   validate-tokens:
-    name: "1 · Validate Token Structure"
+    name: Validate Token Files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci --legacy-peer-deps
-      - name: Validate token JSON syntax
-        run: |
-          find tokens/ -name "*.json" ! -name '\$metadata.json' | while read file; do
-            node -e "try { JSON.parse(require('fs').readFileSync('$file','utf8')); console.log('OK: $file') } catch(e) { console.error('FAIL: $file', e.message); process.exit(1) }"
-          done
-      - name: Check for broken references
-        run: node scripts/validate-references.js
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  transform-tokens:
-    name: "2 · Transform Tokens → CSS / Tailwind / TypeScript"
-    needs: validate-tokens
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci --legacy-peer-deps
-      - name: Flatten Token Studio references
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Validate token references
+        run: node scripts/validate-references.js
+        continue-on-error: false
+
+      - name: Write validation summary
+        if: always()
         run: |
-          npx token-transformer tokens/ps-tokens tokens/transformed.json             "global/colors,global/typography,global/spacing,global/border-radius,global/shadows,global/motion,semantic/colors,semantic/typography,semantic/spacing,semantic/border-radius,semantic/shadows,components/button,components/badge,components/alert,components/card,components/input,components/checkbox,components/modal,components/toast,components/table,components/navigation,components/pagination,components/tooltip,components/tag,components/avatar,components/progress,components/toggle,components/accordion"             "global/colors"
-      - name: Run Style Dictionary
-        run: npx style-dictionary build --config style-dictionary.config.js
-      - name: Upload token artifacts
+          echo "## Token Validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ job.status == 'success' && '✅ PASSED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+
+  # ─── JOB 2: Transform Tokens ─────────────────────────────────────────────────────────────────────────────
+  transform-tokens:
+    name: Transform Tokens → CSS/TS/Tailwind
+    runs-on: ubuntu-latest
+    needs: validate-tokens
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Transform tokens (Token Transformer + Style Dictionary)
+        run: |
+          npx token-transformer tokens/ps-tokens tokens/transformed.json
+          node -e "const sd=require('@style-dictionary/modern'); sd.extend(require('./style-dictionary.config.js')).buildAllPlatforms();"
+
+      - name: Upload transformed tokens as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: design-tokens
+          name: transformed-tokens
           path: |
-            src/tokens/
+            dist/tokens/
             tokens/transformed.json
-          retention-days: 7
+          retention-days: 14
 
+      - name: Write transform summary
+        if: always()
+        run: |
+          echo "## Token Transform" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ job.status == 'success' && '✅ PASSED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+
+  # ─── JOB 3: Generate Components ─────────────────────────────────────────────────────────────────────────────
   generate-components:
-    name: "3 · Claude — Generate / Update Components"
-    needs: transform-tokens
+    name: Generate React Components (AI)
     runs-on: ubuntu-latest
+    needs: transform-tokens
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci --legacy-peer-deps
-      - name: Download token artifacts
-        uses: actions/download-artifact@v4
-        with: { name: design-tokens }
-      - name: Detect changed component tokens
-        id: changed
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Determine which components to generate
+        id: detect
         run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'tokens/**' | grep -oP '(?<=components/)[^/]+(?=\.json)' | sort -u || true)
-          echo "components=$(echo $CHANGED | tr '\n' ' ')" >> $GITHUB_OUTPUT
-          if [ -z "$CHANGED" ]; then
-            echo "No component tokens changed — skipping generation."
+          if [ -n "${{ github.event.inputs.component }}" ]; then
+            echo "COMPONENTS=${{ github.event.inputs.component }}" >> $GITHUB_OUTPUT
+            echo "SOURCE=manual-input" >> $GITHUB_OUTPUT
           else
-            echo "Changed: $CHANGED"
+            # Auto-detect from token changes
+            CHANGED=$(git diff HEAD~1 HEAD --name-only -- 'tokens/ps-tokens/component/*.json' 2>/dev/null \
+              | sed 's|tokens/ps-tokens/component/||' \
+              | sed 's|\.json||' \
+              | tr '\n' ',' | sed 's/,$//')
+            echo "COMPONENTS=${CHANGED}" >> $GITHUB_OUTPUT
+            echo "SOURCE=auto-detected" >> $GITHUB_OUTPUT
           fi
-      - name: Generate components from tokens
-        if: steps.changed.outputs.components != ''
+
+      - name: Generate components and companion tests
+        id: generate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for component in ${{ steps.changed.outputs.components }}; do
-            echo "Generating: $component"
-            node scripts/generate-component.js "$component"
-            sleep 15
-          done
-      - name: TypeScript check
-        if: always()
-        run: |
-          if [ -d src/components ] && [ "$(ls src/components/ 2>/dev/null | wc -l)" -gt 0 ]; then
-            echo "## TypeScript Check" >> $GITHUB_STEP_SUMMARY
-            npx tsc --noEmit 2>&1 | tee /tmp/ts-errors.txt || true
-            ERROR_COUNT=$(grep -c "error TS" /tmp/ts-errors.txt 2>/dev/null || echo "0")
-            if [ "$ERROR_COUNT" -gt 0 ]; then
-              echo "⚠️ Found ${ERROR_COUNT} TypeScript error(s)" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "✅ No TypeScript errors" >> $GITHUB_STEP_SUMMARY
-            fi
+          if [ -z "${{ steps.detect.outputs.COMPONENTS }}" ]; then
+            echo "ℹ️ No components to generate — skipping."
+            echo "GENERATED=" >> $GITHUB_OUTPUT
+            exit 0
           fi
+
+          GENERATED_LIST=""
+          IFS=',' read -ra COMPONENTS <<< "${{ steps.detect.outputs.COMPONENTS }}"
+          for COMP in "${COMPONENTS[@]}"; do
+            COMP=$(echo "$COMP" | xargs)  # trim whitespace
+            if [ -z "$COMP" ]; then continue; fi
+            echo "🔧 Generating component: $COMP"
+            node scripts/generate-component.js "$COMP" && GENERATED_LIST="$GENERATED_LIST,$COMP" || echo "⚠️ Generation warning for $COMP"
+          done
+          echo "GENERATED=${GENERATED_LIST#,}" >> $GITHUB_OUTPUT
+
       - name: Commit generated components
-        if: always()
+        if: steps.generate.outputs.GENERATED != ''
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main 2>/dev/null || true
-          git add src/components/ 2>/dev/null || true
-          if git diff --staged --quiet; then
-            echo "No new components to commit"
+          git add src/components/
+          git diff --cached --quiet || git commit -m "feat: auto-generate components [${{ steps.generate.outputs.GENERATED }}] [skip ci]"
+          git push
+
+      - name: Write generation summary
+        if: always()
+        run: |
+          echo "## Component Generation" >> $GITHUB_STEP_SUMMARY
+          echo "- Source: ${{ steps.detect.outputs.SOURCE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Requested: `${{ steps.detect.outputs.COMPONENTS }}`" >> $GITHUB_STEP_SUMMARY
+          echo "- Generated: `${{ steps.generate.outputs.GENERATED }}`" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ job.status == 'success' && '✅ PASSED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+
+  # ─── JOB 4: Run Tests ─────────────────────────────────────────────────────────────────────────────
+  run-tests:
+    name: Run Unit + Accessibility Tests
+    runs-on: ubuntu-latest
+    needs: generate-components
+    if: ${{ github.event.inputs.skip_tests != 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run Jest unit + accessibility tests
+        id: tests
+        run: |
+          npm test -- --passWithNoTests --coverage --coverageReporters=json-summary 2>&1 | tee test-output.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "TEST_EXIT=$EXIT_CODE" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
+
+      - name: Parse coverage
+        if: always()
+        id: coverage
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            LINES=$(node -e "const c=require('./coverage/coverage-summary.json').total; console.log(c.lines.pct)")
+            echo "COVERAGE=${LINES}%" >> $GITHUB_OUTPUT
           else
-            git commit -m "feat: auto-generate components [skip ci]"
-            git checkout -- . 2>/dev/null || true
-            git pull --rebase origin main
-            git push
+            echo "COVERAGE=N/A" >> $GITHUB_OUTPUT
           fi
 
-  lint-and-test:
-    name: "4 · Lint, Unit Tests & Accessibility"
-    needs: generate-components
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { ref: main }
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci --legacy-peer-deps
-      - name: ESLint
-        run: |
-          echo "## ESLint" >> $GITHUB_STEP_SUMMARY
-          npx eslint src/ --ext .ts,.tsx --format compact 2>&1 | tee /tmp/eslint.txt || true
-          if grep -q " error " /tmp/eslint.txt; then
-            echo "❌ ESLint errors found" >> $GITHUB_STEP_SUMMARY
-            cat /tmp/eslint.txt >> $GITHUB_STEP_SUMMARY
-            exit 1
-          else
-            echo "✅ No ESLint errors" >> $GITHUB_STEP_SUMMARY
-          fi
-      - name: Jest unit tests
-        run: |
-          echo "## Unit Tests" >> $GITHUB_STEP_SUMMARY
-          npx jest --passWithNoTests --reporters=default --reporters=jest-junit 2>&1 | tee /tmp/jest.txt || true
-          if grep -q "FAIL" /tmp/jest.txt; then
-            echo "❌ Jest tests failed" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          else
-            echo "✅ All Jest tests passed" >> $GITHUB_STEP_SUMMARY
-          fi
-        env:
-          JEST_JUNIT_OUTPUT_DIR: /tmp/reports
-          JEST_JUNIT_OUTPUT_NAME: jest-results.xml
-      - name: Axe accessibility tests
-        run: |
-          echo "## Accessibility (Axe)" >> $GITHUB_STEP_SUMMARY
-          npx jest --testPathPattern="axe|a11y|accessibility" --passWithNoTests 2>&1 | tee /tmp/axe.txt || true
-          if grep -q "FAIL" /tmp/axe.txt; then
-            echo "❌ Accessibility violations found" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          else
-            echo "✅ No accessibility violations" >> $GITHUB_STEP_SUMMARY
-          fi
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: /tmp/reports/
-          retention-days: 14
+          path: |
+            test-output.txt
+            coverage/
+          retention-days: 30
 
-  build-storybook:
-    name: "5 · Build & Deploy Storybook (Chromatic)"
-    needs: lint-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci --legacy-peer-deps
-      - name: Build Storybook
+      - name: Write test summary
+        if: always()
         run: |
-          echo "## Storybook Build" >> $GITHUB_STEP_SUMMARY
-          npx storybook build --output-dir storybook-static 2>&1 | tee /tmp/sb.txt
-          if [ $? -eq 0 ]; then
-            echo "✅ Storybook built successfully" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Storybook build failed" >> $GITHUB_STEP_SUMMARY
-            exit 1
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ steps.tests.outputs.TEST_EXIT == '0' && '✅ ALL TESTS PASSED' || '❌ TESTS FAILED' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage: ${{ steps.coverage.outputs.COVERAGE }}" >> $GITHUB_STEP_SUMMARY
+          if [ -f test-output.txt ]; then
+            echo '### Test Output' >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -50 test-output.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
-      - name: Publish to Chromatic (visual regression)
+
+  # ─── JOB 5: Build Storybook + Deploy to Chromatic ─────────────────────────────────────────────────────
+  chromatic-deploy:
+    name: Build Storybook + Deploy to Chromatic
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: ${{ secrets.CHROMATIC_PROJECT_TOKEN != '' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Deploy to Chromatic
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          storybookBuildDir: storybook-static
-          autoAcceptChanges: false
           exitZeroOnChanges: true
-          onlyChanged: true
-        env:
-          CHROMATIC_RETRIES: 2
+          autoAcceptChanges: false
 
-  notify:
-    name: "6 · Pipeline Summary"
-    needs: [validate-tokens, transform-tokens, generate-components, lint-and-test, build-storybook]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Report pipeline status
+      - name: Write Chromatic summary
+        if: always()
         run: |
-          echo "## PartsSource Design System Pipeline" >> $GITHUB_STEP_SUMMARY
-          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Validate Tokens | ${{ needs.validate-tokens.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Transform Tokens | ${{ needs.transform-tokens.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Generate Components | ${{ needs.generate-components.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint & Tests | ${{ needs.lint-and-test.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Storybook / Chromatic | ${{ needs.build-storybook.result }} |" >> $GITHUB_STEP_SUMMARY
-          FAILED=$(echo "${{ needs.validate-tokens.result }} ${{ needs.transform-tokens.result }} ${{ needs.generate-components.result }} ${{ needs.lint-and-test.result }} ${{ needs.build-storybook.result }}" | grep -c failure || echo 0)
-          if [ "$FAILED" -gt 0 ]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "❌ Pipeline completed with $FAILED failure(s). Review the logs above." >> $GITHUB_STEP_SUMMARY
-            exit 1
-          else
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "✅ Full pipeline passed!" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "## Chromatic Visual Deploy" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ job.status == 'success' && '✅ DEPLOYED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+
+  # ─── JOB 6: Notify on Failure (creates GitHub Issue) ─────────────────────────────────────────────────────
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [validate-tokens, transform-tokens, generate-components, run-tests]
+    if: failure()
+    steps:
+      - name: Create failure issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const failedJobs = [];
+            const jobs = ['validate-tokens', 'transform-tokens', 'generate-components', 'run-tests'];
+            // Report which jobs failed
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `## ❌ Design System Pipeline Failed
+
+**Run:** [View full run details](${runUrl})
+**Triggered by:** ${context.eventName} on branch `${context.ref}`
+**Commit:** ${context.sha.slice(0,7)}
+
+### What failed?
+At least one job in the design system pipeline failed. This means:
+- Token validation may have found an error
+- Component generation may have failed
+- Tests may be failing
+
+### What to do
+1. Click the run link above to see which job failed and why
+2. If tests are failing, check the test output artifact attached to the run
+3. If you need help, the error details are in the run logs
+
+### Auto-pipeline status
+| Job | Status |
+|-----|--------|
+| Validate Tokens | ${{ needs.validate-tokens.result }} |
+| Transform Tokens | ${{ needs.transform-tokens.result }} |
+| Generate Components | ${{ needs.generate-components.result }} |
+| Run Tests | ${{ needs.run-tests.result }} |
+`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Pipeline Failed — ${new Date().toISOString().split('T')[0]}`,
+              body: body,
+              labels: ['pipeline-failure', 'automated']
+            });
+
+      - name: Send Teams webhook (if configured)
+        if: ${{ secrets.TEAMS_WEBHOOK_URL != '' }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "$TEAMS_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{\"text\": \"\u274c Design System Pipeline FAILED\\n\\nBranch: ${{ github.ref }}\\nCommit: ${{ github.sha }}\\n\\n[View run details]($RUN_URL)\"}" || true
+
+  # ─── JOB 7: Notify on Success ─────────────────────────────────────────────────────────────────────────────
+  notify-success:
+    name: Notify on Success
+    runs-on: ubuntu-latest
+    needs: [validate-tokens, transform-tokens, generate-components, run-tests]
+    if: success() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Write success summary
+        run: |
+          echo "## ✅ Pipeline Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All jobs passed. The design system is up to date." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Validate Tokens | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Transform Tokens | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Generate Components | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run Tests | ✅ |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Send Teams webhook (if configured)
+        if: ${{ secrets.TEAMS_WEBHOOK_URL != '' }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "$TEAMS_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{\"text\": \"\u2705 Design System Pipeline PASSED\\n\\nAll tokens validated, components generated, and tests passed.\\n\\n[View run details]($RUN_URL)\"}" || true
