@@ -25,7 +25,7 @@ const ChevronDown = () => (
 );
 
 const NavLeft: React.FC<NavLeftProps> = ({
-  items,
+  items = [],
   activeValue,
   onItemClick,
   className = '',
