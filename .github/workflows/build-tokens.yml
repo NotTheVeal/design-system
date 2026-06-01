@@ -40,3 +40,24 @@ jobs:
           name: built-tokens
           path: src/tokens/
           retention-days: 30
+
+  notify:
+    name: Notify on failure
+    needs: [build]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack alert
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        uses: slackapi/slack-github-action@v2
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":x: *${{ github.workflow }}* failed on `${{ github.ref_name }}`",
+              "attachments": [{"color": "danger", "fields": [
+                {"title": "Repo", "value": "${{ github.repository }}", "short": true},
+                {"title": "Run", "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>", "short": true}
+              ]}]
+            }
