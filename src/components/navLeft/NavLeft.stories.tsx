@@ -5,11 +5,6 @@ const meta: Meta<typeof NavLeft> = {
   title: 'Components/NavLeft',
   component: NavLeft,
   tags: ['autodocs'],
-  argTypes: {
-    className: { control: 'text' },
-    isOpen: { control: 'boolean' },
-    onToggle: { action: 'called' },
-  },
 };
 
 export default meta;
@@ -17,9 +12,21 @@ type Story = StoryObj<typeof NavLeft>;
 
 export const Default: Story = {
   args: {
-    className: 'className',
-    isOpen: true,
-    onToggle: () => {},
+    items: [
+      { label: 'Dashboard', value: 'dashboard' },
+      { label: 'Orders', value: 'orders', badge: 4 },
+      {
+        label: 'Equipment',
+        value: 'equipment',
+        children: [
+          { label: 'All Equipment', value: 'equipment-all' },
+          { label: 'Maintenance', value: 'equipment-maintenance' },
+        ],
+      },
+      { label: 'Reports', value: 'reports' },
+      { label: 'Settings', value: 'settings', disabled: true },
+    ],
+    activeValue: 'dashboard',
+    onItemClick: () => {},
   },
 };
-
