@@ -187,3 +187,24 @@ jobs:
         run: |
           echo "CRITICAL: Storybook build failed — baseline is broken."
           exit 1
+
+  notify:
+    name: Notify on failure
+    needs: [token-drift, stale-components, test-coverage, chromatic-health, monthly-summary]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack alert
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        uses: slackapi/slack-github-action@v2
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":x: *${{ github.workflow }}* failed on `${{ github.ref_name }}`",
+              "attachments": [{"color": "danger", "fields": [
+                {"title": "Repo", "value": "${{ github.repository }}", "short": true},
+                {"title": "Run", "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>", "short": true}
+              ]}]
+            }
