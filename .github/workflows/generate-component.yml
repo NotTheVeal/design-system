@@ -165,3 +165,24 @@ jobs:
               body: `## Component Generation Failed\n\n**Component:** \`${component}\`\n**Run:** [View details](${runUrl})\n\nThe automated component generation for **${component}** failed. Please check the run logs for details.\n\nThis issue was auto-created by the pipeline.`,
               labels: ['pipeline-failure', 'component-generation']
             });
+
+  notify:
+    name: Notify on failure
+    needs: [generate]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack alert
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        uses: slackapi/slack-github-action@v2
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":x: *${{ github.workflow }}* failed on `${{ github.ref_name }}`",
+              "attachments": [{"color": "danger", "fields": [
+                {"title": "Repo", "value": "${{ github.repository }}", "short": true},
+                {"title": "Run", "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>", "short": true}
+              ]}]
+            }
