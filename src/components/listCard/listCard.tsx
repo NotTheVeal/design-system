@@ -16,7 +16,7 @@ interface ListCardProps {
   className?: string;
 }
 
-const ListCard: React.FC<ListCardProps> = ({ items, onItemClick, className = '' }) => {
+const ListCard: React.FC<ListCardProps> = ({ items = [], onItemClick, className = '' }) => {
   return (
     <div className={`bg-white border border-[color:var(--ps-border-default)] rounded-[4px] shadow-[var(--ps-shadow-sm)] overflow-hidden ${className}`}>
       {items.map((item, index) => (
