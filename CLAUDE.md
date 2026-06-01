@@ -896,3 +896,84 @@ import { ShoppingCart } from 'lucide-react';
 - ❌ No `div` pretending to be interactive
 - ❌ No raw pixel values — use spacing/sizing tokens
 - ❌ No markdown in output — raw code only
+
+---
+
+## Phase 9 — Test Generation Rules
+
+### Core Directive
+For every component, generate tests that validate rendering, required states, accessibility, and documented interactions. Tests must not rely on raw styling values. Tests must confirm tokenized class usage where possible.
+
+### Required Test Types
+Every generated component test file must include:
+1. **Unit test** — renders without crashing
+2. **Accessibility test** — passes `jest-axe` with no violations
+3. **Snapshot test** — first-child matches snapshot
+4. **State tests** — one test per documented state (see below)
+5. **Keyboard interaction tests** — for any interactive component
+6. **Responsive behavior tests** — if layout changes on mobile
+
+### Required States to Test (by component type)
+
+**Buttons:**
+- Default state renders correctly
+- Disabled state cannot be clicked and has correct aria-disabled
+- Loading state displays correctly (aria-busy)
+- Focus state is keyboard accessible (tabIndex, focus ring visible)
+- Click action fires when enabled, does not fire when disabled
+
+**Form Fields (Input, Select, Textarea):**
+- Label appears and is associated with the input
+- Helper text appears when provided
+- Error message appears and is announced (aria-describedby)
+- Required state is announced (aria-required)
+- Disabled state works (input not interactive)
+- Keyboard focus works (element receives focus)
+
+**Cards:**
+- Content renders correctly
+- Optional media/image renders when provided
+- Long text does not break layout
+- Mobile layout works (responsive behavior)
+
+**Navigation:**
+- Active state is reflected in aria-current
+- Keyboard navigation (Tab, Enter) works
+- All links are accessible
+
+**Modals / Drawers:**
+- Opens and closes correctly
+- Focus trap is active when open
+- Escape key closes
+- Focus returns to trigger on close
+
+**Badges / Alerts / Tags:**
+- All variant states render (success, error, warning, info)
+- Icon renders with correct variant
+- Dismissible variant fires onDismiss
+
+**Checkboxes / Radios / Toggles:**
+- Checked state works and fires onChange
+- Unchecked state works
+- Indeterminate state renders (checkbox only)
+- Disabled state blocks interaction
+- Label is accessible
+
+**Tables:**
+- Renders with data correctly
+- Empty state renders when no rows provided
+- Sortable column fires onSort
+
+### Test Quality Rules
+- ❌ WEAK: `it('renders', () => { render(<Button />); })`
+- ✅ STRONG: `it('primary button renders default, disabled, and loading states using tokenized styles', () => { ... })`
+- Never test raw CSS values (e.g. `#005ba6`) — test className or aria attribute presence
+- Never test implementation details — test user-visible behavior
+- Prefer `getByRole` and `getByLabelText` over `getByTestId`
+
+### Escalation Triggers
+Stop and flag to UX if:
+- Tests fail but Figma and Storybook look correct (design token mismatch likely)
+- Claude generates generic placeholder tests with no state coverage
+- GitHub Actions cannot run the tests (config issue)
+- A component has no documented states in its token file
