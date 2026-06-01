@@ -1,250 +1,318 @@
 #!/usr/bin/env node
 /**
  * generate-component.js
- * Phase 4: Claude auto-generates React/TypeScript components from PS Design System tokens.
- * Called by the GitHub Actions design-system.yml workflow.
+ * ─────────────────────────────────────────────────────────────────────────────
+ * AI-powered component generator for the PartsSource Design System.
  *
- * Usage: node scripts/generate-component.js <componentName>
- * Env: GITHUB_TOKEN (GitHub Models) -OR- ANTHROPIC_API_KEY
+ * Usage:
+ *   node scripts/generate-component.js ComponentName
+ *   node scripts/generate-component.js Button
+ *
+ * What it generates:
+ *   src/components/Button/Button.tsx        — React component (TypeScript)
+ *   src/components/Button/Button.test.tsx   — Unit + accessibility tests
+ *   src/components/Button/index.ts          — Re-export barrel
+ *
+ * Environment variables:
+ *   ANTHROPIC_API_KEY   — Required for Claude generation (preferred)
+ *   GITHUB_TOKEN        — Fallback: uses GitHub Models (gpt-4o-mini)
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const component = process.argv[2];
-if (!component) {
-  console.error('Usage: node scripts/generate-component.js <componentName>');
+// ─── Config ───────────────────────────────────────────────────────────────────
+
+const COMPONENT_NAME = process.argv[2];
+
+if (!COMPONENT_NAME) {
+  console.error('❌ Usage: node scripts/generate-component.js <ComponentName>');
   process.exit(1);
 }
 
-// ── Token context ────────────────────────────────────────────────────────────
-const tokenFile = `tokens/ps-tokens/components/${component}.json`;
-let tokenSummary = '(no component token file found)' ;
-try {
-  const raw = fs.readFileSync(tokenFile, 'utf8');
-  const json = JSON.parse(raw);
-  const lines = JSON.stringify(json, null, 2).split('\n');
-  tokenSummary = lines.length > 80
-    ? lines.slice(0, 80).join('\n') + `\n... (${lines.length - 80} more tokens omitted)`
-    : lines.join('\n');
-} catch (e) {
-  tokenSummary = '(could not parse token file)';
-}
-
-// ── CLAUDE.md system prompt ───────────────────────────────────────────────────
-let systemPrompt = 'You are an expert React/TypeScript developer for the PartsSource design system.';
-try {
-  systemPrompt = fs.readFileSync('CLAUDE.md', 'utf8').slice(0, 8000);
-} catch (_) {}
-
-// ── User prompt ───────────────────────────────────────────────────────────────
-const userPrompt = `Generate a complete React/TypeScript component called "${component}" for the PartsSource design system.
-
-Design system rules:
-- Font: Source Sans Pro. Primary color: #005BA6 (PS Blue). Midnight: #002F48.
-- Spacing: multiples of 4px (4,8,12,16,20,24,32,40,48,64px).
-- Border radius: 4px default; 8px modals/panels; pill=100px.
-- Use CSS custom properties (--ps-*) for ALL token values. Include a :root block.
-- Export as default. Include TypeScript interfaces for all props.
-- Support className prop for style overrides.
-- WCAG AA: proper aria labels and keyboard navigation.
-- Buttons: Primary has #005BA6 border+text on white bg, fills blue on hover.
-- Inputs: 48px height, floating label, 1px #DCDCDC border, turns #005BA6 on focus.
-- Shadows: card hover = 0 4px 12px rgba(0,0,0,0.1); focus ring = 0 0 0 3px rgba(0,147,244,0.3).
-
-Component design tokens (${tokenFile}):
-${tokenSummary}
-
-Output ONLY valid TypeScript/TSX source code.
-No markdown fences, no explanations, no commentary.
-First line MUST be: import React from 'react';
-`;
-
-// ── API configuration ─────────────────────────────────────────────────────────
-// Prefer ANTHROPIC_API_KEY; fall back to GITHUB_TOKEN (GitHub Models)
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-
-if (!ANTHROPIC_KEY && !GITHUB_TOKEN) {
-  console.error('ERROR: Set ANTHROPIC_API_KEY or GITHUB_TOKEN');
+if (!/^[A-Z][a-zA-Z0-9]+$/.test(COMPONENT_NAME)) {
+  console.error(`❌ Component name must be PascalCase. Got: "${COMPONENT_NAME}"`);
   process.exit(1);
 }
 
-const useAnthropic = !!ANTHROPIC_KEY;
+const OUT_DIR = path.join('src', 'components', COMPONENT_NAME);
+const TSX_FILE = path.join(OUT_DIR, `${COMPONENT_NAME}.tsx`);
+const TEST_FILE = path.join(OUT_DIR, `${COMPONENT_NAME}.test.tsx`);
+const INDEX_FILE = path.join(OUT_DIR, 'index.ts');
 
-const options = useAnthropic ? {
-  hostname: 'api.anthropic.com',
-  path: '/v1/messages',
-  method: 'POST',
-  headers: {
-    'content-type': 'application/json',
-    'x-api-key': ANTHROPIC_KEY,
-    'anthropic-version': '2023-06-01',
-  },
-} : {
-  hostname: 'models.inference.ai.azure.com',
-  path: '/chat/completions',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${GITHUB_TOKEN}`,
-  },
-};
+// ─── Read token context ───────────────────────────────────────────────────────
 
-const body = useAnthropic
-  ? JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
-    })
-  : JSON.stringify({
-      model: 'gpt-4o',
-      max_tokens: 4096,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user',   content: userPrompt   },
-      ],
-    });
-
-console.log(`Generating ${component} via ${useAnthropic ? 'Anthropic Claude Sonnet 4.6' : 'GitHub Models'}...`);
-console.log(`Prompt size: ${Buffer.byteLength(body)} bytes`);
-
-// ── Retry config ──────────────────────────────────────────────────────────────
-const MAX_ATTEMPTS = 4;
-const RETRY_DELAYS = [15, 30, 60]; // seconds between attempts 1-2, 2-3, 3-4
-
-function sleep(seconds) {
-  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+function readTokenContext() {
+  const tokenPath = path.join('tokens', 'ps-tokens', 'component', `${COMPONENT_NAME.toLowerCase()}.json`);
+  if (fs.existsSync(tokenPath)) {
+    try {
+      return JSON.stringify(JSON.parse(fs.readFileSync(tokenPath, 'utf8')), null, 2).slice(0, 2000);
+    } catch {
+      return 'Token file exists but could not be parsed.';
+    }
+  }
+  return 'No specific token file found for this component. Use general PS Design System tokens.';
 }
 
-function makeRequest() {
+// ─── Read CLAUDE.md rules ─────────────────────────────────────────────────────
+
+function readClaudeRules() {
+  const claudePath = 'CLAUDE.md';
+  if (fs.existsSync(claudePath)) {
+    const content = fs.readFileSync(claudePath, 'utf8');
+    const lines = content.split('\n');
+    const start = lines.findIndex(l => l.includes('Component Generation'));
+    if (start > -1) return lines.slice(start, start + 100).join('\n');
+    return content.slice(0, 3000);
+  }
+  return '';
+}
+
+// ─── Prompts ──────────────────────────────────────────────────────────────────
+
+function buildComponentPrompt(tokenContext, claudeRules) {
+  return `You are generating a production-quality React TypeScript component for the PartsSource Design System.
+
+## Component: ${COMPONENT_NAME}
+
+## PartsSource Design System Rules
+${claudeRules}
+
+## Token Context
+${tokenContext}
+
+## Requirements
+
+Generate a complete, production-ready React TypeScript component file for ${COMPONENT_NAME}.
+
+Requirements:
+1. Use TypeScript with explicit prop interfaces (export Props interface)
+2. Use CSS custom properties from the PS design system (--ps-* tokens)
+3. Include ALL required states: default, hover, focus, disabled, loading (where applicable)
+4. Full WCAG AA accessibility: aria-* attributes, keyboard navigation, focus rings
+5. Use Lucide React icons (stroke: 1.75px) where appropriate
+6. Export as named export AND default export
+7. Include JSDoc comments on the Props interface
+8. Do NOT use any external CSS framework — inline styles using CSS variables only
+9. Follow PartsSource brand: blue primary (#005BA6), Source Sans Pro font, 4px grid spacing
+
+Output ONLY the TypeScript file content. No explanations, no markdown fences.`;
+}
+
+function buildTestPrompt() {
+  return `You are generating comprehensive test files for the PartsSource Design System component: ${COMPONENT_NAME}
+
+Generate a complete test file for src/components/${COMPONENT_NAME}/${COMPONENT_NAME}.tsx
+
+Requirements — include ALL of these test types:
+
+1. **Unit test (render)** — component renders without crashing
+2. **Accessibility test** — jest-axe: toHaveNoViolations
+3. **Snapshot test** — toMatchSnapshot
+4. **State tests** — test all key states (disabled, loading, error, checked, etc.)
+5. **Interaction tests** — click handlers fire when enabled; NOT when disabled
+6. **Keyboard test** — Tab focuses the element; Enter/Space activates where appropriate
+7. **ARIA attribute tests** — aria-disabled, aria-busy, aria-label, role correct
+
+Import structure:
+\`\`\`
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe, toHaveNoViolations } from 'jest-axe';
+import { ${COMPONENT_NAME} } from './${COMPONENT_NAME}';
+
+expect.extend(toHaveNoViolations);
+\`\`\`
+
+Output ONLY the TypeScript test file content. No explanations, no markdown fences.`;
+}
+
+// ─── HTTP request helper ──────────────────────────────────────────────────────
+
+function httpsPost(options, body) {
   return new Promise((resolve, reject) => {
     const req = https.request(options, (res) => {
       let data = '';
-      res.on('data', (chunk) => { data += chunk; });
+      res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        if (res.statusCode === 429) {
-          reject({ retryable: true, message: `Rate limited (429): ${data.slice(0, 200)}` });
-          return;
-        }
-        if (res.statusCode >= 500) {
-          reject({ retryable: true, message: `Server error (${res.statusCode}): ${data.slice(0, 200)}` });
-          return;
-        }
-        if (res.statusCode >= 400) {
-          reject({ retryable: false, message: `Client error (${res.statusCode}): ${data.slice(0, 400)}` });
-          return;
-        }
-        try {
-          const json = JSON.parse(data);
-          // Handle both Anthropic and OpenAI response shapes
-          const text = useAnthropic
-            ? json.content?.[0]?.text
-            : json.choices?.[0]?.message?.content;
-          if (!text) {
-            reject({ retryable: false, message: `Unexpected response shape: ${data.slice(0, 300)}` });
-            return;
-          }
-          resolve(text);
-        } catch (e) {
-          reject({ retryable: false, message: `JSON parse error: ${e.message}` });
-        }
+        try { resolve({ status: res.statusCode, body: JSON.parse(data) }); }
+        catch { resolve({ status: res.statusCode, body: data }); }
       });
     });
-    req.on('error', (e) => reject({ retryable: true, message: e.message }));
-    req.write(body);
+    req.on('error', reject);
+    req.write(JSON.stringify(body));
     req.end();
   });
 }
 
-async function run() {
-  let lastError;
+// ─── Generate via Anthropic Claude ───────────────────────────────────────────
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    if (attempt > 1) {
-      const delay = RETRY_DELAYS[attempt - 2];
-      console.log(`Retrying in ${delay}s (attempt ${attempt}/${MAX_ATTEMPTS})...`);
-      await sleep(delay);
-    }
+async function generateWithClaude(prompt) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
 
+  const result = await httpsPost({
+    hostname: 'api.anthropic.com',
+    path: '/v1/messages',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+  }, {
+    model: 'claude-opus-4-6',
+    max_tokens: 4096,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  if (result.status !== 200) {
+    throw new Error(`Claude API error ${result.status}: ${JSON.stringify(result.body)}`);
+  }
+  return result.body.content[0].text;
+}
+
+// ─── Generate via GitHub Models (fallback) ────────────────────────────────────
+
+async function generateWithGithubModels(prompt) {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('GITHUB_TOKEN not set');
+
+  const result = await httpsPost({
+    hostname: 'models.inference.ai.azure.com',
+    path: '/chat/completions',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  }, {
+    model: 'gpt-4o-mini',
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 4096,
+    temperature: 0.2,
+  });
+
+  if (result.status !== 200) {
+    throw new Error(`GitHub Models error ${result.status}: ${JSON.stringify(result.body)}`);
+  }
+  return result.body.choices[0].message.content;
+}
+
+// ─── Generate text using best available API ──────────────────────────────────
+
+async function generateText(prompt, label) {
+  console.log(`  🤖 Generating ${label}...`);
+
+  if (process.env.ANTHROPIC_API_KEY) {
     try {
-      const text = await makeRequest();
-
-      // Strip any accidental markdown fences
-      const cleaned = text
-        .replace(/^```[\w]*\n?/m, '').replace(/```$/m, '').trim();
-
-      // Validate it looks like TypeScript/React
-      const looksLikeTS =
-        cleaned.startsWith('import') ||
-        cleaned.includes('//') ||
-        cleaned.startsWith('const') ||
-        cleaned.startsWith('export') ||
-        cleaned.startsWith('use');
-
-      if (!cleaned || !looksLikeTS) {
-        lastError = { retryable: true, message: `Output does not look like TypeScript. First line: ${cleaned.split('\n')[0]}` };
-        console.error(lastError.message);
-        continue;
-      }
-
-      // Write the component file
-      const outDir = `src/components/${component}`;
-      const outFile = `${outDir}/${component}.tsx`;
-      fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(outFile, cleaned + '\n');
-      console.log(`✅ Written: ${outFile} (${cleaned.split('\n').length} lines)`);
-
-      // ── Phase 9: Generate companion test file ──────────────────────────────
-      const testFile = `${outDir}/${component}.test.tsx`;
-      if (!fs.existsSync(testFile)) {
-        const testContent = [
-          `import React from 'react';`,
-          `import { render } from '@testing-library/react';`,
-          `import { axe, toHaveNoViolations } from 'jest-axe';`,
-          `import ${component} from './${component}';`,
-          ``,
-          `expect.extend(toHaveNoViolations);`,
-          ``,
-          `describe('${component}', () => {`,
-          `  it('renders without crashing', () => {`,
-          `    const { container } = render(<${component} />);`,
-          `    expect(container).toBeTruthy();`,
-          `  });`,
-          ``,
-          `  it('has no accessibility violations', async () => {`,
-          `    const { container } = render(<${component} />);`,
-          `    const results = await axe(container);`,
-          `    expect(results).toHaveNoViolations();`,
-          `  });`,
-          ``,
-          `  it('matches snapshot', () => {`,
-          `    const { container } = render(<${component} />);`,
-          `    expect(container.firstChild).toMatchSnapshot();`,
-          `  });`,
-          `});`,
-          ``,
-        ].join('\n');
-        fs.writeFileSync(testFile, testContent);
-        console.log(`✅ Written: ${testFile}`);
-      } else {
-        console.log(`ℹ️  Test file already exists, skipping: ${testFile}`);
-      }
-
-      return; // success
-
+      const text = await generateWithClaude(prompt);
+      console.log(`  ✅ ${label} generated via Claude`);
+      return text;
     } catch (err) {
-      lastError = err;
-      console.error(`Attempt ${attempt} failed: ${err.message}`);
-      if (!err.retryable) break; // don't retry client errors
+      console.warn(`  ⚠️ Claude failed: ${err.message} — trying GitHub Models...`);
     }
   }
 
-  // All attempts exhausted
-  console.error(`❌ Failed to generate ${component} after ${MAX_ATTEMPTS} attempts: ${lastError?.message}`);
-  process.exit(1);
+  if (process.env.GITHUB_TOKEN) {
+    try {
+      const text = await generateWithGithubModels(prompt);
+      console.log(`  ✅ ${label} generated via GitHub Models`);
+      return text;
+    } catch (err) {
+      console.error(`  ❌ GitHub Models failed: ${err.message}`);
+      throw err;
+    }
+  }
+
+  throw new Error('No AI API available. Set ANTHROPIC_API_KEY or GITHUB_TOKEN.');
 }
 
-run();
+// ─── Clean AI output (strip markdown fences if present) ──────────────────────
+
+function cleanOutput(text) {
+  return text
+    .replace(/^```(?:typescript|tsx|ts|javascript|jsx)?\n?/m, '')
+    .replace(/\n?```\s*$/m, '')
+    .trim();
+}
+
+// ─── Write file helper ────────────────────────────────────────────────────────
+
+function writeFile(filePath, content) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(filePath, content, 'utf8');
+  console.log(`  📝 Written: ${filePath} (${content.length} bytes)`);
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  console.log(`\n🎨 Generating component: ${COMPONENT_NAME}`);
+  console.log(`   Output: ${OUT_DIR}/\n`);
+
+  const tokenContext = readTokenContext();
+  const claudeRules = readClaudeRules();
+
+  // 1. Generate the component TSX
+  const componentPrompt = buildComponentPrompt(tokenContext, claudeRules);
+  let componentCode;
+  try {
+    componentCode = cleanOutput(await generateText(componentPrompt, `${COMPONENT_NAME}.tsx`));
+  } catch (err) {
+    console.error(`❌ Component generation failed: ${err.message}`);
+    process.exit(1);
+  }
+
+  writeFile(TSX_FILE, componentCode);
+
+  // 2. Generate the test file
+  const testPrompt = buildTestPrompt();
+  let testCode;
+  try {
+    testCode = cleanOutput(await generateText(testPrompt, `${COMPONENT_NAME}.test.tsx`));
+    writeFile(TEST_FILE, testCode);
+  } catch (err) {
+    console.warn(`⚠️ Test generation failed (non-fatal): ${err.message}`);
+    const fallbackTest = `import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { axe, toHaveNoViolations } from 'jest-axe';
+import { ${COMPONENT_NAME} } from './${COMPONENT_NAME}';
+
+expect.extend(toHaveNoViolations);
+
+describe('${COMPONENT_NAME}', () => {
+  it('renders without crashing', () => {
+    render(<${COMPONENT_NAME} />);
+  });
+
+  it('has no accessibility violations', async () => {
+    const { container } = render(<${COMPONENT_NAME} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+});
+`;
+    writeFile(TEST_FILE, fallbackTest);
+  }
+
+  // 3. Write barrel index
+  const indexContent = `export { ${COMPONENT_NAME} } from './${COMPONENT_NAME}';\nexport type { Props as ${COMPONENT_NAME}Props } from './${COMPONENT_NAME}';\n`;
+  writeFile(INDEX_FILE, indexContent);
+
+  console.log(`\n✅ Done! Generated ${COMPONENT_NAME}:`);
+  console.log(`   • ${TSX_FILE}`);
+  console.log(`   • ${TEST_FILE}`);
+  console.log(`   • ${INDEX_FILE}`);
+}
+
+main().catch(err => {
+  console.error('❌ Fatal error:', err.message);
+  process.exit(1);
+});
