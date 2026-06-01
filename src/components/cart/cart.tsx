@@ -21,7 +21,7 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({
-  items,
+  items = [],
   subtotal,
   tax,
   total,
