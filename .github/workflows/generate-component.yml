@@ -1,117 +1,167 @@
-name: Generate Component
+name: Generate Component (On-Demand)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Trigger this workflow from GitHub UI:
+#   Repo → Actions → "Generate Component (On-Demand)" → Run workflow
+#
+# As a UX designer you can trigger this any time you've finished designing
+# a new component in Figma and want it generated as code automatically.
+# ─────────────────────────────────────────────────────────────────────────────
 
 on:
   workflow_dispatch:
     inputs:
       component_name:
-        description: 'Component name in PascalCase (e.g. StatusBadge)'
+        description: 'Component name in PascalCase (e.g. Button, Modal, SearchBar)'
         required: true
         type: string
       branch:
-        description: 'Branch to commit generated files to'
+        description: 'Branch to commit generated component to'
         required: false
         default: 'main'
         type: string
+      run_tests:
+        description: 'Run tests immediately after generating?'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   generate:
-    name: Generate ${{ inputs.component_name }}
+    name: Generate "${{ github.event.inputs.component_name }}" Component
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ github.event.inputs.branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
-      - name: Validate component name
+      - name: Validate PascalCase component name
+        id: validate
         run: |
-          NAME="${{ inputs.component_name }}"
-          if [[ ! "$NAME" =~ ^[A-Z][a-zA-Z0-9]+$ ]]; then
-            echo "❌ Invalid component name '$NAME'. Must be PascalCase (e.g. StatusBadge)."
+          COMPONENT="${{ github.event.inputs.component_name }}"
+          if ! echo "$COMPONENT" | grep -Eq '^[A-Z][a-zA-Z0-9]+$'; then
+            echo "❌ ERROR: Component name must be PascalCase (e.g. Button, SearchBar, NavHeader)"
+            echo "   Got: $COMPONENT"
             exit 1
           fi
-          echo "✅ Component name is valid: $NAME"
+          echo "COMPONENT=$COMPONENT" >> $GITHUB_OUTPUT
+          TSX_FILE="src/components/${COMPONENT}/${COMPONENT}.tsx"
+          TEST_FILE="src/components/${COMPONENT}/${COMPONENT}.test.tsx"
+          echo "TSX_FILE=$TSX_FILE" >> $GITHUB_OUTPUT
+          echo "TEST_FILE=$TEST_FILE" >> $GITHUB_OUTPUT
+          echo "✅ Component name valid: $COMPONENT"
 
       - name: Check if component already exists
-        id: check
+        id: check_exists
         run: |
-          COMPONENT="${{ inputs.component_name }}"
-          FILE="src/components/${COMPONENT}/${COMPONENT}.tsx"
-          if [ -f "$FILE" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "⚠️  Component already exists at $FILE — skipping generation."
+          COMPONENT="${{ steps.validate.outputs.COMPONENT }}"
+          TSX_FILE="${{ steps.validate.outputs.TSX_FILE }}"
+          if [ -f "$TSX_FILE" ]; then
+            echo "EXISTS=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Component $COMPONENT already exists at $TSX_FILE"
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "✅ No existing component found. Proceeding with generation."
+            echo "EXISTS=false" >> $GITHUB_OUTPUT
+            echo "✅ Component $COMPONENT does not exist — will generate fresh"
           fi
 
-      - name: Generate component
-        if: steps.check.outputs.exists == 'false'
+      - name: Generate component + tests using AI
+        id: generate
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: node scripts/generate-component.js "${{ inputs.component_name }}"
-
-      - name: Verify generated files
-        if: steps.check.outputs.exists == 'false'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          COMPONENT="${{ inputs.component_name }}"
-          TSX="src/components/${COMPONENT}/${COMPONENT}.tsx"
-          TEST="src/components/${COMPONENT}/${COMPONENT}.test.tsx"
-          if [ ! -f "$TSX" ]; then
-            echo "❌ Component file not found: $TSX"
+          COMPONENT="${{ steps.validate.outputs.COMPONENT }}"
+          echo "🤖 Generating $COMPONENT..."
+          node scripts/generate-component.js "$COMPONENT"
+          TSX_FILE="${{ steps.validate.outputs.TSX_FILE }}"
+          TEST_FILE="${{ steps.validate.outputs.TEST_FILE }}"
+          if [ -f "$TSX_FILE" ]; then
+            echo "GENERATED_TSX=true" >> $GITHUB_OUTPUT
+            echo "✅ Generated: $TSX_FILE"
+          else
+            echo "GENERATED_TSX=false" >> $GITHUB_OUTPUT
+            echo "❌ TSX file not found after generation"
             exit 1
           fi
-          if [ ! -f "$TEST" ]; then
-            echo "❌ Test file not found: $TEST"
-            exit 1
+          if [ -f "$TEST_FILE" ]; then
+            echo "GENERATED_TEST=true" >> $GITHUB_OUTPUT
+            echo "✅ Generated: $TEST_FILE"
+          else
+            echo "GENERATED_TEST=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Test file not generated (non-fatal)"
           fi
-          echo "✅ Generated files:"
-          echo "  • $TSX ($(wc -l < $TSX) lines)"
-          echo "  • $TEST ($(wc -l < $TEST) lines)"
 
-      - name: Commit and push
-        if: steps.check.outputs.exists == 'false'
+      - name: Run tests on generated component
+        if: ${{ github.event.inputs.run_tests == 'true' && steps.generate.outputs.GENERATED_TSX == 'true' }}
+        id: tests
         run: |
-          COMPONENT="${{ inputs.component_name }}"
+          COMPONENT="${{ steps.validate.outputs.COMPONENT }}"
+          npm test -- --testPathPattern="src/components/${COMPONENT}" --passWithNoTests 2>&1 | tee component-test-output.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "TEST_EXIT=$EXIT_CODE" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
+
+      - name: Commit generated files
+        if: steps.generate.outputs.GENERATED_TSX == 'true'
+        run: |
+          COMPONENT="${{ steps.validate.outputs.COMPONENT }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "src/components/${COMPONENT}/"
-          git commit -m "feat(${COMPONENT}): auto-generate component + test via workflow_dispatch
+          git diff --cached --quiet && echo "Nothing to commit" || \
+            git commit -m "feat(component): auto-generate ${COMPONENT} [Claude Design Integration]"
+          git push origin ${{ github.event.inputs.branch }}
 
-          Generated by: generate-component.yml
-          Triggered by: ${{ github.actor }}
-          Component: ${{ inputs.component_name }}"
-          git push origin "${{ inputs.branch }}"
-
-      - name: Write job summary
+      - name: Write step summary
         if: always()
         run: |
-          COMPONENT="${{ inputs.component_name }}"
-          echo "## Component Generation Summary" >> $GITHUB_STEP_SUMMARY
+          COMPONENT="${{ steps.validate.outputs.COMPONENT }}"
+          TSX_FILE="${{ steps.validate.outputs.TSX_FILE }}"
+          TEST_FILE="${{ steps.validate.outputs.TEST_FILE }}"
+          echo "# 🎨 Component Generation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.check.outputs.exists }}" == "true" ]; then
-            echo "⚠️ **Skipped** — `${COMPONENT}` already exists." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "✅ **Generated** — `${COMPONENT}` committed to `${{ inputs.branch }}`." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "| File | Lines |" >> $GITHUB_STEP_SUMMARY
-            echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-            TSX="src/components/${COMPONENT}/${COMPONENT}.tsx"
-            TEST="src/components/${COMPONENT}/${COMPONENT}.test.tsx"
-            [ -f "$TSX" ] && echo "| `$TSX` | $(wc -l < $TSX) |" >> $GITHUB_STEP_SUMMARY
-            [ -f "$TEST" ] && echo "| `$TEST` | $(wc -l < $TEST) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | \`${COMPONENT}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ github.event.inputs.branch }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| TSX Generated | ${{ steps.generate.outputs.GENERATED_TSX == 'true' && '✅ Yes' || '❌ No' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Generated | ${{ steps.generate.outputs.GENERATED_TEST == 'true' && '✅ Yes' || '⚠️ No' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Passed | ${{ steps.tests.outputs.TEST_EXIT == '0' && '✅ Yes' || steps.tests.outputs.TEST_EXIT == '' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "component-test-output.txt" ]; then
+            echo "### Test Output" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat component-test-output.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const component = '${{ github.event.inputs.component_name }}';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `❌ Component Generation Failed: ${component}`,
+              body: `## Component Generation Failed\n\n**Component:** \`${component}\`\n**Run:** [View details](${runUrl})\n\nThe automated component generation for **${component}** failed. Please check the run logs for details.\n\nThis issue was auto-created by the pipeline.`,
+              labels: ['pipeline-failure', 'component-generation']
+            });
