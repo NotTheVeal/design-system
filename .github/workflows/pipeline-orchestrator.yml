@@ -136,7 +136,6 @@ PYEOF
     if: always() && needs.validate-tokens.result == 'success'
     outputs:
       result: ${{ job.status }}
-      storybook_url: ${{ steps.build.outputs.url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -145,11 +144,9 @@ PYEOF
           cache: 'npm'
       - run: npm ci --prefer-offline || npm install
       - name: Build Storybook
-        id: build
         run: |
           npx storybook build --output-dir storybook-static 2>&1 || true
           if [ -d storybook-static ]; then
-            echo "url=storybook-static" >> $GITHUB_OUTPUT
             echo "Storybook built successfully ✓"
           else
             echo "Storybook build produced no output"
@@ -194,6 +191,13 @@ PYEOF
     steps:
       - uses: actions/checkout@v4
       - name: Generate audit report
+        env:
+          VALIDATE_RESULT: ${{ needs.validate-tokens.result }}
+          BUILD_RESULT: ${{ needs.build-tokens.result }}
+          LINT_RESULT: ${{ needs.lint-typecheck.result }}
+          TEST_RESULT: ${{ needs.unit-tests.result }}
+          STORYBOOK_RESULT: ${{ needs.build-storybook.result }}
+          CHROMATIC_RESULT: ${{ needs.chromatic.result }}
         run: |
           mkdir -p docs/audit
           python3 << 'PYEOF'
@@ -233,7 +237,6 @@ html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Design System Audit — {now}</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -266,13 +269,6 @@ with open('docs/audit/index.html', 'w') as f:
     f.write(html)
 print('Audit report written to docs/audit/index.html')
 PYEOF
-        env:
-          VALIDATE_RESULT: ${{ needs.validate-tokens.result }}
-          BUILD_RESULT: ${{ needs.build-tokens.result }}
-          LINT_RESULT: ${{ needs.lint-typecheck.result }}
-          TEST_RESULT: ${{ needs.unit-tests.result }}
-          STORYBOOK_RESULT: ${{ needs.build-storybook.result }}
-          CHROMATIC_RESULT: ${{ needs.chromatic.result }}
       - name: Commit audit report
         run: |
           git config user.name "github-actions[bot]"
@@ -296,34 +292,53 @@ PYEOF
     needs: [validate-tokens, build-tokens, lint-typecheck, unit-tests, build-storybook, chromatic, audit-report]
     if: always()
     steps:
-      - name: Send Slack notification
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+      - name: Send Teams notification
+        if: ${{ secrets.TEAMS_WEBHOOK_URL != '' }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
         run: |
-          OVERALL="PASS"
-          for result in "${{ needs.validate-tokens.result }}" "${{ needs.build-tokens.result }}" "${{ needs.lint-typecheck.result }}" "${{ needs.unit-tests.result }}" "${{ needs.build-storybook.result }}"; do
-            if [ "$result" = "failure" ]; then OVERALL="FAIL"; fi
-          done
-
-          COLOR=$([ "$OVERALL" = "PASS" ] && echo "good" || echo "danger")
+          VALIDATE="${{ needs.validate-tokens.result }}"
+          BUILD="${{ needs.build-tokens.result }}"
+          LINT="${{ needs.lint-typecheck.result }}"
+          TESTS="${{ needs.unit-tests.result }}"
+          STORYBOOK="${{ needs.build-storybook.result }}"
+          CHROMATIC="${{ needs.chromatic.result }}"
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          curl -s -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+          OVERALL="✅ PASS"
+          THEME_COLOR="17AB78"
+          for result in "$VALIDATE" "$BUILD" "$LINT" "$TESTS" "$STORYBOOK"; do
+            if [ "$result" = "failure" ]; then
+              OVERALL="❌ FAIL"
+              THEME_COLOR="FF0000"
+            fi
+          done
+
+          emoji() { [ "$1" = "success" ] && echo "✅" || ([ "$1" = "skipped" ] && echo "⏭️" || echo "❌"); }
+
+          curl -s -X POST "$TEAMS_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d "{
-              \"attachments\": [{
-                \"color\": \"$COLOR\",
-                \"title\": \"Design System Pipeline: $OVERALL\",
-                \"title_link\": \"$RUN_URL\",
-                \"fields\": [
-                  {\"title\":\"Validate Tokens\",\"value\":\"${{ needs.validate-tokens.result }}\",\"short\":true},
-                  {\"title\":\"Build Tokens\",\"value\":\"${{ needs.build-tokens.result }}\",\"short\":true},
-                  {\"title\":\"Lint & TypeScript\",\"value\":\"${{ needs.lint-typecheck.result }}\",\"short\":true},
-                  {\"title\":\"Unit Tests\",\"value\":\"${{ needs.unit-tests.result }}\",\"short\":true},
-                  {\"title\":\"Storybook\",\"value\":\"${{ needs.build-storybook.result }}\",\"short\":true},
-                  {\"title\":\"Chromatic\",\"value\":\"${{ needs.chromatic.result }}\",\"short\":true}
-                ],
-                \"footer\": \"GitHub Actions\",
-                \"ts\": $(date +%s)
+              \"@type\": \"MessageCard\",
+              \"@context\": \"https://schema.org/extensions\",
+              \"themeColor\": \"$THEME_COLOR\",
+              \"summary\": \"Design System Pipeline: $OVERALL\",
+              \"sections\": [{
+                \"activityTitle\": \"**Design System Pipeline: $OVERALL**\",
+                \"activitySubtitle\": \"Branch: ${{ github.ref_name }} | Triggered by: ${{ github.event_name }}\",
+                \"facts\": [
+                  {\"name\": \"Validate Tokens\", \"value\": \"$(emoji $VALIDATE) $VALIDATE\"},
+                  {\"name\": \"Build Tokens\",    \"value\": \"$(emoji $BUILD) $BUILD\"},
+                  {\"name\": \"Lint & TypeScript\",\"value\": \"$(emoji $LINT) $LINT\"},
+                  {\"name\": \"Unit Tests\",       \"value\": \"$(emoji $TESTS) $TESTS\"},
+                  {\"name\": \"Storybook\",        \"value\": \"$(emoji $STORYBOOK) $STORYBOOK\"},
+                  {\"name\": \"Chromatic\",        \"value\": \"$(emoji $CHROMATIC) $CHROMATIC\"}
+                ]
+              }],
+              \"potentialAction\": [{
+                \"@type\": \"OpenUri\",
+                \"name\": \"View Run\",
+                \"targets\": [{\"os\": \"default\", \"uri\": \"$RUN_URL\"}]
               }]
             }"
       - name: Pipeline complete
