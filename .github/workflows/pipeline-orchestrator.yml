@@ -138,6 +138,8 @@ jobs:
   audit-report:
     name: Audit Report
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs: [validate-tokens, build-tokens, lint-typecheck, unit-tests, build-storybook, chromatic]
     if: always()
     outputs:
