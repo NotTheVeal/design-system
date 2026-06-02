@@ -25,54 +25,17 @@ env:
 
 jobs:
   validate-tokens:
-    name: 1 · Validate Tokens
+    name: Validate Tokens
     runs-on: ubuntu-latest
     outputs:
       result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate token files
-        run: |
-          echo "Checking token directory structure..."
-          if [ ! -f 'tokens/$metadata.json' ]; then
-            echo "ERROR: tokens/$metadata.json not found"
-            exit 1
-          fi
-          echo "tokens/$metadata.json found ✓"
-          python3 << 'PYEOF'
-import json, sys, os
-
-metadata_path = 'tokens/$metadata.json'
-with open(metadata_path) as f:
-    metadata = json.load(f)
-
-token_sets = metadata.get('tokenSetOrder', [])
-print(f"Found {len(token_sets)} token sets in metadata")
-
-errors = []
-for ts in token_sets:
-    path = f'tokens/{ts}.json'
-    if not os.path.exists(path):
-        errors.append(f'Missing: {path}')
-    else:
-        try:
-            with open(path) as f:
-                json.load(f)
-            print(f'  ✓ {path}')
-        except json.JSONDecodeError as e:
-            errors.append(f'Invalid JSON in {path}: {e}')
-
-if errors:
-    print('\nERRORS:')
-    for e in errors:
-        print(f'  ✗ {e}')
-    sys.exit(1)
-else:
-    print(f'\nAll {len(token_sets)} token files valid ✓')
-PYEOF
+        run: python3 scripts/validate-tokens.py
 
   build-tokens:
-    name: 2 · Build Design Tokens
+    name: Build Design Tokens
     runs-on: ubuntu-latest
     needs: validate-tokens
     outputs:
@@ -86,15 +49,14 @@ PYEOF
       - run: npm ci --prefer-offline || npm install
       - name: Build tokens
         run: |
-          if [ -f 'sd.config.js' ] || [ -f 'style-dictionary.config.js' ] || [ -f 'config.json' ]; then
-            echo "Running Style Dictionary build..."
+          if [ -f sd.config.js ] || [ -f style-dictionary.config.js ]; then
             npx style-dictionary build
           else
-            echo "No Style Dictionary config found — skipping token build"
+            echo "No Style Dictionary config, skipping token build"
           fi
 
   lint-typecheck:
-    name: 3 · Lint & TypeScript
+    name: Lint and TypeScript
     runs-on: ubuntu-latest
     needs: build-tokens
     if: always() && needs.validate-tokens.result == 'success'
@@ -107,13 +69,11 @@ PYEOF
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci --prefer-offline || npm install
-      - name: TypeScript check
-        run: npx tsc --noEmit || true
-      - name: ESLint
-        run: npx eslint src --ext .ts,.tsx --max-warnings=50 || true
+      - run: npx tsc --noEmit || true
+      - run: npx eslint src --ext .ts,.tsx --max-warnings=50 || true
 
   unit-tests:
-    name: 4 · Unit Tests
+    name: Unit Tests
     runs-on: ubuntu-latest
     needs: lint-typecheck
     if: always() && needs.validate-tokens.result == 'success' && github.event.inputs.skip_tests != 'true'
@@ -126,11 +86,10 @@ PYEOF
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci --prefer-offline || npm install
-      - name: Run tests
-        run: npx jest --passWithNoTests --forceExit || true
+      - run: npx jest --passWithNoTests --forceExit || true
 
   build-storybook:
-    name: 5 · Build Storybook
+    name: Build Storybook
     runs-on: ubuntu-latest
     needs: unit-tests
     if: always() && needs.validate-tokens.result == 'success'
@@ -146,11 +105,7 @@ PYEOF
       - name: Build Storybook
         run: |
           npx storybook build --output-dir storybook-static 2>&1 || true
-          if [ -d storybook-static ]; then
-            echo "Storybook built successfully ✓"
-          else
-            echo "Storybook build produced no output"
-          fi
+          [ -d storybook-static ] && echo "Storybook built" || echo "No output"
       - uses: actions/upload-artifact@v4
         if: success()
         with:
@@ -159,7 +114,7 @@ PYEOF
           retention-days: 7
 
   chromatic:
-    name: 6 · Chromatic Visual Tests
+    name: Chromatic Visual Tests
     runs-on: ubuntu-latest
     needs: build-storybook
     if: always() && needs.validate-tokens.result == 'success' && github.event.inputs.skip_chromatic != 'true'
@@ -174,112 +129,36 @@ PYEOF
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci --prefer-offline || npm install
-      - name: Run Chromatic
-        uses: chromaui/action@latest
+      - uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: true
           onlyChanged: true
 
   audit-report:
-    name: 7 · Audit Report
+    name: Audit Report
     runs-on: ubuntu-latest
     needs: [validate-tokens, build-tokens, lint-typecheck, unit-tests, build-storybook, chromatic]
     if: always()
     outputs:
       result: ${{ job.status }}
+    env:
+      VALIDATE_RESULT: ${{ needs.validate-tokens.result }}
+      BUILD_RESULT: ${{ needs.build-tokens.result }}
+      LINT_RESULT: ${{ needs.lint-typecheck.result }}
+      TEST_RESULT: ${{ needs.unit-tests.result }}
+      STORYBOOK_RESULT: ${{ needs.build-storybook.result }}
+      CHROMATIC_RESULT: ${{ needs.chromatic.result }}
     steps:
       - uses: actions/checkout@v4
       - name: Generate audit report
-        env:
-          VALIDATE_RESULT: ${{ needs.validate-tokens.result }}
-          BUILD_RESULT: ${{ needs.build-tokens.result }}
-          LINT_RESULT: ${{ needs.lint-typecheck.result }}
-          TEST_RESULT: ${{ needs.unit-tests.result }}
-          STORYBOOK_RESULT: ${{ needs.build-storybook.result }}
-          CHROMATIC_RESULT: ${{ needs.chromatic.result }}
-        run: |
-          mkdir -p docs/audit
-          python3 << 'PYEOF'
-import os, datetime
-
-results = {
-    'Validate Tokens':    os.environ.get('VALIDATE_RESULT', 'unknown'),
-    'Build Tokens':       os.environ.get('BUILD_RESULT', 'unknown'),
-    'Lint & TypeScript':  os.environ.get('LINT_RESULT', 'unknown'),
-    'Unit Tests':         os.environ.get('TEST_RESULT', 'unknown'),
-    'Build Storybook':    os.environ.get('STORYBOOK_RESULT', 'unknown'),
-    'Chromatic':          os.environ.get('CHROMATIC_RESULT', 'unknown'),
-}
-
-overall = 'PASS' if all(v in ('success', 'skipped', 'unknown') for v in results.values()) else 'FAIL'
-badge_color = '#17AB78' if overall == 'PASS' else '#FF0000'
-now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
-
-rows = ''
-for name, status in results.items():
-    if status == 'success':
-        icon, color, label = '✓', '#17AB78', 'PASS'
-    elif status in ('failure', 'failed'):
-        icon, color, label = '✗', '#FF0000', 'FAIL'
-    elif status == 'skipped':
-        icon, color, label = '—', '#949494', 'SKIP'
-    else:
-        icon, color, label = '?', '#E3A92D', 'WARN'
-    rows += f'''<tr>
-      <td style="padding:10px 16px;border-bottom:1px solid #DCDCDC;font-family:Source Sans Pro,sans-serif;color:#4A4A4A">{name}</td>
-      <td style="padding:10px 16px;border-bottom:1px solid #DCDCDC;text-align:center">
-        <span style="background:{color};color:#fff;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:700;font-family:Source Sans Pro,sans-serif">{label}</span>
-      </td>
-    </tr>'''
-
-html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Design System Audit — {now}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {{font-family:Source Sans Pro,sans-serif;background:#FAFAFA;margin:0;padding:32px;color:#4A4A4A}}
-    .card {{background:#fff;border:1px solid #DCDCDC;border-radius:4px;box-shadow:0 2px 10px rgba(0,47,72,.10);max-width:720px;margin:0 auto}}
-    .header {{background:#005BA6;color:#fff;padding:24px 32px;border-radius:4px 4px 0 0}}
-    .header h1 {{margin:0;font-size:24px;font-weight:300}}
-    .header .meta {{font-size:13px;opacity:.8;margin-top:4px}}
-    .badge {{display:inline-block;background:{badge_color};color:#fff;padding:4px 16px;border-radius:4px;font-size:14px;font-weight:700;margin-top:12px}}
-    table {{width:100%;border-collapse:collapse}}
-    th {{text-align:left;padding:10px 16px;background:#F1F1F1;font-size:12px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.5px}}
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="header">
-      <h1>Design System Pipeline Audit</h1>
-      <div class="meta">Generated {now}</div>
-      <div class="badge">{overall}</div>
-    </div>
-    <table>
-      <thead><tr><th>Job</th><th style="text-align:center">Status</th></tr></thead>
-      <tbody>{rows}</tbody>
-    </table>
-  </div>
-</body>
-</html>"""
-
-with open('docs/audit/index.html', 'w') as f:
-    f.write(html)
-print('Audit report written to docs/audit/index.html')
-PYEOF
+        run: python3 scripts/generate-audit.py
       - name: Commit audit report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/audit/index.html
-          if git diff --cached --quiet; then
-            echo "No changes to audit report"
-          else
-            git commit -m "chore(audit): update pipeline audit report"
-            git push
-          fi
+          git diff --cached --quiet || (git commit -m "chore(audit): update pipeline audit report" && git push)
       - uses: actions/upload-artifact@v4
         with:
           name: audit-report
@@ -287,67 +166,38 @@ PYEOF
           retention-days: 90
 
   notify:
-    name: 8 · Notify
+    name: Notify
     runs-on: ubuntu-latest
     needs: [validate-tokens, build-tokens, lint-typecheck, unit-tests, build-storybook, chromatic, audit-report]
     if: always()
     steps:
       - name: Send Teams notification
-        if: ${{ secrets.TEAMS_WEBHOOK_URL != '' }}
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          VALIDATE: ${{ needs.validate-tokens.result }}
+          BUILD: ${{ needs.build-tokens.result }}
+          LINT: ${{ needs.lint-typecheck.result }}
+          TESTS: ${{ needs.unit-tests.result }}
+          STORYBOOK: ${{ needs.build-storybook.result }}
+          CHROMATIC: ${{ needs.chromatic.result }}
         run: |
-          VALIDATE="${{ needs.validate-tokens.result }}"
-          BUILD="${{ needs.build-tokens.result }}"
-          LINT="${{ needs.lint-typecheck.result }}"
-          TESTS="${{ needs.unit-tests.result }}"
-          STORYBOOK="${{ needs.build-storybook.result }}"
-          CHROMATIC="${{ needs.chromatic.result }}"
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          OVERALL="✅ PASS"
-          THEME_COLOR="17AB78"
-          for result in "$VALIDATE" "$BUILD" "$LINT" "$TESTS" "$STORYBOOK"; do
-            if [ "$result" = "failure" ]; then
-              OVERALL="❌ FAIL"
-              THEME_COLOR="FF0000"
-            fi
+          if [ -z "$TEAMS_WEBHOOK_URL" ]; then
+            echo "No TEAMS_WEBHOOK_URL set, skipping"; exit 0
+          fi
+          OVERALL="PASS"; THEME="17AB78"
+          for r in "$VALIDATE" "$BUILD" "$LINT" "$TESTS" "$STORYBOOK"; do
+            [ "$r" = "failure" ] && OVERALL="FAIL" && THEME="FF0000" || true
           done
-
-          emoji() { [ "$1" = "success" ] && echo "✅" || ([ "$1" = "skipped" ] && echo "⏭️" || echo "❌"); }
-
-          curl -s -X POST "$TEAMS_WEBHOOK_URL" \
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -sf -X POST "$TEAMS_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d "{
-              \"@type\": \"MessageCard\",
-              \"@context\": \"https://schema.org/extensions\",
-              \"themeColor\": \"$THEME_COLOR\",
-              \"summary\": \"Design System Pipeline: $OVERALL\",
-              \"sections\": [{
-                \"activityTitle\": \"**Design System Pipeline: $OVERALL**\",
-                \"activitySubtitle\": \"Branch: ${{ github.ref_name }} | Triggered by: ${{ github.event_name }}\",
-                \"facts\": [
-                  {\"name\": \"Validate Tokens\", \"value\": \"$(emoji $VALIDATE) $VALIDATE\"},
-                  {\"name\": \"Build Tokens\",    \"value\": \"$(emoji $BUILD) $BUILD\"},
-                  {\"name\": \"Lint & TypeScript\",\"value\": \"$(emoji $LINT) $LINT\"},
-                  {\"name\": \"Unit Tests\",       \"value\": \"$(emoji $TESTS) $TESTS\"},
-                  {\"name\": \"Storybook\",        \"value\": \"$(emoji $STORYBOOK) $STORYBOOK\"},
-                  {\"name\": \"Chromatic\",        \"value\": \"$(emoji $CHROMATIC) $CHROMATIC\"}
-                ]
-              }],
-              \"potentialAction\": [{
-                \"@type\": \"OpenUri\",
-                \"name\": \"View Run\",
-                \"targets\": [{\"os\": \"default\", \"uri\": \"$RUN_URL\"}]
-              }]
-            }"
+            -d "{\"@type\":\"MessageCard\",\"@context\":\"https://schema.org/extensions\",\"themeColor\":\"$THEME\",\"summary\":\"Pipeline $OVERALL\",\"sections\":[{\"activityTitle\":\"**Design System Pipeline: $OVERALL**\",\"activitySubtitle\":\"Branch: ${{ github.ref_name }}\",\"facts\":[{\"name\":\"Validate\",\"value\":\"$VALIDATE\"},{\"name\":\"Build\",\"value\":\"$BUILD\"},{\"name\":\"Lint\",\"value\":\"$LINT\"},{\"name\":\"Tests\",\"value\":\"$TESTS\"},{\"name\":\"Storybook\",\"value\":\"$STORYBOOK\"},{\"name\":\"Chromatic\",\"value\":\"$CHROMATIC\"}]}],\"potentialAction\":[{\"@type\":\"OpenUri\",\"name\":\"View Run\",\"targets\":[{\"os\":\"default\",\"uri\":\"$RUN_URL\"}]}]}"
       - name: Pipeline complete
         run: |
-          echo "Pipeline run complete."
-          echo "Validate: ${{ needs.validate-tokens.result }}"
-          echo "Build:    ${{ needs.build-tokens.result }}"
-          echo "Lint:     ${{ needs.lint-typecheck.result }}"
-          echo "Tests:    ${{ needs.unit-tests.result }}"
-          echo "Storybook:${{ needs.build-storybook.result }}"
-          echo "Chromatic:${{ needs.chromatic.result }}"
-          echo "Audit:    ${{ needs.audit-report.result }}"
+          echo "validate=${{ needs.validate-tokens.result }}"
+          echo "build=${{ needs.build-tokens.result }}"
+          echo "lint=${{ needs.lint-typecheck.result }}"
+          echo "tests=${{ needs.unit-tests.result }}"
+          echo "storybook=${{ needs.build-storybook.result }}"
+          echo "chromatic=${{ needs.chromatic.result }}"
+          echo "audit=${{ needs.audit-report.result }}"
