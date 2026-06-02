@@ -1,142 +1,44 @@
-import React, { useState, useRef, useEffect } from 'react';
-
-interface DatePickerProps {
-  value?: Date | null;
-  defaultValue?: Date | null;
-  onChange?: (date: Date | null) => void;
-  label?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  error?: string;
-  minDate?: Date;
-  maxDate?: Date;
-  className?: string;
-}
-
-const ChevronLeft = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const ChevronRight = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-const CalendarIcon = () => <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.75"/><path d="M2 7h14M6 1v4M12 1v4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/></svg>;
-
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-
-const DatePicker: React.FC<DatePickerProps> = ({
-  value,
-  defaultValue = null,
-  onChange,
-  label,
-  placeholder = 'Select date',
-  disabled = false,
-  error,
-  minDate,
-  maxDate,
-  className = '',
-}) => {
-  const [internalValue, setInternalValue] = useState<Date | null>(defaultValue);
-  const [isOpen, setIsOpen] = useState(false);
-  const controlled = value !== undefined;
-  const selectedDate = controlled ? value : internalValue;
-
-  const today = new Date();
-  const [viewYear, setViewYear] = useState((selectedDate || today).getFullYear());
-  const [viewMonth, setViewMonth] = useState((selectedDate || today).getMonth());
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  const handleSelect = (date: Date) => {
-    if (minDate && date < minDate) return;
-    if (maxDate && date > maxDate) return;
-    if (!controlled) setInternalValue(date);
-    onChange?.(date);
-    setIsOpen(false);
-  };
-
-  const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-  const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
-
-  const prevMonth = () => {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
-    else setViewMonth(m => m - 1);
-  };
-  const nextMonth = () => {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
-    else setViewMonth(m => m + 1);
-  };
-
-  const formatDate = (d: Date | null) => d ? `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}` : '';
-  const daysInMonth = getDaysInMonth(viewYear, viewMonth);
-  const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
-
-  const borderColor = error ? 'border-[#D32F2F]' : isOpen ? 'border-[#005BA6] shadow-[0_0_0_3px_rgba(0,147,244,0.3)]' : 'border-[#DCDCDC] hover:border-[#949494]';
-  const hasValue = Boolean(selectedDate);
-  const floated = isOpen || hasValue;
-
-  return (
-    <div className={`relative w-full ${className}`} ref={containerRef}>
-      <div
-        className={`relative h-[48px] border ${borderColor} rounded-[4px] bg-white transition-all duration-150 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        onClick={() => { if (!disabled) setIsOpen(!isOpen); }}
-      >
-        {label && (
-          <label className={`absolute left-3 pointer-events-none transition-all duration-150 ${floated ? 'top-2 text-[12px] font-semibold text-[#005BA6]' : 'top-1/2 -translate-y-1/2 text-[16px] text-[#777777]'}`}>{label}</label>
-        )}
-        <div className={`absolute left-3 right-10 bottom-0 pb-2 text-[16px] select-none ${floated && label ? 'pt-5' : 'pt-2'} ${selectedDate ? 'text-[#4A4A4A]' : 'text-[#777777]'}`}>
-          {selectedDate ? formatDate(selectedDate) : (floated && label ? '' : placeholder)}
-        </div>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#777777]"><CalendarIcon /></div>
-      </div>
-
-      {isOpen && (
-        <div className="absolute z-50 mt-1 bg-white border border-[#DCDCDC] rounded-[8px] shadow-[0_6px_20px_rgba(0,47,72,0.18)] p-4 w-[280px]">
-          <div className="flex items-center justify-between mb-4">
-            <button onClick={prevMonth} className="w-[28px] h-[28px] flex items-center justify-center rounded-[4px] text-[#777777] hover:bg-[#F1F1F1] transition-colors"><ChevronLeft /></button>
-            <span className="text-[14px] font-semibold text-[#4A4A4A]">{MONTHS[viewMonth]} {viewYear}</span>
-            <button onClick={nextMonth} className="w-[28px] h-[28px] flex items-center justify-center rounded-[4px] text-[#777777] hover:bg-[#F1F1F1] transition-colors"><ChevronRight /></button>
-          </div>
-
-          <div className="grid grid-cols-7 gap-0 mb-2">
-            {DAYS.map(d => (
-              <div key={d} className="text-center text-[11px] font-semibold text-[#949494] py-1">{d}</div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 gap-0">
-            {Array.from({ length: firstDay }).map((_, i) => <div key={`e${i}`} />)}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const day = i + 1;
-              const date = new Date(viewYear, viewMonth, day);
-              const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-              const isToday = date.toDateString() === today.toDateString();
-              const isDisabled = (minDate && date < minDate) || (maxDate && date > maxDate);
-              return (
-                <button key={day} onClick={() => handleSelect(date)} disabled={Boolean(isDisabled)}
-                  className={`w-full aspect-square flex items-center justify-center text-[13px] rounded-full transition-colors duration-150
-                    ${isSelected ? 'bg-[#005BA6] text-white font-semibold' : isToday ? 'border border-[#005BA6] text-[#005BA6]' : isDisabled ? 'text-[#CCCCCC] cursor-not-allowed' : 'text-[#4A4A4A] hover:bg-[#F1F1F1]'}`}>
-                  {day}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-3 pt-3 border-t border-[#DCDCDC] flex justify-between">
-            <button onClick={() => { if (!controlled) setInternalValue(null); onChange?.(null); setIsOpen(false); }}
-              className="text-[12px] text-[#777777] hover:text-[#4A4A4A] transition-colors">Clear</button>
-            <button onClick={() => { handleSelect(today); }}
-              className="text-[12px] font-semibold text-[#005BA6] hover:text-[#004A84] transition-colors">Today</button>
-          </div>
-        </div>
-      )}
-
-      {error && <p className="mt-1 text-[12px] text-[#D32F2F]">{error}</p>}
+import React,{useState}from'react';
+export type DatePickerColorScheme='current'|'future';
+export interface DatePickerProps{colorScheme?:DatePickerColorScheme;value?:Date|null;onChange?:(d:Date)=>void;label?:string;placeholder?:string;disabled?:boolean;id?:string;className?:string;}
+const C={current:{icon:'#FF9505',sel:'#FF9505',selTxt:'#FFF',hover:'#FFF8EC',focus:'rgba(255,149,5,0.25)',label:'#FF9505',border:'#FF9505'},future:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#EFF9FE',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'}};
+const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const fmt=(d:Date)=>`${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}/${d.getFullYear()}`;
+export const DatePicker:React.FC<DatePickerProps>=({colorScheme='future',value=null,onChange,label='Select Date',placeholder='MM/DD/YYYY',disabled=false,id,className=''})=>{
+  const c=C[colorScheme];const[open,setOpen]=useState(false);const[view,setView]=useState(value??new Date());const[focused,setFocused]=useState(false);
+  const has=value!==null;const float=focused||has||open;
+  const yr=view.getFullYear();const mo=view.getMonth();
+  const days=new Date(yr,mo+1,0).getDate();const first=new Date(yr,mo,1).getDay();
+  const same=(a:Date,b:Date)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+  const today=new Date();
+  const cells=[...Array(first).fill(null),...Array.from({length:days},(_,i)=>i+1)];
+  const bc=open||focused?c.border:'#DCDCDC';
+  return(<div style={{position:'relative',display:'inline-block',fontFamily:"'Source Sans Pro',sans-serif"}} className={className}>
+    <div style={{width:280,height:48,border:`1px solid ${bc}`,borderRadius:4,background:disabled?'#F1F1F1':'#FFF',display:'flex',alignItems:'center',padding:'0 12px',cursor:disabled?'not-allowed':'pointer',position:'relative',outline:'none',boxShadow:focused&&!disabled?`0 0 0 2px ${c.focus}`:'none'}}
+      tabIndex={disabled?-1:0} role="button" aria-expanded={open} aria-haspopup="dialog" id={id}
+      onClick={()=>!disabled&&setOpen(o=>!o)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)}
+      onKeyDown={e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();!disabled&&setOpen(o=>!o);}if(e.key==='Escape')setOpen(false);}}>
+      <span style={{position:'absolute',left:12,top:float?6:'50%',transform:float?'none':'translateY(-50%)',fontSize:float?11:14,fontWeight:float?700:400,color:float?c.label:'#777',transition:'all 150ms ease',pointerEvents:'none',background:disabled?'#F1F1F1':'#FFF',padding:'0 2px'}}>{label}</span>
+      <span style={{fontSize:14,color:'#4A4A4A',marginTop:float?10:0,opacity:has?1:0}}>{has?fmt(value!):placeholder}</span>
+      <span style={{marginLeft:'auto',color:disabled?'#949494':c.icon}}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </span>
     </div>
-  );
+    {open&&!disabled&&<div style={{position:'absolute',top:52,left:0,zIndex:100,background:'#FFF',border:'1px solid #DCDCDC',borderRadius:4,boxShadow:'0 4px 12px rgba(0,0,0,0.12)',padding:16,minWidth:280}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+        <button onClick={()=>setView(new Date(yr,mo-1,1))} style={{background:'none',border:'none',cursor:'pointer',color:'#4A4A4A',padding:4}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <span style={{fontSize:14,fontWeight:700,color:'#002F48'}}>{MONTHS[mo]} {yr}</span>
+        <button onClick={()=>setView(new Date(yr,mo+1,1))} style={{background:'none',border:'none',cursor:'pointer',color:'#4A4A4A',padding:4}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2,marginBottom:4}}>{DAYS.map(d=><div key={d} style={{textAlign:'center',fontSize:11,fontWeight:700,color:'#949494',padding:'4px 0'}}>{d}</div>)}</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2}}>
+        {cells.map((day,i)=>!day?<div key={`e${i}`}/>:<button key={day} onClick={()=>{onChange?.(new Date(yr,mo,day));setOpen(false);}}
+          style={{width:'100%',aspectRatio:'1',borderRadius:'50%',border:same(new Date(yr,mo,day),today)&&!(value&&same(new Date(yr,mo,day),value))?`1px solid ${c.sel}`:'none',background:value&&same(new Date(yr,mo,day),value)?c.sel:'transparent',color:value&&same(new Date(yr,mo,day),value)?c.selTxt:same(new Date(yr,mo,day),today)?c.sel:'#4A4A4A',fontSize:13,fontWeight:(value&&same(new Date(yr,mo,day),value))||same(new Date(yr,mo,day),today)?700:400,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'inherit'}}
+          onMouseEnter={e=>{if(!(value&&same(new Date(yr,mo,day),value)))(e.currentTarget as HTMLButtonElement).style.background=c.hover;}}
+          onMouseLeave={e=>{if(!(value&&same(new Date(yr,mo,day),value)))(e.currentTarget as HTMLButtonElement).style.background='transparent';}}>{day}</button>)}
+      </div>
+    </div>}
+  </div>);
 };
-
 export default DatePicker;

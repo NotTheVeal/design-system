@@ -1,53 +1,36 @@
-import React, { useEffect, useRef } from 'react';
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-}
-
-const sizeMap = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl' };
-
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'md', className = '' }) => {
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div
-        ref={dialogRef}
-        className={`relative bg-white rounded-lg shadow-xl w-full ${sizeMap[size]} ${className}`}
-      >
-        {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label="Close"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        )}
-        <div className="px-6 py-4">{children}</div>
+import React,{useEffect,useRef}from'react';
+export type ModalColorScheme='current'|'future';
+export type ModalSize='sm'|'md'|'lg';
+export interface ModalProps{colorScheme?:ModalColorScheme;isOpen?:boolean;onClose?:()=>void;title?:string;children?:React.ReactNode;primaryLabel?:string;secondaryLabel?:string;onPrimary?:()=>void;onSecondary?:()=>void;size?:ModalSize;}
+const C={current:{btn:'#FF9505',hover:'#E88800',text:'#FFF',border:'#FF9505'},future:{btn:'#005BA6',hover:'#004A84',text:'#FFF',border:'#005BA6'}};
+const W={sm:400,md:520,lg:680};
+export const Modal:React.FC<ModalProps>=({colorScheme='future',isOpen=false,onClose,title='Dialog Title',children,primaryLabel='Confirm',secondaryLabel='Cancel',onPrimary,onSecondary,size='md'})=>{
+  const c=C[colorScheme];const dialogRef=useRef<HTMLDivElement>(null);const closeRef=useRef<HTMLButtonElement>(null);
+  useEffect(()=>{if(!isOpen)return;closeRef.current?.focus();
+    const h=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose?.();if(e.key==='Tab'){const f=dialogRef.current?.querySelectorAll<HTMLElement>('button,[href],input,[tabindex]:not([tabindex="-1"])');if(!f||!f.length)return;if(e.shiftKey&&document.activeElement===f[0]){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&document.activeElement===f[f.length-1]){e.preventDefault();f[0].focus();}}};
+    document.addEventListener('keydown',h);return()=>document.removeEventListener('keydown',h);},[isOpen,onClose]);
+  if(!isOpen)return null;
+  return(<div style={{position:'fixed',inset:0,zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}} aria-modal="true" role="dialog" aria-labelledby="modal-title">
+    <div style={{position:'absolute',inset:0,background:'rgba(0,47,72,0.5)'}} onClick={onClose} aria-hidden="true"/>
+    <div ref={dialogRef} style={{position:'relative',width:W[size],maxWidth:'calc(100vw - 32px)',background:'#FFF',borderRadius:8,boxShadow:'0 6px 20px rgba(0,47,72,0.18)',fontFamily:"'Source Sans Pro',sans-serif",overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'20px 24px 16px',borderBottom:'1px solid #DCDCDC'}}>
+        <h2 id="modal-title" style={{fontSize:18,fontWeight:700,color:'#002F48',margin:0}}>{title}</h2>
+        <button ref={closeRef} onClick={onClose} aria-label="Close dialog" style={{background:'none',border:'none',cursor:'pointer',color:'#777',padding:4,display:'flex',alignItems:'center',borderRadius:4}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style={{padding:'20px 24px',color:'#4A4A4A',fontSize:14,lineHeight:1.6}}>{children??<p>Your session has timed out. Please contact your representative or return to the home page.</p>}</div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:12,padding:'16px 24px',borderTop:'1px solid #DCDCDC',background:'#FAFAFA'}}>
+        {secondaryLabel&&<button onClick={onSecondary??onClose} style={{background:'none',border:'2px solid #005BA6',borderRadius:4,padding:'10px 20px',fontSize:14,fontWeight:600,color:'#005BA6',cursor:'pointer',fontFamily:'inherit'}}>
+          {secondaryLabel}
+        </button>}
+        {primaryLabel&&<button onClick={onPrimary} style={{background:c.btn,border:`2px solid ${c.border}`,borderRadius:4,padding:'10px 20px',fontSize:14,fontWeight:600,color:c.text,cursor:'pointer',fontFamily:'inherit',transition:'background 200ms ease'}}
+          onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background=c.hover;}}
+          onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background=c.btn;}}>
+          {primaryLabel}
+        </button>}
       </div>
     </div>
-  );
+  </div>);
 };
-
 export default Modal;

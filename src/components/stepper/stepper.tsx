@@ -1,98 +1,28 @@
 import React from 'react';
-
-interface Step {
-  label: string;
-  completed: boolean;
-}
-
-interface StepperProps {
-  steps: Step[];
-  currentStep: number;
-  className?: string;
-}
-
-const Stepper: React.FC<StepperProps> = ({ steps, currentStep, className }) => {
-  return (
-    <div className={`stepper ${className}`} style={{ padding: 'var(--ps-stepper-padding)', background: 'var(--ps-stepper-container-background)' }}>
-      <style>
-        {`
-          :root {
-            --ps-font-family: 'Source Sans Pro', sans-serif;
-            --ps-primary-color: #005BA6;
-            --ps-midnight-color: #002F48;
-            --ps-spacing-4: 4px;
-            --ps-spacing-8: 8px;
-            --ps-spacing-12: 12px;
-            --ps-spacing-16: 16px;
-            --ps-spacing-20: 20px;
-            --ps-spacing-24: 24px;
-            --ps-spacing-32: 32px;
-            --ps-spacing-40: 40px;
-            --ps-spacing-48: 48px;
-            --ps-spacing-64: 64px;
-            --ps-border-radius: 4px;
-            --ps-modal-border-radius: 8px;
-            --ps-pill-border-radius: 100px;
-          }
-          .stepper {
-            display: flex;
-            align-items: center;
-            padding: var(--ps-spacing-24);
-            gap: var(--ps-spacing-8);
-          }
-          .step {
-            position: relative;
-            flex: 1;
-            text-align: center;
-          }
-          .step-label {
-            font-family: var(--ps-font-family);
-            color: var(--ps-step-label-current);
-          }
-          .step-indicator {
-            width: var(--ps-indicator-size);
-            height: var(--ps-indicator-size);
-            border-radius: var(--ps-indicator-radius);
-            border: 2px solid transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-          }
-          .step-completed {
-            background-color: var(--ps-step-indicator-finished-background);
-            border-color: var(--ps-step-indicator-finished-border);
-          }
-          .step-current {
-            background-color: var(--ps-step-indicator-current-background);
-            border-color: var(--ps-step-indicator-current-border);
-            box-shadow: var(--ps-step-indicator-current-shadow);
-          }
-          .connector {
-            height: var(--ps-connector-height);
-            background-color: var(--ps-step-connector-incomplete);
-            flex: 1;
-          }
-          .connector-complete {
-            background-color: var(--ps-step-connector-complete);
-          }
-        `}
-      </style>
-      {steps.map((step, index) => (
-        <React.Fragment key={index}>
-          <div className={`step-indicator ${step.completed ? 'step-completed' : ''} ${currentStep === index ? 'step-current' : ''}`} role="step">
-            {step.completed ? <span>✔</span> : index + 1}
+export type StepperColorScheme='current'|'future';
+export type StepStatus='not-started'|'in-progress'|'completed';
+export interface Step{label:string;description?:string;}
+export interface StepperProps{colorScheme?:StepperColorScheme;steps:Step[];currentStep?:number;orientation?:'horizontal'|'vertical';className?:string;}
+const C={current:{active:'#FF9505',activeBg:'#FFF8EC'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
+export const Stepper:React.FC<StepperProps>=({colorScheme='future',steps,currentStep=0,orientation='horizontal',className=''})=>{
+  const c=C[colorScheme];
+  const getStatus=(i:number):StepStatus=>i<currentStep?'completed':i===currentStep?'in-progress':'not-started';
+  const getCircle=(s:StepStatus):React.CSSProperties=>s==='completed'?{background:'#17AB78',border:'2px solid #17AB78',color:'#fff'}:s==='in-progress'?{background:c.activeBg,border:`2px solid ${c.active}`,color:c.active}:{background:'#FFF',border:'2px solid #DCDCDC',color:'#949494'};
+  const isH=orientation==='horizontal';
+  return(<div className={className} style={{display:'flex',flexDirection:isH?'row':'column',alignItems:isH?'flex-start':'stretch',fontFamily:"'Source Sans Pro',sans-serif"}}>
+    {steps.map((step,i)=>{const s=getStatus(i);const cs=getCircle(s);const isLast=i===steps.length-1;return(
+      <div key={i} style={{display:'flex',flexDirection:isH?'column':'row',alignItems:isH?'center':'flex-start',flex:isH&&!isLast?1:undefined,gap:isH?8:0}}>
+        <div style={{display:'flex',flexDirection:isH?'row':'column',alignItems:'center',width:isH?'100%':undefined}}>
+          <div style={{width:32,height:32,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:700,flexShrink:0,...cs}}>
+            {s==='completed'?<svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1 6L6 11L15 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>:<span>{i+1}</span>}
           </div>
-          <div className={`step`} aria-label={step.label} tabIndex={0}>
-            <div className="step-label">{step.label}</div>
-          </div>
-          {index < steps.length - 1 && (
-            <div className={`connector ${step.completed ? 'connector-complete' : ''}`} />
-          )}
-        </React.Fragment>
-      ))}
-    </div>
-  );
+          {!isLast&&<div style={{flex:isH?1:undefined,height:isH?2:32,width:isH?undefined:2,background:s==='completed'?'#17AB78':'#DCDCDC',minWidth:isH?24:undefined}}/>}
+        </div>
+        <div style={{textAlign:isH?'center':'left',paddingLeft:isH?0:12,maxWidth:isH?100:undefined}}>
+          <div style={{fontSize:12,fontWeight:s==='in-progress'?700:400,color:s==='in-progress'?c.active:s==='completed'?'#17AB78':'#949494'}}>{step.label}</div>
+          {step.description&&<div style={{fontSize:11,color:'#949494',marginTop:2}}>{step.description}</div>}
+        </div>
+      </div>);})}
+  </div>);
 };
-
 export default Stepper;

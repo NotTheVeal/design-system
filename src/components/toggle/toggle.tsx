@@ -1,68 +1,22 @@
 import React from 'react';
-
-interface ToggleProps {
-  label?: string;
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onChange?: (checked: boolean) => void;
-  disabled?: boolean;
-  size?: 'sm' | 'md';
-  className?: string;
-  id?: string;
-}
-
-const Toggle: React.FC<ToggleProps> = ({
-  label,
-  checked,
-  defaultChecked = false,
-  onChange,
-  disabled = false,
-  size = 'md',
-  className = '',
-  id,
-}) => {
-  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
-  const controlled = checked !== undefined;
-  const isChecked = controlled ? checked : internalChecked;
-  const inputId = id ?? `toggle-${Math.random().toString(36).slice(2)}`;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!controlled) setInternalChecked(e.target.checked);
-    onChange?.(e.target.checked);
-  };
-
-  const trackW = size === 'sm' ? 'w-[40px]' : 'w-[48px]';
-  const trackH = size === 'sm' ? 'h-[22px]' : 'h-[26px]';
-  const thumbSize = size === 'sm' ? 'w-[16px] h-[16px]' : 'w-[20px] h-[20px]';
-  const thumbTranslate = isChecked
-    ? (size === 'sm' ? 'translate-x-[20px]' : 'translate-x-[24px]')
-    : 'translate-x-[3px]';
-
-  return (
-    <label
-      htmlFor={inputId}
-      className={`inline-flex items-center gap-3 cursor-pointer select-none ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-    >
-      <div
-        className={`relative ${trackW} ${trackH} rounded-full transition-all duration-200 focus-within:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]
-          ${isChecked ? 'bg-[color:var(--ps-brand-primary)]' : 'bg-[color:var(--ps-neutral-200)]'}
-          ${disabled ? 'cursor-not-allowed' : ''}`}
-      >
-        <input
-          id={inputId}
-          type="checkbox"
-          checked={isChecked}
-          onChange={handleChange}
-          disabled={disabled}
-          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-        />
-        <div
-          className={`absolute top-1/2 -translate-y-1/2 ${thumbSize} rounded-full bg-white shadow-sm transition-transform duration-200 ${thumbTranslate}`}
-        />
-      </div>
-      {label && <span className="text-[16px] text-[color:var(--ps-fg-primary)]">{label}</span>}
-    </label>
-  );
+export type ToggleColorScheme='current'|'future';
+export interface ToggleProps{colorScheme?:ToggleColorScheme;checked?:boolean;disabled?:boolean;label?:string;labelPosition?:'left'|'right';id?:string;onChange?:(v:boolean)=>void;className?:string;}
+const C={current:{on:'#FF9505',focus:'rgba(255,149,5,0.35)'},future:{on:'#005BA6',focus:'rgba(0,91,166,0.5)'}};
+export const Toggle:React.FC<ToggleProps>=({colorScheme='future',checked=false,disabled=false,label,labelPosition='right',id,onChange,className=''})=>{
+  const c=C[colorScheme];
+  const track=disabled?'#DCDCDC':checked?c.on:'#949494';
+  const onKD=(e:React.KeyboardEvent)=>{if(e.key===' '&&!disabled){e.preventDefault();onChange?.(!checked);}};
+  const lbl=label&&<span style={{fontSize:14,color:disabled?'#949494':'#4A4A4A',userSelect:'none',fontFamily:"'Source Sans Pro',sans-serif"}}>{label}</span>;
+  return(<div style={{display:'inline-flex',alignItems:'center',gap:8,cursor:disabled?'not-allowed':'pointer',opacity:disabled?.6:1}} className={className}>
+    {labelPosition==='left'&&lbl}
+    <div role="switch" aria-checked={checked} aria-disabled={disabled} aria-label={label} tabIndex={disabled?-1:0} id={id}
+      onClick={()=>!disabled&&onChange?.(!checked)} onKeyDown={onKD}
+      onFocus={e=>{(e.currentTarget as HTMLElement).style.boxShadow=`0 0 0 3px ${c.focus}`;}}
+      onBlur={e=>{(e.currentTarget as HTMLElement).style.boxShadow='none';}}
+      style={{width:44,height:24,borderRadius:100,background:track,position:'relative',transition:'background 200ms ease',outline:'none',flexShrink:0}}>
+      <div style={{width:18,height:18,borderRadius:'50%',background:'#FFF',position:'absolute',top:3,left:checked?23:3,transition:'left 200ms ease',boxShadow:'0 1px 3px rgba(0,0,0,0.2)'}}/>
+    </div>
+    {labelPosition==='right'&&lbl}
+  </div>);
 };
-
 export default Toggle;
