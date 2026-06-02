@@ -1,0 +1,416 @@
+name: Figma Token Sync
+
+# Pulls tokens directly from the Figma REST API — no Token Studio Pro needed.
+# Triggers: daily 8am UTC, or manually from Actions UI.
+#
+# Required secret: FIGMA_TOKEN
+#   Figma → Settings → Account → Personal access tokens → Create new token
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FIGMA_FILE_KEY: pyZ5wKN9KGBUfgi47UwQ0q
+
+jobs:
+  sync-tokens:
+    name: Pull Tokens from Figma
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm install --legacy-peer-deps
+
+      - name: Fetch Figma styles
+        id: fetch
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+        run: |
+          echo "Fetching Figma file: $FIGMA_FILE_KEY"
+          curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
+            "https://api.figma.com/v1/files/$FIGMA_FILE_KEY/styles" \
+            -o figma-styles.json
+          if python3 -c "import sys,json; d=json.load(open('figma-styles.json')); exit(0 if 'meta' in d else 1)" 2>/dev/null; then
+            COUNT=$(python3 -c "import json; d=json.load(open('figma-styles.json')); print(len(d.get('meta',{}).get('styles',[])))")
+            echo "style_count=$COUNT" >> $GITHUB_OUTPUT
+            echo "ok=true" >> $GITHUB_OUTPUT
+            echo "Fetched $COUNT styles"
+          else
+            echo "::error::Figma API error. Check FIGMA_TOKEN secret."
+            cat figma-styles.json
+            exit 1
+          fi
+          curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
+            "https://api.figma.com/v1/files/$FIGMA_FILE_KEY/variables/local" \
+            -o figma-variables.json 2>/dev/null || echo '{}' > figma-variables.json
+          HAS=$(python3 -c "import json; d=json.load(open('figma-variables.json')); print('yes' if 'meta' in d else 'no')" 2>/dev/null || echo "no")
+          echo "has_variables=$HAS" >> $GITHUB_OUTPUT
+
+      - name: Convert styles to token manifest
+        env:
+          FIGMA_FILE_KEY: ${{ env.FIGMA_FILE_KEY }}
+        run: |
+          python3 - <<'PYEOF'
+          import json, os
+
+          with open('figma-styles.json') as f:
+              data = json.load(f)
+          styles = data.get('meta', {}).get('styles', [])
+
+          color_tokens, typography_tokens, effect_tokens = {}, {}, {}
+
+          for s in styles:
+              name = s.get('name', '')
+              stype = s.get('style_type', '')
+              node_id = s.get('node_id', '')
+              desc = s.get('description', '')
+              parts = [p.strip().lower().replace(' ', '-') for p in name.split('/')]
+              target = {'FILL': color_tokens, 'TEXT': typography_tokens, 'EFFECT': effect_tokens}.get(stype)
+              if target is None: continue
+              obj = target
+              for part in parts[:-1]: obj = obj.setdefault(part, {})
+              obj[parts[-1]] = {'$type': {'FILL':'color','TEXT':'typography','EFFECT':'shadow'}[stype], '$value': f'{{figma.{node_id}}}', 'description': desc}
+
+          os.makedirs('tokens/figma-sync', exist_ok=True)
+          manifest = {
+              '_generated': 'Auto-synced from Figma by figma-token-sync.yml',
+              '_figma_file': os.environ.get('FIGMA_FILE_KEY',''),
+              '_style_count': len(styles),
+              '_types': {t: sum(1 for s in styles if s['style_type']==t) for t in ['FILL','TEXT','EFFECT','GRID']},
+              'color': color_tokens, 'typography': typography_tokens, 'effects': effect_tokens
+          }
+          with open('tokens/figma-sync/figma-styles-manifest.json', 'w') as f:
+              json.dump(manifest, f, indent=2)
+          print(f"Manifest written: {len(styles)} styles")
+          for t, c in manifest['_types'].items():
+              if c: print(f"  {t}: {c}")
+          PYEOF
+
+      - name: Process Figma variables (if available)
+        run: |
+          python3 - <<'PYEOF'
+          import json, os
+
+          with open('figma-variables.json') as f:
+              data = json.load(f)
+
+          if 'meta' not in data:
+              print("Variables API not available — skipping (requires Figma Professional plan)")
+              exit(0)
+
+          collections = data['meta'].get('variableCollections', {})
+          variables = data['meta'].get('variables', {})
+          print(f"Found {len(variables)} variables in {len(collections)} collections")
+
+          type_map = {'COLOR':'color','FLOAT':'number','STRING':'string','BOOLEAN':'boolean'}
+          token_output = {}
+
+          for var_id, var in variables.items():
+              if var.get('hiddenFromPublishing'): continue
+              name = var.get('name','')
+              var_type = var.get('resolvedType','STRING')
+              coll_id = var.get('variableCollectionId','')
+              coll = collections.get(coll_id, {})
+              coll_name = coll.get('name','unknown').lower().replace(' ','-')
+              default_mode = coll.get('defaultModeId','')
+              value = var.get('valuesByMode',{}).get(default_mode,'')
+              if var_type == 'COLOR' and isinstance(value, dict):
+                  r,g,b = round(value.get('r',0)*255), round(value.get('g',0)*255), round(value.get('b',0)*255)
+                  a = value.get('a',1)
+                  value = f'rgba({r},{g},{b},{a:.2f})' if a < 1 else f'#{r:02x}{g:02x}{b:02x}'
+              parts = [p.strip().lower().replace(' ','-') for p in name.split('/')]
+              obj = token_output.setdefault(coll_name, {})
+              for part in parts[:-1]: obj = obj.setdefault(part, {})
+              obj[parts[-1]] = {'$type': type_map.get(var_type,'other'), '$value': value, '$extensions': {'figma': {'variableId': var_id}}}
+
+          os.makedirs('tokens/figma-sync', exist_ok=True)
+          for name, tokens in token_output.items():
+              out = f'tokens/figma-sync/{name}.json'
+              with open(out, 'w') as f: json.dump(tokens, f, indent=2)
+              print(f"  Wrote {out}")
+          print(f"Done: {len(token_output)} collection files")
+          PYEOF
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add tokens/figma-sync/
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes — Figma tokens are already in sync"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            FILES=$(git diff --cached --name-only | tr '\n' ',' | sed 's/,$//')
+            echo "files=$FILES" >> $GITHUB_OUTPUT
+            echo "Changes: $FILES"
+          fi
+
+      - name: Commit token changes
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (do not commit changes)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  FIGMA_FILE_KEY: pyZ5wKN9KGBUfgi47UwQ0q
+  NODE_VERSION: '24'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync-tokens:
+    name: Sync Figma Tokens
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch Figma styles
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+        run: |
+          echo "Fetching styles from Figma file ${{ env.FIGMA_FILE_KEY }}..."
+          curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
+            "https://api.figma.com/v1/files/${{ env.FIGMA_FILE_KEY }}/styles" \
+            -o figma-styles.json
+          echo "Styles response size: $(wc -c < figma-styles.json) bytes"
+          if [ "$(cat figma-styles.json | python3 -c 'import sys,json; d=json.load(sys.stdin); print(d.get("error",""))')" != "" ]; then
+            echo "ERROR: Figma API returned an error:"
+            cat figma-styles.json | python3 -m json.tool
+            exit 1
+          fi
+
+      - name: Fetch Figma variables
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+        run: |
+          echo "Fetching variables from Figma file ${{ env.FIGMA_FILE_KEY }}..."
+          curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
+            "https://api.figma.com/v1/files/${{ env.FIGMA_FILE_KEY }}/variables/local" \
+            -o figma-variables.json
+          echo "Variables response size: $(wc -c < figma-variables.json) bytes"
+          # Variables API requires Professional plan - gracefully handle 403
+          STATUS=$(cat figma-variables.json | python3 -c 'import sys,json; d=json.load(sys.stdin); print(d.get("status",200))' 2>/dev/null || echo "200")
+          if [ "$STATUS" = "403" ]; then
+            echo "WARNING: Variables API requires Figma Professional plan. Skipping variables sync."
+            echo '{"meta":{"variables":{},"variableCollections":{}},"error":false}' > figma-variables.json
+          fi
+
+      - name: Convert styles to W3C DTCG tokens
+        run: |
+          mkdir -p tokens/figma-sync
+          python3 << 'PYEOF'
+          import json, re, sys, os
+
+          with open('figma-styles.json') as f:
+              data = json.load(f)
+
+          styles = data.get('meta', {}).get('styles', [])
+          print(f"Processing {len(styles)} Figma styles...")
+
+          # Group styles by type
+          token_groups = {}
+          manifest = {
+              '$schema': 'https://tr.designtokens.org/format/',
+              'figma': {
+                  'file_key': os.environ.get('FIGMA_FILE_KEY', ''),
+                  'sync_date': '',
+                  'style_count': len(styles),
+              },
+              'styles': []
+          }
+
+          import datetime
+          manifest['figma']['sync_date'] = datetime.datetime.utcnow().isoformat() + 'Z'
+
+          for style in styles:
+              style_type = style.get('style_type', 'UNKNOWN').lower()
+              name = style.get('name', '')
+              node_id = style.get('node_id', '')
+              description = style.get('description', '')
+
+              manifest['styles'].append({
+                  'name': name,
+                  'type': style_type,
+                  'node_id': node_id,
+                  'description': description,
+              })
+
+              # Build token group
+              parts = [p.strip() for p in re.split(r'[/\\]', name)]
+              if not parts:
+                  continue
+
+              group = token_groups.setdefault(style_type, {})
+              current = group
+              for part in parts[:-1]:
+                  current = current.setdefault(part, {})
+
+              token_name = parts[-1]
+              current[token_name] = {
+                  '$type': style_type,
+                  '$value': name,
+                  '$extensions': {
+                      'com.figma': {
+                          'node_id': node_id,
+                          'description': description,
+                      }
+                  }
+              }
+
+          with open('tokens/figma-sync/figma-styles-manifest.json', 'w') as f:
+              json.dump(manifest, f, indent=2)
+          print(f"Wrote manifest with {len(styles)} styles")
+
+          for style_type, tokens in token_groups.items():
+              out_path = f'tokens/figma-sync/figma-{style_type}.json'
+              with open(out_path, 'w') as f:
+                  json.dump({
+                      '$schema': 'https://tr.designtokens.org/format/',
+                      **tokens
+                  }, f, indent=2)
+              print(f"Wrote {out_path}")
+
+          PYEOF
+
+      - name: Convert variables to W3C DTCG tokens
+        run: |
+          python3 << 'PYEOF'
+          import json, sys, os, datetime
+
+          with open('figma-variables.json') as f:
+              data = json.load(f)
+
+          meta = data.get('meta', {})
+          variables = meta.get('variables', {})
+          collections = meta.get('variableCollections', {})
+
+          if not variables and not collections:
+              print("No variables found (likely requires Professional plan). Skipping.")
+              exit(0)
+
+          print(f"Processing {len(variables)} variables in {len(collections)} collections...")
+
+          # Group by collection
+          collection_tokens = {}
+          for var_id, var in variables.items():
+              collection_id = var.get('variableCollectionId', 'unknown')
+              collection = collections.get(collection_id, {})
+              collection_name = collection.get('name', 'unknown').lower().replace(' ', '-')
+
+              token_group = collection_tokens.setdefault(collection_name, {})
+              name = var.get('name', var_id)
+              parts = [p.strip() for p in name.replace('\\', '/').split('/')]
+
+              var_type = var.get('resolvedType', 'STRING')
+              type_map = {
+                  'COLOR': 'color',
+                  'FLOAT': 'number',
+                  'STRING': 'string',
+                  'BOOLEAN': 'boolean',
+              }
+              dtcg_type = type_map.get(var_type, 'string')
+
+              # Get default mode value
+              default_mode = collection.get('defaultModeId', '')
+              value_by_mode = var.get('valuesByMode', {})
+              value = value_by_mode.get(default_mode, list(value_by_mode.values())[0] if value_by_mode else None)
+
+              if isinstance(value, dict) and 'r' in value:
+                  r, g, b = int(value['r']*255), int(value['g']*255), int(value['b']*255)
+                  a = value.get('a', 1)
+                  value = f'rgba({r},{g},{b},{a})' if a < 1 else f'#{r:02x}{g:02x}{b:02x}'
+
+              current = token_group
+              for part in parts[:-1]:
+                  current = current.setdefault(part, {})
+
+              current[parts[-1]] = {
+                  '$type': dtcg_type,
+                  '$value': value,
+                  '$extensions': {
+                      'com.figma': {
+                          'variable_id': var_id,
+                          'collection': collection.get('name', ''),
+                      }
+                  }
+              }
+
+          for collection_name, tokens in collection_tokens.items():
+              out_path = f'tokens/figma-sync/{collection_name}.json'
+              os.makedirs('tokens/figma-sync', exist_ok=True)
+              with open(out_path, 'w') as f:
+                  json.dump({
+                      '$schema': 'https://tr.designtokens.org/format/',
+                      **tokens
+                  }, f, indent=2)
+              print(f"Wrote {out_path}")
+
+          PYEOF
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add tokens/figma-sync/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No token changes detected."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Token changes detected:"
+            git diff --cached --stat
+          fi
+
+      - name: Commit and push token changes
+        if: steps.changes.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          SYNC_DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
+          git commit -m "chore(tokens): sync from Figma [$SYNC_DATE]
+
+          Auto-synced from Figma file ${{ env.FIGMA_FILE_KEY }}
+          Source: Figma REST API (styles + variables)
+          Triggered by: ${{ github.event_name }}"
+          git push
+
+      - name: Summary
+        run: |
+          echo "## Figma Token Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.changes.outputs.has_changes }}" = "true" ]; then
+            if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+              echo "✅ Changes detected (dry run — not committed)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ Changes detected and committed" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "ℹ️ No changes detected — tokens are up to date" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Figma File:** `${{ env.FIGMA_FILE_KEY }}`" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** `${{ github.event_name }}`" >> $GITHUB_STEP_SUMMARY
