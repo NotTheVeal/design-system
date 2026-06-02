@@ -1,45 +1,75 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>PS Design System Pipeline June 2, 2026</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PS Design System Audit</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
-:root{--blue:#005BA6;--midnight:#002F48;--border:#DCDCDC;--bg:#FAFAFA;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Source Sans Pro',sans-serif;background:var(--bg);color:#4A4A4A;font-size:14px;line-height:1.5;}
-.header{background:var(--midnight);color:white;padding:28px 48px;border-bottom:4px solid var(--blue);}
-.header h1{font-size:24px;font-weight:300;margin-bottom:4px;}
-.meta{font-size:12px;color:rgba(255,255,255,0.6);}
-.body{max-width:1000px;margin:0 auto;padding:28px 24px 60px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:20px 0;}
-.card{background:white;border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center;}
-.card .n{font-size:28px;font-weight:700;color:var(--blue);}
-.card .l{font-size:11px;color:#777;text-transform:uppercase;font-weight:700;}
-table{width:100%;border-collapse:collapse;background:white;border:1px solid var(--border);border-radius:4px;margin:12px 0;font-size:13px;}
-th{padding:8px 12px;background:#F1F1F1;text-align:left;font-size:11px;font-weight:700;color:#777;text-transform:uppercase;border-bottom:1px solid var(--border);}
-td{padding:9px 12px;border-bottom:1px solid #F1F1F1;}
-tr:last-child td{border-bottom:none;}
-.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;}
-.pass{background:#E2F5EE;color:#0E7C55;border:1px solid #b2e4d3;}
-.fail{background:#FACBCB;color:#C00;border:1px solid #f0a0a0;}
-.warn{background:#FFF4D0;color:#9C6B00;border:1px solid #f0d080;}
-.skip{background:#F1F1F1;color:#777;border:1px solid #DCDCDC;}
-.section-title{font-size:16px;font-weight:700;color:var(--midnight);border-bottom:2px solid var(--border);padding-bottom:8px;margin:28px 0 14px;}
-.trigger-box{background:#EFF9FE;border:1px solid #a0c8e8;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#003F70;}
-.overall{background:white;border:1px solid var(--border);border-radius:4px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
-.overall .label{font-size:15px;font-weight:700;color:var(--midnight);}
-code{font-family:monospace;font-size:11px;background:#F1F1F1;padding:1px 4px;border-radius:2px;}
-.footer{text-align:center;font-size:11px;color:#949494;margin-top:40px;padding-top:14px;border-top:1px solid var(--border);}
-</style></head><body>
-<div class="header"><h1>PartsSource Design System — Pipeline Report</h1>
-<div class="meta">June 2, 2026 · ea3ef46 · push</div></div>
-<div class="body">
-<div class="trigger-box"><strong>Trigger:</strong> push</div>
-<div class="overall"><div class="label">Overall Status</div><span class="badge fail">PIPELINE FAILURE</span></div>
-<div class="grid">
-<div class="card"><div class="n">54</div><div class="l">Components</div></div>
-<div class="card"><div class="n">54</div><div class="l">Stories</div></div>
-<div class="card"><div class="n">74</div><div class="l">Token Files</div></div>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+  :root { --blue:#005BA6; --midnight:#002F48; --border:#DCDCDC; --bg:#FAFAFA; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Source Sans Pro',sans-serif; background:var(--bg); color:#4A4A4A; font-size:14px; line-height:1.5; }
+  .header { background:var(--midnight); color:white; padding:28px 48px; border-bottom:4px solid var(--blue); }
+  .header h1 { font-size:24px; font-weight:300; margin-bottom:4px; }
+  .header .meta { font-size:12px; color:rgba(255,255,255,0.6); }
+  .body { max-width:1000px; margin:0 auto; padding:28px 24px 60px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin:20px 0; }
+  .card { background:white; border:1px solid var(--border); border-radius:4px; padding:14px; text-align:center; }
+  .card .n { font-size:28px; font-weight:700; color:var(--blue); }
+  .card .l { font-size:11px; color:#777; text-transform:uppercase; font-weight:700; letter-spacing:0.4px; }
+  table { width:100%; border-collapse:collapse; background:white; border:1px solid var(--border); border-radius:4px; margin:12px 0; font-size:13px; }
+  th { padding:8px 12px; background:#F1F1F1; text-align:left; font-size:11px; font-weight:700; color:#777; text-transform:uppercase; letter-spacing:0.3px; border-bottom:1px solid var(--border); }
+  td { padding:9px 12px; border-bottom:1px solid #F1F1F1; }
+  tr:last-child td { border-bottom:none; }
+  .badge { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; }
+  .pass { background:#E2F5EE; color:#0E7C55; border:1px solid #b2e4d3; }
+  .warn { background:#FFF4D0; color:#9C6B00; border:1px solid #f0d080; }
+  .manual { background:#FEF0FF; color:#7C00A0; border:1px solid #E0B0F0; }
+  .section-title { font-size:16px; font-weight:700; color:var(--midnight); border-bottom:2px solid var(--border); padding-bottom:8px; margin:28px 0 14px; }
+  .trigger-box { background:#EFF9FE; border:1px solid #a0c8e8; border-radius:4px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:#003F70; }
+  code { font-family:monospace; font-size:11px; background:#F1F1F1; padding:1px 4px; border-radius:2px; }
+  .footer { text-align:center; font-size:11px; color:#949494; margin-top:40px; padding-top:14px; border-top:1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>PartsSource Design System - Audit Report</h1>
+  <div class="meta">June 2, 2026 - a5ca675 - main - Figma token push</div>
 </div>
-<div class="section-title">Pipeline Job Results</div>
-<table><thead><tr><th>Job</th><th>Result</th></tr></thead><tbody><tr><td>Validate Tokens</td><td><span class="badge fail">FAIL</span></td></tr><tr><td>Lint + TypeScript</td><td><span class="badge skip">SKIP</span></td></tr><tr><td>Unit Tests</td><td><span class="badge skip">SKIP</span></td></tr><tr><td>Storybook Build</td><td><span class="badge skip">SKIP</span></td></tr><tr><td>Chromatic</td><td><span class="badge skip">SKIP</span></td></tr></tbody></table>
-<div class="footer">Auto-generated by pipeline-orchestrator.yml · PartsSource Design System · rveal@partssource.com</div>
-</div></body></html>
+<div class="body">
+  <div class="trigger-box"><strong>Trigger:</strong> Figma token push<br><strong>Changed token files:</strong> <code>tokens/ps-tokens/primitive/motion.json</code></div>
+  <div class="grid">
+    <div class="card"><div class="n">54</div><div class="l">Components</div></div>
+    <div class="card"><div class="n">54</div><div class="l">Stories</div></div>
+    <div class="card"><div class="n">75</div><div class="l">Token Files</div></div>
+    <div class="card"><div class="n">10</div><div class="l">Workflows</div></div>
+  </div>
+  <div class="section-title">Pipeline Status</div>
+  <table>
+    <thead><tr><th>Workflow</th><th>Status</th><th>Slack Alert</th></tr></thead>
+    <tbody>
+      <tr><td>Chromatic Visual Tests</td><td><span class="badge pass">Active</span></td><td><span class="badge pass">Wired</span></td></tr>
+      <tr><td>Build Design Tokens</td><td><span class="badge pass">Active</span></td><td><span class="badge pass">Wired</span></td></tr>
+      <tr><td>Design System CI</td><td><span class="badge pass">Active</span></td><td><span class="badge pass">Wired</span></td></tr>
+      <tr><td>Generate Component</td><td><span class="badge pass">Active</span></td><td><span class="badge pass">Wired</span></td></tr>
+      <tr><td>Publish to npm</td><td><span class="badge pass">Ready</span></td><td><span class="badge pass">Wired</span></td></tr>
+      <tr><td>Token Drift Monitor</td><td><span class="badge pass">Monthly</span></td><td><span class="badge pass">Wired</span></td></tr>
+      <tr><td>Audit Report</td><td><span class="badge pass">Weekly + Figma Push</span></td><td><span class="badge pass">Wired</span></td></tr>
+    </tbody>
+  </table>
+  <div class="section-title">Gap Tracker</div>
+  <table>
+    <thead><tr><th>Gap</th><th>Status</th><th>Owner Action</th></tr></thead>
+    <tbody>
+      <tr><td>Token pipeline (Figma to JSON to CSS)</td><td><span class="badge pass">Resolved</span></td><td>-</td></tr>
+      <tr><td>57-component Storybook library</td><td><span class="badge pass">Resolved</span></td><td>-</td></tr>
+      <tr><td>Chromatic visual regression CI</td><td><span class="badge pass">Resolved</span></td><td>-</td></tr>
+      <tr><td>Node.js 24 upgrade (all workflows)</td><td><span class="badge pass">Resolved</span></td><td>-</td></tr>
+      <tr><td>Slack notifications (all 7 workflows)</td><td><span class="badge warn">Needs Secret</span></td><td>Add SLACK_WEBHOOK_URL to repo secrets</td></tr>
+      <tr><td>npm publish pipeline</td><td><span class="badge warn">Needs Secret</span></td><td>Add NPM_TOKEN to repo secrets</td></tr>
+      <tr><td>Figma Token Studio GitHub auto-sync</td><td><span class="badge manual">Manual Setup</span></td><td>Configure Token Studio plugin in Figma (one-time, 5 min)</td></tr>
+    </tbody>
+  </table>
+  <div class="footer">Auto-generated by audit-report.yml - PartsSource Design System - rveal@partssource.com</div>
+</div>
+</body>
+</html>
