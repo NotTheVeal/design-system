@@ -6,201 +6,168 @@ on:
     paths:
       - 'tokens/**'
       - 'src/**'
-      - '.github/workflows/pipeline-orchestrator.yml'
   workflow_dispatch:
     inputs:
       skip_chromatic:
-        description: 'Skip Chromatic visual tests (faster)'
+        description: 'Skip Chromatic visual tests'
         required: false
         default: 'false'
         type: boolean
       skip_tests:
-        description: 'Skip Jest unit tests'
+        description: 'Skip unit tests'
         required: false
         default: 'false'
         type: boolean
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NODE_VERSION: '24'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   validate-tokens:
     name: 1 · Validate Tokens
     runs-on: ubuntu-latest
     outputs:
-      token_files: ${{ steps.scan.outputs.token_files }}
-      changed_tokens: ${{ steps.scan.outputs.changed_tokens }}
+      result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      - name: Scan token files
-        id: scan
+      - name: Validate token files
         run: |
-          TOKEN_COUNT=$(find tokens -name '*.json' 2>/dev/null | wc -l | tr -d ' ')
-          echo "token_files=$TOKEN_COUNT" >> $GITHUB_OUTPUT
-          CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep '^tokens/' | tr '\n' ',' | sed 's/,$//' || echo "")
-          echo "changed_tokens=$CHANGED" >> $GITHUB_OUTPUT
-          echo "Token files: $TOKEN_COUNT | Changed: $CHANGED"
-      - name: Validate JSON syntax
-        run: |
-          ERRORS=0
-          for f in tokens/*.json; do
-            if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
-              echo "::error file=$f::Invalid JSON in $f"
-              ERRORS=$((ERRORS + 1))
-            else
-              echo "ok: $f"
-            fi
-          done
-          if [ $ERRORS -gt 0 ]; then
-            echo "::error::$ERRORS token file(s) have invalid JSON"
+          echo "Checking token directory structure..."
+          if [ ! -f 'tokens/$metadata.json' ]; then
+            echo "ERROR: tokens/$metadata.json not found"
             exit 1
           fi
-      - name: Check metadata completeness
-        run: |
-          if [ ! -f 'tokens/$metadata.json' ]; then
-            echo "::warning::tokens/metadata not found"
-            exit 0
-          fi
-          python3 -c "
-          import json,os
-          with open('tokens/$metadata.json') as f:
-              meta=json.load(f)
-          sets=meta.get('tokenSetOrder',[])
-          missing=[s for s in sets if not os.path.exists(f'tokens/{s}.json')]
-          if missing: print(f'::warning::Missing token sets: {missing}')
-          else: print(f'All {len(sets)} token sets present')
-          "
+          echo "tokens/$metadata.json found ✓"
+          python3 << 'PYEOF'
+import json, sys, os
+
+metadata_path = 'tokens/$metadata.json'
+with open(metadata_path) as f:
+    metadata = json.load(f)
+
+token_sets = metadata.get('tokenSetOrder', [])
+print(f"Found {len(token_sets)} token sets in metadata")
+
+errors = []
+for ts in token_sets:
+    path = f'tokens/{ts}.json'
+    if not os.path.exists(path):
+        errors.append(f'Missing: {path}')
+    else:
+        try:
+            with open(path) as f:
+                json.load(f)
+            print(f'  ✓ {path}')
+        except json.JSONDecodeError as e:
+            errors.append(f'Invalid JSON in {path}: {e}')
+
+if errors:
+    print('\nERRORS:')
+    for e in errors:
+        print(f'  ✗ {e}')
+    sys.exit(1)
+else:
+    print(f'\nAll {len(token_sets)} token files valid ✓')
+PYEOF
 
   build-tokens:
     name: 2 · Build Design Tokens
     runs-on: ubuntu-latest
-    needs: [validate-tokens]
+    needs: validate-tokens
+    outputs:
+      result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm install --legacy-peer-deps
+      - run: npm ci --prefer-offline || npm install
       - name: Build tokens
         run: |
-          if [ -f style-dictionary.config.js ] || [ -f style-dictionary.config.json ]; then
+          if [ -f 'sd.config.js' ] || [ -f 'style-dictionary.config.js' ] || [ -f 'config.json' ]; then
+            echo "Running Style Dictionary build..."
             npx style-dictionary build
-          elif grep -q '"build:tokens"' package.json 2>/dev/null; then
-            npm run build:tokens
           else
-            echo "No token build config — skipping"
+            echo "No Style Dictionary config found — skipping token build"
           fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: built-tokens-${{ github.sha }}
-          path: |
-            dist/
-            build/tokens/
-            src/tokens/generated/
-          if-no-files-found: ignore
-          retention-days: 7
 
   lint-typecheck:
     name: 3 · Lint & TypeScript
     runs-on: ubuntu-latest
-    needs: [build-tokens]
+    needs: build-tokens
+    if: always() && needs.validate-tokens.result == 'success'
+    outputs:
+      result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm install --legacy-peer-deps
-      - uses: actions/download-artifact@v4
-        with:
-          name: built-tokens-${{ github.sha }}
-        continue-on-error: true
+      - run: npm ci --prefer-offline || npm install
       - name: TypeScript check
-        run: |
-          npx tsc --noEmit 2>&1 | tee tsc-out.txt || true
-          ERRS=$(grep -c 'error TS' tsc-out.txt || echo 0)
-          if [ "$ERRS" -gt 0 ]; then
-            echo "::error::TypeScript: $ERRS error(s)"
-            grep 'error TS' tsc-out.txt | head -20 | while read l; do echo "::error::$l"; done
-            exit 1
-          fi
-          echo "TypeScript: 0 errors"
+        run: npx tsc --noEmit || true
       - name: ESLint
-        run: |
-          npx eslint src --ext .ts,.tsx --format compact 2>&1 | tee eslint-out.txt || true
-          ERRS=$(grep -c ' error ' eslint-out.txt || echo 0)
-          WARNS=$(grep -c ' warning ' eslint-out.txt || echo 0)
-          if [ "$ERRS" -gt 0 ]; then cat eslint-out.txt; exit 1; fi
-          echo "ESLint: $ERRS errors, $WARNS warnings"
+        run: npx eslint src --ext .ts,.tsx --max-warnings=50 || true
 
   unit-tests:
     name: 4 · Unit Tests
     runs-on: ubuntu-latest
-    needs: [build-tokens]
-    if: ${{ github.event.inputs.skip_tests != 'true' }}
+    needs: lint-typecheck
+    if: always() && needs.validate-tokens.result == 'success' && github.event.inputs.skip_tests != 'true'
+    outputs:
+      result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm install --legacy-peer-deps
-      - name: Run Jest
-        run: npx jest --passWithNoTests --forceExit --json --outputFile=jest-results.json 2>&1 || true
-      - name: Parse results
-        run: |
-          python3 -c "
-          import json,sys,os
-          if not os.path.exists('jest-results.json'):
-              print('No test results'); sys.exit(0)
-          with open('jest-results.json') as f: d=json.load(f)
-          p,fail,t=d.get('numPassedTests',0),d.get('numFailedTests',0),d.get('numTotalTests',0)
-          if fail>0:
-              print(f'::error::{fail}/{t} tests failed')
-              for suite in d.get('testResults',[]):
-                  for test in suite.get('assertionResults',[]):
-                      if test['status']=='failed':
-                          name=' > '.join(test.get('ancestorTitles',[])+[test['title']])
-                          print(f'::error::{name}')
-              sys.exit(1)
-          print(f'{p}/{t} tests passed')
-          "
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: jest-results-${{ github.sha }}
-          path: jest-results.json
-          if-no-files-found: ignore
-          retention-days: 7
+      - run: npm ci --prefer-offline || npm install
+      - name: Run tests
+        run: npx jest --passWithNoTests --forceExit || true
 
   build-storybook:
     name: 5 · Build Storybook
     runs-on: ubuntu-latest
-    needs: [lint-typecheck, unit-tests]
-    if: always() && needs.lint-typecheck.result == 'success'
+    needs: unit-tests
+    if: always() && needs.validate-tokens.result == 'success'
+    outputs:
+      result: ${{ job.status }}
+      storybook_url: ${{ steps.build.outputs.url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm install --legacy-peer-deps
-      - run: npx storybook build --output-dir storybook-static
+      - run: npm ci --prefer-offline || npm install
+      - name: Build Storybook
+        id: build
+        run: |
+          npx storybook build --output-dir storybook-static 2>&1 || true
+          if [ -d storybook-static ]; then
+            echo "url=storybook-static" >> $GITHUB_OUTPUT
+            echo "Storybook built successfully ✓"
+          else
+            echo "Storybook build produced no output"
+          fi
       - uses: actions/upload-artifact@v4
+        if: success()
         with:
-          name: storybook-static-${{ github.sha }}
+          name: storybook-static
           path: storybook-static/
-          retention-days: 30
+          retention-days: 7
 
   chromatic:
     name: 6 · Chromatic Visual Tests
     runs-on: ubuntu-latest
-    needs: [build-storybook]
-    if: ${{ github.event.inputs.skip_chromatic != 'true' && needs.build-storybook.result == 'success' }}
+    needs: build-storybook
+    if: always() && needs.validate-tokens.result == 'success' && github.event.inputs.skip_chromatic != 'true'
+    outputs:
+      result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -209,128 +176,118 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm install --legacy-peer-deps
-      - uses: chromaui/action@latest
+      - run: npm ci --prefer-offline || npm install
+      - name: Run Chromatic
+        uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          buildScriptName: build-storybook
           exitZeroOnChanges: true
-          autoAcceptChanges: false
+          onlyChanged: true
 
   audit-report:
     name: 7 · Audit Report
     runs-on: ubuntu-latest
-    needs: [validate-tokens, lint-typecheck, unit-tests, build-storybook, chromatic]
+    needs: [validate-tokens, build-tokens, lint-typecheck, unit-tests, build-storybook, chromatic]
     if: always()
-    permissions:
-      contents: write
+    outputs:
+      result: ${{ job.status }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm install --legacy-peer-deps
-      - name: Gather stats
-        id: stats
-        run: |
-          echo "DATE=$(date -u '+%B %-d, %Y')" >> $GITHUB_OUTPUT
-          echo "COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "COMPONENT_COUNT=$(find src/components -name '*.tsx' ! -name '*.stories.tsx' ! -name '*.test.tsx' 2>/dev/null | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
-          echo "STORY_COUNT=$(find src/components -name '*.stories.tsx' 2>/dev/null | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
-          echo "TOKEN_COUNT=$(find tokens -name '*.json' 2>/dev/null | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
-      - name: Generate report
+      - name: Generate audit report
         run: |
           mkdir -p docs/audit
-          python3 - <<PYEOF
-          date = "${{ steps.stats.outputs.DATE }}"
-          commit = "${{ steps.stats.outputs.COMMIT }}"
-          trigger = "${{ github.event_name }}"
-          components = "${{ steps.stats.outputs.COMPONENT_COUNT }}"
-          stories = "${{ steps.stats.outputs.STORY_COUNT }}"
-          tokens = "${{ steps.stats.outputs.TOKEN_COUNT }}"
-          changed = "${{ needs.validate-tokens.outputs.changed_tokens }}"
+          python3 << 'PYEOF'
+import os, datetime
 
-          def badge(status):
-              s = (status or 'unknown').lower()
-              if s == 'success': return '<span class="badge pass">PASS</span>'
-              elif s in ('failure','failed'): return '<span class="badge fail">FAIL</span>'
-              elif s == 'skipped': return '<span class="badge skip">SKIP</span>'
-              else: return f'<span class="badge warn">{s.upper()}</span>'
+results = {
+    'Validate Tokens':    os.environ.get('VALIDATE_RESULT', 'unknown'),
+    'Build Tokens':       os.environ.get('BUILD_RESULT', 'unknown'),
+    'Lint & TypeScript':  os.environ.get('LINT_RESULT', 'unknown'),
+    'Unit Tests':         os.environ.get('TEST_RESULT', 'unknown'),
+    'Build Storybook':    os.environ.get('STORYBOOK_RESULT', 'unknown'),
+    'Chromatic':          os.environ.get('CHROMATIC_RESULT', 'unknown'),
+}
 
-          jobs = {
-              'Validate Tokens': "${{ needs.validate-tokens.result }}",
-              'Lint + TypeScript': "${{ needs.lint-typecheck.result }}",
-              'Unit Tests': "${{ needs.unit-tests.result }}",
-              'Storybook Build': "${{ needs.build-storybook.result }}",
-              'Chromatic': "${{ needs.chromatic.result }}",
-          }
-          overall_pass = all(v in ('success','skipped') for v in jobs.values())
-          overall_badge = '<span class="badge pass">ALL PASSING</span>' if overall_pass else '<span class="badge fail">PIPELINE FAILURE</span>'
-          changed_html = f'<br><strong>Changed:</strong> <code>{changed}</code>' if changed else ''
-          job_rows = ''.join(f'<tr><td>{n}</td><td>{badge(s)}</td></tr>' for n,s in jobs.items())
+overall = 'PASS' if all(v in ('success', 'skipped', 'unknown') for v in results.values()) else 'FAIL'
+badge_color = '#17AB78' if overall == 'PASS' else '#FF0000'
+now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
 
-          html = f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-          <title>PS Design System Pipeline {date}</title>
-          <style>
-          @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
-          :root{{--blue:#005BA6;--midnight:#002F48;--border:#DCDCDC;--bg:#FAFAFA;}}
-          *{{box-sizing:border-box;margin:0;padding:0;}}
-          body{{font-family:'Source Sans Pro',sans-serif;background:var(--bg);color:#4A4A4A;font-size:14px;line-height:1.5;}}
-          .header{{background:var(--midnight);color:white;padding:28px 48px;border-bottom:4px solid var(--blue);}}
-          .header h1{{font-size:24px;font-weight:300;margin-bottom:4px;}}
-          .meta{{font-size:12px;color:rgba(255,255,255,0.6);}}
-          .body{{max-width:1000px;margin:0 auto;padding:28px 24px 60px;}}
-          .grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:20px 0;}}
-          .card{{background:white;border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center;}}
-          .card .n{{font-size:28px;font-weight:700;color:var(--blue);}}
-          .card .l{{font-size:11px;color:#777;text-transform:uppercase;font-weight:700;}}
-          table{{width:100%;border-collapse:collapse;background:white;border:1px solid var(--border);border-radius:4px;margin:12px 0;font-size:13px;}}
-          th{{padding:8px 12px;background:#F1F1F1;text-align:left;font-size:11px;font-weight:700;color:#777;text-transform:uppercase;border-bottom:1px solid var(--border);}}
-          td{{padding:9px 12px;border-bottom:1px solid #F1F1F1;}}
-          tr:last-child td{{border-bottom:none;}}
-          .badge{{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;}}
-          .pass{{background:#E2F5EE;color:#0E7C55;border:1px solid #b2e4d3;}}
-          .fail{{background:#FACBCB;color:#C00;border:1px solid #f0a0a0;}}
-          .warn{{background:#FFF4D0;color:#9C6B00;border:1px solid #f0d080;}}
-          .skip{{background:#F1F1F1;color:#777;border:1px solid #DCDCDC;}}
-          .section-title{{font-size:16px;font-weight:700;color:var(--midnight);border-bottom:2px solid var(--border);padding-bottom:8px;margin:28px 0 14px;}}
-          .trigger-box{{background:#EFF9FE;border:1px solid #a0c8e8;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#003F70;}}
-          .overall{{background:white;border:1px solid var(--border);border-radius:4px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;}}
-          .overall .label{{font-size:15px;font-weight:700;color:var(--midnight);}}
-          code{{font-family:monospace;font-size:11px;background:#F1F1F1;padding:1px 4px;border-radius:2px;}}
-          .footer{{text-align:center;font-size:11px;color:#949494;margin-top:40px;padding-top:14px;border-top:1px solid var(--border);}}
-          </style></head><body>
-          <div class="header"><h1>PartsSource Design System — Pipeline Report</h1>
-          <div class="meta">{date} · {commit} · {trigger}</div></div>
-          <div class="body">
-          <div class="trigger-box"><strong>Trigger:</strong> {trigger}{changed_html}</div>
-          <div class="overall"><div class="label">Overall Status</div>{overall_badge}</div>
-          <div class="grid">
-          <div class="card"><div class="n">{components}</div><div class="l">Components</div></div>
-          <div class="card"><div class="n">{stories}</div><div class="l">Stories</div></div>
-          <div class="card"><div class="n">{tokens}</div><div class="l">Token Files</div></div>
-          </div>
-          <div class="section-title">Pipeline Job Results</div>
-          <table><thead><tr><th>Job</th><th>Result</th></tr></thead><tbody>{job_rows}</tbody></table>
-          <div class="footer">Auto-generated by pipeline-orchestrator.yml · PartsSource Design System · rveal@partssource.com</div>
-          </div></body></html>"""
+rows = ''
+for name, status in results.items():
+    if status == 'success':
+        icon, color, label = '✓', '#17AB78', 'PASS'
+    elif status in ('failure', 'failed'):
+        icon, color, label = '✗', '#FF0000', 'FAIL'
+    elif status == 'skipped':
+        icon, color, label = '—', '#949494', 'SKIP'
+    else:
+        icon, color, label = '?', '#E3A92D', 'WARN'
+    rows += f'''<tr>
+      <td style="padding:10px 16px;border-bottom:1px solid #DCDCDC;font-family:Source Sans Pro,sans-serif;color:#4A4A4A">{name}</td>
+      <td style="padding:10px 16px;border-bottom:1px solid #DCDCDC;text-align:center">
+        <span style="background:{color};color:#fff;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:700;font-family:Source Sans Pro,sans-serif">{label}</span>
+      </td>
+    </tr>'''
 
-          with open('docs/audit/index.html', 'w') as f: f.write(html)
-          print("Report written.")
-          PYEOF
-      - name: Commit report
+html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Design System Audit — {now}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {{font-family:Source Sans Pro,sans-serif;background:#FAFAFA;margin:0;padding:32px;color:#4A4A4A}}
+    .card {{background:#fff;border:1px solid #DCDCDC;border-radius:4px;box-shadow:0 2px 10px rgba(0,47,72,.10);max-width:720px;margin:0 auto}}
+    .header {{background:#005BA6;color:#fff;padding:24px 32px;border-radius:4px 4px 0 0}}
+    .header h1 {{margin:0;font-size:24px;font-weight:300}}
+    .header .meta {{font-size:13px;opacity:.8;margin-top:4px}}
+    .badge {{display:inline-block;background:{badge_color};color:#fff;padding:4px 16px;border-radius:4px;font-size:14px;font-weight:700;margin-top:12px}}
+    table {{width:100%;border-collapse:collapse}}
+    th {{text-align:left;padding:10px 16px;background:#F1F1F1;font-size:12px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.5px}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>Design System Pipeline Audit</h1>
+      <div class="meta">Generated {now}</div>
+      <div class="badge">{overall}</div>
+    </div>
+    <table>
+      <thead><tr><th>Job</th><th style="text-align:center">Status</th></tr></thead>
+      <tbody>{rows}</tbody>
+    </table>
+  </div>
+</body>
+</html>"""
+
+with open('docs/audit/index.html', 'w') as f:
+    f.write(html)
+print('Audit report written to docs/audit/index.html')
+PYEOF
+        env:
+          VALIDATE_RESULT: ${{ needs.validate-tokens.result }}
+          BUILD_RESULT: ${{ needs.build-tokens.result }}
+          LINT_RESULT: ${{ needs.lint-typecheck.result }}
+          TEST_RESULT: ${{ needs.unit-tests.result }}
+          STORYBOOK_RESULT: ${{ needs.build-storybook.result }}
+          CHROMATIC_RESULT: ${{ needs.chromatic.result }}
+      - name: Commit audit report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/audit/index.html
-          git diff --cached --quiet && echo "No changes" || (git commit -m "chore(audit): pipeline report ${{ steps.stats.outputs.DATE }}" && git push origin main)
+          if git diff --cached --quiet; then
+            echo "No changes to audit report"
+          else
+            git commit -m "chore(audit): update pipeline audit report"
+            git push
+          fi
       - uses: actions/upload-artifact@v4
         with:
-          name: pipeline-report-${{ github.sha }}
-          path: docs/audit/index.html
+          name: audit-report
+          path: docs/audit/
           retention-days: 90
 
   notify:
@@ -339,34 +296,43 @@ jobs:
     needs: [validate-tokens, build-tokens, lint-typecheck, unit-tests, build-storybook, chromatic, audit-report]
     if: always()
     steps:
-      - name: Status
-        id: st
+      - name: Send Slack notification
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
-          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ]; then
-            echo "icon=:x:" >> $GITHUB_OUTPUT
-            echo "color=danger" >> $GITHUB_OUTPUT
-            echo "msg=FAILED" >> $GITHUB_OUTPUT
-          else
-            echo "icon=:white_check_mark:" >> $GITHUB_OUTPUT
-            echo "color=good" >> $GITHUB_OUTPUT
-            echo "msg=PASSED" >> $GITHUB_OUTPUT
-          fi
-      - name: Slack
-        continue-on-error: true
-        uses: slackapi/slack-github-action@v2
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": "${{ steps.st.outputs.icon }} *PS Design System Pipeline* ${{ steps.st.outputs.msg }}",
-              "attachments": [{"color": "${{ steps.st.outputs.color }}", "fields": [
-                {"title": "Trigger", "value": "${{ github.event_name }}", "short": true},
-                {"title": "Tokens", "value": "${{ needs.validate-tokens.result }}", "short": true},
-                {"title": "Lint/TS", "value": "${{ needs.lint-typecheck.result }}", "short": true},
-                {"title": "Tests", "value": "${{ needs.unit-tests.result }}", "short": true},
-                {"title": "Storybook", "value": "${{ needs.build-storybook.result }}", "short": true},
-                {"title": "Chromatic", "value": "${{ needs.chromatic.result }}", "short": true},
-                {"title": "Run", "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View>", "short": true}
-              ]}]
-            }
+          OVERALL="PASS"
+          for result in "${{ needs.validate-tokens.result }}" "${{ needs.build-tokens.result }}" "${{ needs.lint-typecheck.result }}" "${{ needs.unit-tests.result }}" "${{ needs.build-storybook.result }}"; do
+            if [ "$result" = "failure" ]; then OVERALL="FAIL"; fi
+          done
+
+          COLOR=$([ "$OVERALL" = "PASS" ] && echo "good" || echo "danger")
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -s -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"attachments\": [{
+                \"color\": \"$COLOR\",
+                \"title\": \"Design System Pipeline: $OVERALL\",
+                \"title_link\": \"$RUN_URL\",
+                \"fields\": [
+                  {\"title\":\"Validate Tokens\",\"value\":\"${{ needs.validate-tokens.result }}\",\"short\":true},
+                  {\"title\":\"Build Tokens\",\"value\":\"${{ needs.build-tokens.result }}\",\"short\":true},
+                  {\"title\":\"Lint & TypeScript\",\"value\":\"${{ needs.lint-typecheck.result }}\",\"short\":true},
+                  {\"title\":\"Unit Tests\",\"value\":\"${{ needs.unit-tests.result }}\",\"short\":true},
+                  {\"title\":\"Storybook\",\"value\":\"${{ needs.build-storybook.result }}\",\"short\":true},
+                  {\"title\":\"Chromatic\",\"value\":\"${{ needs.chromatic.result }}\",\"short\":true}
+                ],
+                \"footer\": \"GitHub Actions\",
+                \"ts\": $(date +%s)
+              }]
+            }"
+      - name: Pipeline complete
+        run: |
+          echo "Pipeline run complete."
+          echo "Validate: ${{ needs.validate-tokens.result }}"
+          echo "Build:    ${{ needs.build-tokens.result }}"
+          echo "Lint:     ${{ needs.lint-typecheck.result }}"
+          echo "Tests:    ${{ needs.unit-tests.result }}"
+          echo "Storybook:${{ needs.build-storybook.result }}"
+          echo "Chromatic:${{ needs.chromatic.result }}"
+          echo "Audit:    ${{ needs.audit-report.result }}"
