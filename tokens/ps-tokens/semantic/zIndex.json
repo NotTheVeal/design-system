@@ -1,0 +1,44 @@
+{
+  "zIndex": {
+    "hide": {
+      "value": "{zIndex.hide}",
+      "type": "other"
+    },
+    "base": {
+      "value": "{zIndex.base}",
+      "type": "other"
+    },
+    "raised": {
+      "value": "{zIndex.raised}",
+      "type": "other"
+    },
+    "dropdown": {
+      "value": "{zIndex.dropdown}",
+      "type": "other"
+    },
+    "sticky": {
+      "value": "{zIndex.sticky}",
+      "type": "other"
+    },
+    "overlay": {
+      "value": "{zIndex.overlay}",
+      "type": "other"
+    },
+    "modal": {
+      "value": "{zIndex.modal}",
+      "type": "other"
+    },
+    "popover": {
+      "value": "{zIndex.popover}",
+      "type": "other"
+    },
+    "toast": {
+      "value": "{zIndex.toast}",
+      "type": "other"
+    },
+    "tooltip": {
+      "value": "{zIndex.tooltip}",
+      "type": "other"
+    }
+  }
+}
