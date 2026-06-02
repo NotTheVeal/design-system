@@ -12,24 +12,21 @@ type Story = StoryObj<typeof Cart>;
 
 export const Default: Story = {
   args: {
+    colorScheme: 'future',
     items: [
       {
         id: '1',
         name: 'MRI Gradient Coil Assembly',
-        description: 'OEM Part #GCA-7720',
+        partNumber: 'GCA-7720',
         quantity: 1,
-        price: 1249.99,
-        onQuantityChange: () => {},
-        onRemove: () => {},
+        price: '$1,249.99',
       },
       {
         id: '2',
         name: 'Ultrasound Transducer Probe',
-        description: 'Compatible: GE Logiq E9',
+        partNumber: 'GE-LOGIQ-E9',
         quantity: 2,
-        price: 389.00,
-        onQuantityChange: () => {},
-        onRemove: () => {},
+        price: '$389.00',
       },
     ],
     onCheckout: () => {},
