@@ -1,6 +1,9 @@
 name: Fix Audit Issues - Apply all Storybook/Figma fixes
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-audit-issues.yml']
 jobs:
   fix:
     runs-on: ubuntu-latest
@@ -10,7 +13,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Apply all audit fixes
         run: |
           python3 - << 'PYEOF'
@@ -23,7 +25,7 @@ def read(p):
 def write(p, c):
     if not os.path.exists(os.path.dirname(p)): return
     open(p,'w').write(c)
-    print(f"  fixed: {p}")
+    print(f'  fixed: {p}')
 
 def gsub(p, old, new):
     c = read(p)
@@ -32,13 +34,11 @@ def gsub(p, old, new):
 
 base = "src/components"
 
-# FIX 1: Default colorScheme to future in all affected components
 for comp in ["checkbox","toggle","radio","slider","stepper","datePicker","carousel","cart","productCard","pagination","navTop","navLeft","navigation","modal"]:
     p = f"{base}/{comp}/{comp}.tsx"
     gsub(p, "colorScheme = 'current'", "colorScheme = 'future'")
     gsub(p, 'colorScheme = "current"', 'colorScheme = "future"')
 
-# FIX 2: All orange hex -> PS Blue in affected components
 orange_comps = ["checkbox","toggle","radio","slider","stepper","datePicker","carousel","cart","productCard","pagination","navTop","navLeft","navigation","ctaBar","modal","table"]
 for comp in orange_comps:
     p = f"{base}/{comp}/{comp}.tsx"
@@ -47,7 +47,6 @@ for comp in orange_comps:
     c = c.replace("#FF9505","#005BA6").replace("#ff9505","#005ba6").replace("'FF9505'","'005BA6'")
     write(p, c)
 
-# FIX 3: Checkbox + Radio size 20 -> 24
 for comp in ["checkbox","radio"]:
     p = f"{base}/{comp}/{comp}.tsx"
     c = read(p)
@@ -55,26 +54,22 @@ for comp in ["checkbox","radio"]:
     c = re.sub(r"(?<!\d)(20)(?=\s*[,}]|\s*px)", lambda m: "24", c)
     write(p, c)
 
-# FIX 4: Page shell height 56 -> 60
 p = f"{base}/pageShell/pageShell.tsx"
 c = read(p)
 if c:
     c = re.sub(r'(height|minHeight):\s*56\b', lambda m: m.group(0).replace("56","60"), c)
     write(p, c)
 
-# FIX 5: Select option hover bg
 p = f"{base}/select/select.tsx"
 gsub(p, "backgroundColor: '#F1F1F1'", "backgroundColor: '#DCEAED'")
 gsub(p, 'backgroundColor: "#F1F1F1"', 'backgroundColor: "#DCEAED"')
 
-# FIX 6: Table - add stickyHeader prop + fix row height 44->48
 p = f"{base}/table/table.tsx"
 c = read(p)
 if c and "stickyHeader" not in c:
     c = re.sub(r'(tableLayout|borderCollapse)', r'position: "relative", \1', c, count=1)
     write(p, c)
 
-# FIX 7: Modal max-width 600->640, add danger variant
 p = f"{base}/modal/modal.tsx"
 c = read(p)
 if c:
@@ -83,7 +78,6 @@ if c:
         c = re.sub(r'(interface \w+Props)', r"\1 extends { variant?: 'default' | 'danger' }", c)
     write(p, c)
 
-# FIX 8: CTA Bar borderRadius pill->standard
 p = f"{base}/ctaBar/ctaBar.tsx"
 c = read(p)
 if c:
@@ -92,19 +86,16 @@ if c:
 
 print("All fixes complete.")
 PYEOF
-
       - name: Commit fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/
-          git diff --cached --quiet && echo "Nothing to commit" || \
-            git commit -m "fix: apply 14 audit fixes - colorScheme future default, sizing, variants
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "fix: apply audit fixes - colorScheme future, orange to blue, sizing"
           git push
-
       - name: Set FIGMA_FILE_KEY repo variable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh variable set FIGMA_FILE_KEY --body "pyZ5wKN9KGBUfgi47UwQ0q" -R NotTheVeal/design-system || echo "variable set attempted"
-          echo "Done. Next manual step: add FIGMA_ACCESS_TOKEN secret at github.com/NotTheVeal/design-system/settings/secrets/actions"
+          echo "FIGMA_FILE_KEY set. Next: add FIGMA_ACCESS_TOKEN secret manually."
