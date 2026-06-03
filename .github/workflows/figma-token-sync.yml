@@ -1,31 +1,17 @@
 name: Figma Token Sync
-
-# Pulls design variables from the Figma REST API and commits them to tokens/figma/.
-# Required secret: FIGMA_TOKEN  (Figma → Settings → Personal access tokens)
-# FIGMA_FILE_KEY is set as a repo variable: pyZ5wKN9KGBUfgi47UwQ0q
-
 on:
-  schedule:
-    - cron: '0 8 * * *'
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: 'Dry run — fetch but do not commit'
-        required: false
-        default: 'false'
-        type: boolean
+  schedule:
+    - cron: '0 6 * * 1'
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  FIGMA_FILE_KEY: ${{ vars.FIGMA_FILE_KEY || 'pyZ5wKN9KGBUfgi47UwQ0q' }}
+  FIGMA_FILE_KEY: pyZ5wKN9KGBUfgi47UwQ0q
 
 jobs:
-  sync-tokens:
-    name: Pull Tokens from Figma
+  sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,45 +20,28 @@ jobs:
       - name: Validate FIGMA_TOKEN secret
         run: |
           if [ -z "${{ secrets.FIGMA_TOKEN }}" ]; then
-            echo "::error::FIGMA_TOKEN secret is not set."
-            echo "Go to: Settings → Secrets and variables → Actions → New repository secret"
-            echo "Name: FIGMA_TOKEN"
-            echo "Value: Your Figma personal access token (Figma → Settings → Personal access tokens)"
+            echo "::error::FIGMA_TOKEN secret is not set. Add it at Settings > Secrets > Actions."
             exit 1
           fi
-          echo "FIGMA_TOKEN is configured."
+          echo "FIGMA_TOKEN is present."
 
       - name: Fetch Figma design variables
         run: |
           mkdir -p tokens/figma
-          echo "Fetching from file: ${{ env.FIGMA_FILE_KEY }}"
-          curl -s -f \
+          HTTP_STATUS=$(curl -s -o tokens/figma/variables.json -w "%{http_code}" \
             -H "X-Figma-Token: ${{ secrets.FIGMA_TOKEN }}" \
-            "https://api.figma.com/v1/files/${{ env.FIGMA_FILE_KEY }}/variables/local" \
-            -o tokens/figma/variables.json
-          python3 -c "
-import json, sys
-d = json.load(open('tokens/figma/variables.json'))
-status = d.get('status', 200)
-if status and status != 200:
-    print('Figma API error:', d.get('err', d))
-    sys.exit(1)
-meta = d.get('meta', {})
-cols = meta.get('variableCollections', {})
-vars_ = meta.get('variables', {})
-print(f'Collections: {len(cols)}, Variables: {len(vars_)}')
-"
+            "https://api.figma.com/v1/files/${{ env.FIGMA_FILE_KEY }}/variables/local")
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Figma API returned HTTP $HTTP_STATUS"
+            cat tokens/figma/variables.json
+            exit 1
+          fi
+          echo "Fetch OK. Size: $(wc -c < tokens/figma/variables.json) bytes"
 
-      - name: Commit token changes
-        if: ${{ inputs.dry_run != 'true' }}
+      - name: Commit updated tokens
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add tokens/figma/
-          if git diff --cached --quiet; then
-            echo "No token changes to commit."
-          else
-            git commit -m "chore: sync Figma tokens [$(date -u +%Y-%m-%d)]"
-            git push
-            echo "Tokens committed and pushed."
-          fi
+          git add tokens/
+          git diff --cached --quiet && echo "No token changes to commit" || git commit -m "chore: sync Figma design tokens"
+          git push
