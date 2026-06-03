@@ -1,12 +1,12 @@
 import React from 'react';
 export type ProductCardColorScheme='current'|'future';
 export interface ProductCardProps{colorScheme?:ProductCardColorScheme;productName?:string;partNumber?:string;oem?:string;price?:string;availability?:string;optionsCount?:number;imageSrc?:string;onSeeBuyingOptions?:()=>void;onPrimary?:()=>void;className?:string;}
-const C={current:{primary:'#FF9505',primaryHover:'#E88800',primaryTxt:'#FFF',primaryBorder:'#FF9505'},future:{primary:'#005BA6',primaryHover:'#004A84',primaryTxt:'#FFF',primaryBorder:'#005BA6'}};
+const C={current:{primary:'#005BA6',primaryHover:'#E88800',primaryTxt:'#FFF',primaryBorder:'#005BA6'},future:{primary:'#005BA6',primaryHover:'#004A84',primaryTxt:'#FFF',primaryBorder:'#005BA6'}};
 export const ProductCard:React.FC<ProductCardProps>=({colorScheme='future',productName='Patient Cable, SpO2 Spot Check',partNumber='OEM-89400-01',oem='Nellcor',price='$42.50',availability='In Stock',optionsCount=2,imageSrc,onSeeBuyingOptions,onPrimary,className=''})=>{
   const c=C[colorScheme];
   const btnBase:React.CSSProperties={borderRadius:4,padding:'8px 16px',fontSize:12,fontWeight:700,cursor:'pointer',letterSpacing:0.5,textTransform:'uppercase',fontFamily:'inherit',transition:'background 200ms ease',flex:1};
   return(<div className={className} style={{width:300,background:'#FFF',border:'1px solid #DCDCDC',borderRadius:4,overflow:'hidden',boxShadow:'0 1px 4px rgba(0,47,72,0.08)',fontFamily:"'Source Sans Pro',sans-serif",display:'flex',flexDirection:'column'}}>
-    <div style={{height:140,background:'#F1F1F1',display:'flex',alignItems:'center',justifyContent:'center'}}>
+    <div style={{height:140,background:'#DCEAED',display:'flex',alignItems:'center',justifyContent:'center'}}>
       {imageSrc?<img src={imageSrc} alt={productName} style={{maxHeight:'100%',maxWidth:'100%',objectFit:'contain'}}/>:<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DCDCDC" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21 15 16 10 5 21"/></svg>}
     </div>
     <div style={{padding:'12px 16px',flex:1,display:'flex',flexDirection:'column',gap:4}}>

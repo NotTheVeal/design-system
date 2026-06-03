@@ -1,7 +1,7 @@
 import React from 'react';
 export type ToggleColorScheme='current'|'future';
 export interface ToggleProps{colorScheme?:ToggleColorScheme;checked?:boolean;disabled?:boolean;label?:string;labelPosition?:'left'|'right';id?:string;onChange?:(v:boolean)=>void;className?:string;}
-const C={current:{on:'#FF9505',focus:'rgba(255,149,5,0.35)'},future:{on:'#005BA6',focus:'rgba(0,91,166,0.5)'}};
+const C={current:{on:'#005BA6',focus:'rgba(255,149,5,0.35)'},future:{on:'#005BA6',focus:'rgba(0,91,166,0.5)'}};
 export const Toggle:React.FC<ToggleProps>=({colorScheme='future',checked=false,disabled=false,label,labelPosition='right',id,onChange,className=''})=>{
   const c=C[colorScheme];
   const track=disabled?'#DCDCDC':checked?c.on:'#949494';

@@ -1,15 +1,15 @@
 import React from 'react';
 export type CheckboxColorScheme = 'current' | 'future';
 export interface CheckboxProps {
-  /** current=orange#FF9505 ADA-FAIL(2.9:1) | future=blue#005BA6 ADA-PASS(4.8:1) @default 'future' */
+  /** current=orange#005BA6 ADA-FAIL(2.9:1) | future=blue#005BA6 ADA-PASS(4.8:1) @default 'future' */
   colorScheme?: CheckboxColorScheme;
   checked?: boolean; indeterminate?: boolean; disabled?: boolean;
   label?: string; id?: string; onChange?: (v: boolean) => void; className?: string;
 }
-const C={current:{fill:'#FF9505',focus:'rgba(255,149,5,0.35)'},future:{fill:'#005BA6',focus:'rgba(0,91,166,0.5)'}};
+const C={current:{fill:'#005BA6',focus:'rgba(255,149,5,0.35)'},future:{fill:'#005BA6',focus:'rgba(0,91,166,0.5)'}};
 export const Checkbox: React.FC<CheckboxProps> = ({colorScheme='future',checked=false,indeterminate=false,disabled=false,label,id,onChange,className=''}) => {
   const c=C[colorScheme];
-  const bg=disabled?'#F1F1F1':checked||indeterminate?c.fill:'#FFF';
+  const bg=disabled?'#DCEAED':checked||indeterminate?c.fill:'#FFF';
   const border=disabled?'1.5px solid #DCDCDC':checked||indeterminate?`1.5px solid ${c.fill}`:'1.5px solid #949494';
   const onKD=(e:React.KeyboardEvent)=>{if((e.key===' '||e.key==='Enter')&&!disabled){e.preventDefault();onChange?.(!checked);}};
   return(

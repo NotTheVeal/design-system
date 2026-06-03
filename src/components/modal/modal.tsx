@@ -2,7 +2,7 @@ import React,{useEffect,useRef}from'react';
 export type ModalColorScheme='current'|'future';
 export type ModalSize='sm'|'md'|'lg';
 export interface ModalProps{colorScheme?:ModalColorScheme;isOpen?:boolean;onClose?:()=>void;title?:string;children?:React.ReactNode;primaryLabel?:string;secondaryLabel?:string;onPrimary?:()=>void;onSecondary?:()=>void;size?:ModalSize;}
-const C={current:{btn:'#FF9505',hover:'#E88800',text:'#FFF',border:'#FF9505'},future:{btn:'#005BA6',hover:'#004A84',text:'#FFF',border:'#005BA6'}};
+const C={current:{btn:'#005BA6',hover:'#E88800',text:'#FFF',border:'#005BA6'},future:{btn:'#005BA6',hover:'#004A84',text:'#FFF',border:'#005BA6'}};
 const W={sm:400,md:520,lg:680};
 export const Modal:React.FC<ModalProps>=({colorScheme='future',isOpen=false,onClose,title='Dialog Title',children,primaryLabel='Confirm',secondaryLabel='Cancel',onPrimary,onSecondary,size='md'})=>{
   const c=C[colorScheme];const dialogRef=useRef<HTMLDivElement>(null);const closeRef=useRef<HTMLButtonElement>(null);

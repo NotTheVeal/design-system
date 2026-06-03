@@ -2,7 +2,7 @@ import React from 'react';
 export type CartColorScheme='current'|'future';
 export interface CartItem{id:string;name:string;partNumber?:string;quantity:number;price:string;}
 export interface CartProps{colorScheme?:CartColorScheme;items?:CartItem[];title?:string;onAddToCart?:()=>void;onCheckout?:()=>void;className?:string;}
-const C={current:{btn:'#FF9505',hover:'#E88800',txt:'#FFF',border:'#FF9505'},future:{btn:'#005BA6',hover:'#004A84',txt:'#FFF',border:'#005BA6'}};
+const C={current:{btn:'#005BA6',hover:'#E88800',txt:'#FFF',border:'#005BA6'},future:{btn:'#005BA6',hover:'#004A84',txt:'#FFF',border:'#005BA6'}};
 const DEF:CartItem[]=[{id:'1',name:'Patient Cable, SpO2 Spot Check',partNumber:'OEM-89400-01',quantity:2,price:'$85.00'},{id:'2',name:'Blood Pressure Cuff, Adult Large',partNumber:'BP-5104-AL',quantity:1,price:'$34.50'},{id:'3',name:'ECG Electrode Snap, 10-pack',partNumber:'ECG-1001-10',quantity:5,price:'$62.00'}];
 export const Cart:React.FC<CartProps>=({colorScheme='future',items=DEF,title='My Cart',onAddToCart,onCheckout,className=''})=>{
   const c=C[colorScheme];
@@ -19,7 +19,7 @@ export const Cart:React.FC<CartProps>=({colorScheme='future',items=DEF,title='My
     <div style={{maxHeight:280,overflowY:'auto'}}>
       {items.map((item,i)=>(
         <div key={item.id} style={{display:'flex',alignItems:'center',padding:'12px 20px',borderBottom:i<items.length-1?'1px solid #F1F1F1':'none',gap:12}}>
-          <div style={{width:40,height:40,background:'#F1F1F1',borderRadius:4,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center'}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DCDCDC" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div style={{width:40,height:40,background:'#DCEAED',borderRadius:4,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center'}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DCDCDC" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21 15 16 10 5 21"/></svg></div>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:13,fontWeight:600,color:'#4A4A4A',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{item.name}</div>
             {item.partNumber&&<div style={{fontSize:11,color:'#949494'}}>Part #: {item.partNumber}</div>}
