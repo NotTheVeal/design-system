@@ -1,0 +1,113 @@
+name: Figma → GitHub Token Sync (Auto-Detect Changes)
+
+# Required secrets: FIGMA_ACCESS_TOKEN, GitHub var: FIGMA_FILE_KEY
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  detect-and-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Figma file metadata
+        id: figma_meta
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          FIGMA_FILE:  ${{ vars.FIGMA_FILE_KEY }}
+        run: |
+          RESPONSE=$(curl -s -H "X-Figma-Token: $FIGMA_TOKEN" \
+            "https://api.figma.com/v1/files/$FIGMA_FILE?depth=1")
+          LM=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('lastModified',''))")
+          echo "last_modified=$LM" >> $GITHUB_OUTPUT
+
+      - name: Check if file changed
+        id: check_changed
+        run: |
+          STORED=""
+          if [ -f ".figma-sync-state.json" ]; then
+            STORED=$(python3 -c "import json; d=json.load(open('.figma-sync-state.json')); print(d.get('lastModified',''))" 2>/dev/null || echo "")
+          fi
+          NEW="${{ steps.figma_meta.outputs.last_modified }}"
+          if [ "$STORED" = "$NEW" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Export Figma variables to Token Studio JSON
+        if: steps.check_changed.outputs.changed == 'true'
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          FIGMA_FILE:  ${{ vars.FIGMA_FILE_KEY }}
+        run: |
+          python3 - << PYEOF
+          import json, os, re
+          from urllib.request import Request, urlopen
+          token    = os.environ["FIGMA_TOKEN"]
+          file_key = os.environ["FIGMA_FILE"]
+          def figma_get(path):
+              req = Request(f"https://api.figma.com/v1{path}", headers={"X-Figma-Token": token})
+              return json.loads(urlopen(req).read())
+          data        = figma_get(f"/files/{file_key}/variables/local")
+          variables   = data.get("meta", {}).get("variables", {})
+          collections = data.get("meta", {}).get("variableCollections", {})
+          os.makedirs("tokens/ps-tokens", exist_ok=True)
+          def resolve_value(v, variables):
+              if isinstance(v, dict):
+                  if v.get("type") == "VARIABLE_ALIAS":
+                      ref = variables.get(v.get("id", ""), {})
+                      vals = ref.get("valuesByMode", {})
+                      if vals: return resolve_value(list(vals.values())[0], variables)
+                  if "r" in v:
+                      r,g,b,a = round(v["r"]*255),round(v["g"]*255),round(v["b"]*255),v.get("a",1)
+                      return f"rgba({r},{g},{b},{a})" if a<1 else "#{:02X}{:02X}{:02X}".format(r,g,b)
+              return v
+          TYPE_MAP = {"COLOR":"color","FLOAT":"sizing","STRING":"other","BOOLEAN":"other"}
+          output = {}
+          for col_id, col in collections.items():
+              col_name = re.sub(r"[^a-zA-Z0-9_/-]","_",col["name"])
+              modes = col.get("modes",[])
+              dm = modes[0]["modeId"] if modes else None
+              if not dm: continue
+              for var_id in col.get("variableIds",[]):
+                  var = variables.get(var_id)
+                  if not var: continue
+                  name  = var["name"].replace("/",".")
+                  vtype = TYPE_MAP.get(var.get("resolvedType",""),"other")
+                  value = resolve_value(var.get("valuesByMode",{}).get(dm,""),variables)
+                  parts = name.split(".")
+                  node  = output.setdefault(col_name,{})
+                  for part in parts[:-1]: node = node.setdefault(part,{})
+                  node[parts[-1]] = {"value":value,"type":vtype}
+          for key,val in output.items():
+              safe = re.sub(r"[^a-zA-Z0-9_-]","-",key).lower()
+              with open(f"tokens/ps-tokens/{safe}.json","w") as f: json.dump({key:val},f,indent=2)
+              print(f"wrote tokens/ps-tokens/{safe}.json")
+          PYEOF
+
+      - name: Update sync state
+        if: steps.check_changed.outputs.changed == 'true'
+        run: |
+          echo "{"lastModified": "${{ steps.figma_meta.outputs.last_modified }}"}" > .figma-sync-state.json
+
+      - name: Commit token changes
+        if: steps.check_changed.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tokens/ .figma-sync-state.json
+          git diff --cached --quiet || git commit -m "chore: sync tokens from Figma [auto]"
+          git push
+
+      - name: No changes
+        if: steps.check_changed.outputs.changed == 'false'
+        run: echo "Figma file unchanged — no sync needed."
