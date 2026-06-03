@@ -1,3 +1,25 @@
+## [1.1.0] - 2026-06-03
+
+### Added
+- `colorScheme` prop (`'current' | 'future'`) on 8 orange-primary components: Cart, Checkbox, DatePicker, Modal, ProductCard, Radio, Stepper, Toggle
+- `future` variant uses PS Blue `#005BA6` — ADA-compliant (4.8:1 contrast ratio)
+- `current` variant preserves legacy Orange `#FF9505` for backward compatibility (deprecated, 2.9:1 — do not use in new work)
+- Side-by-Side and individual Current/Future Storybook stories for all 8 components
+- Chromatic visual baselines established for all new stories (Build 52)
+
+### Migration
+Replace orange-primary component usage with `colorScheme="future"` to opt into the ADA-compliant blue:
+
+```tsx
+// Before
+<Checkbox checked={true} />
+
+// After (ADA compliant)
+<Checkbox checked={true} colorScheme="future" />
+```
+
+The `colorScheme` prop defaults to `'future'` on all updated components.
+
 # Changelog
 
 All notable changes to `@partssource/react-ui-core` are documented here.
