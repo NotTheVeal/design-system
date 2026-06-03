@@ -65,8 +65,7 @@ jobs:
                   'IVswLTldKScsICdib3JkZXJSYWRpdXM6IDQnLCBjKQoKICAgICAgICBpZiBj' \
                   'ICE9IG9yaWc6CiAgICAgICAgICAgIGNoYW5nZWQgKz0gMQogICAgICAgICAg' \
                   'ICB3cml0ZShwYXRoLCBjKQoKcHJpbnQoZiJEb25lLiB7Y2hhbmdlZH0gZmls' \
-                  'ZXMgdXBkYXRlZC4iKQo='
-            | base64 -d | python3
+                  'ZXMgdXBkYXRlZC4iKQo=' | base64 -d | python3
       - name: Commit fixes
         run: |
           git config user.name "github-actions[bot]"
