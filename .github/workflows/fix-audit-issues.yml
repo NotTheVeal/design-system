@@ -14,7 +14,59 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Apply all audit fixes
-        run: echo 'aW1wb3J0IG9zLCByZQoKZGVmIHJlYWQocCk6CiAgICBpZiBub3Qgb3MucGF0aC5leGlzdHMocCk6IHJldHVybiBOb25lCiAgICByZXR1cm4gb3BlbihwKS5yZWFkKCkKCmRlZiB3cml0ZShwLCBjKToKICAgIGlmIG5vdCBvcy5wYXRoLmV4aXN0cyhvcy5wYXRoLmRpcm5hbWUocCkpOiByZXR1cm4KICAgIG9wZW4ocCwgJ3cnKS53cml0ZShjKQogICAgcHJpbnQoZicgIGZpeGVkOiB7cH0nKQoKZGVmIGdzdWIocCwgb2xkLCBuZXcpOgogICAgYyA9IHJlYWQocCkKICAgIGlmIGMgaXMgTm9uZSBvciBvbGQgbm90IGluIGM6IHJldHVybgogICAgd3JpdGUocCwgYy5yZXBsYWNlKG9sZCwgbmV3KSkKCmJhc2UgPSAnc3JjL2NvbXBvbmVudHMnCmZvciBjb21wIGluIFsnY2hlY2tib3gnLCd0b2dnbGUnLCdyYWRpbycsJ3NsaWRlcicsJ3N0ZXBwZXInLCdkYXRlUGlja2VyJywnY2Fyb3VzZWwnLCdjYXJ0JywncHJvZHVjdENhcmQnLCdwYWdpbmF0aW9uJywnbmF2VG9wJywnbmF2TGVmdCcsJ25hdmlnYXRpb24nLCdtb2RhbCddOgogICAgcCA9IGYne2Jhc2V9L3tjb21wfS9wYWdlU2hlbGwudHN4JwogZ3N1YihwLCAiY29sb3JTY2hlbWUgPSAnY3VycmVudCciLCAiY29sb3JTY2hlbWUgPSAnZnV0dXJlJyIpCiAgICBnc3ViKHAsICdjb2xvclNjaGVtZSA9ICJjb2xvclNjaGVtZScsICdmdXR1cmUnKQoKbW9kYWwgPSAnc3Jj/wJjb21wIGluIFsnY2hlY2tib3gnLCd0b2dnbGUnLCdyYWRpbycsJ3NsaWRlcicsJ3N0ZXBwZXInLCdkYXRlUGlja2VyJywnY2Fyb3VzZWwnLCdjYXJ0JywncHJvZHVjdENhcmQnLCdwYWdpbmF0aW9uJywnbmF2VG9wJywnbmF2TGVmdCcsJ25hdmlnYXRpb24nLCdjdGFCYXInLCdtb2RhbCcsJ3RhYmxlJ10KZm9yIGNvbXAgaW4gb3JhbmdlOgogICAgcCA9IGYne2Jhc2V9L3tjb21wfS9wYWdlU2hlbGwudHN4JwogICAgYyA9IHJlYWQocCkKICAgIGlmIGMgaXMgTm9uZTogY29udGludWUKICAgIGMgPSBjLnJlcGxhY2UoJyNGRjM1MDUnLCcjMDA1QkE2JykucmVwbGFjZSgnI2ZmOTUwNScsIzMjwjAwNUJBNicpLnJlcGxhY2UoInNDRUFFRCciLCInQkFDS0cyJykKICAgIHdyaXRlKHAsIGMpCgpwID0gZid7YmFzZX0vbW9kYWwvbW9kYWwudHN4JwpZID0gYmFzZX0vZ3NvdXAvbW9kYWwudHN4JwpjID0gcmVhZChwKQppZiBjOgogICAgYyA9IHJlLnN1YihyJyhoZWlnaHRoJ2wtM1VccV0qNjQwKD8jWzAtOV0pJywgJkVjb250aW51ZScsIGcucmVwbGFjZSgnNTYnLCcyMCËpJCkgaC0kKQogICAgd3JpdGUocCwgYykKCnAgPSBmJ3tiYXNlfS9zZWxlY3Qvc2VsZWN0LnRzeCcKYyA9IHJlYWQocCkKaWYgYzoKICAgIGMgPSByZXksIHI+KyZjKQogICAgd3JpdGUocCwgYykKCnAgPSBmJ3tiYXNlfS9jbdGFCYXIvY3RhQmFyLnRzeCcKYyA9IHJlYWQocCkKaWYgYzoKICAgIGMgPSByZSwgcXspKzBdKScuIGxhbWJkYSA9IC4nLCBjKQogICAgd3JpdGUocCwgYykKCnAgPSBmJ3tiYXNlfS9jdGFCYXIvctdfnS5AQURBJwpjID0gcmVhZChwKQppZiBjOgogICAgYyA9IHJlLnN1YihyJyhoJ3wiLkYxRjFGMScsJyIlKQogICAgd3JpdGUocCwgYykKcmludCcgQWxsIGZpeGVzIGNvbXBsZXRlLicpCg==' | base64 -d | python3
+        run: |
+          printf '%s' \
+                  'aW1wb3J0IG9zLCByZQoKZGVmIHJlYWQocCk6CiAgICBpZiBub3Qgb3MucGF0' \
+                  'aC5leGlzdHMocCk6IHJldHVybiBOb25lCiAgICByZXR1cm4gb3BlbihwKS5y' \
+                  'ZWFkKCkKCmRlZiB3cml0ZShwLCBjKToKICAgIG9wZW4ocCwgJ3cnKS53cml0' \
+                  'ZShjKQogICAgcHJpbnQoZiIgIHdyb3RlIHtwfSIpCgpzcmMgPSAnc3JjJwpj' \
+                  'aGFuZ2VkID0gMAoKZm9yIHJvb3QsIGRpcnMsIGZpbGVzIGluIG9zLndhbGso' \
+                  'c3JjKToKICAgIGZvciBmbmFtZSBpbiBmaWxlczoKICAgICAgICBpZiBub3Qg' \
+                  'Zm5hbWUuZW5kc3dpdGgoKCcuanN4JywgJy50c3gnLCAnLmpzJywgJy50cycs' \
+                  'ICcuc3Rvcmllcy5qc3gnLCAnLnN0b3JpZXMudHN4JykpOgogICAgICAgICAg' \
+                  'ICBjb250aW51ZQogICAgICAgIHBhdGggPSBvcy5wYXRoLmpvaW4ocm9vdCwg' \
+                  'Zm5hbWUpCiAgICAgICAgb3JpZyA9IHJlYWQocGF0aCkKICAgICAgICBpZiBv' \
+                  'cmlnIGlzIE5vbmU6IGNvbnRpbnVlCiAgICAgICAgYyA9IG9yaWcKCiAgICAw' \
+                  'ICAgIyBGaXggMTogY29sb3JTY2hlbWU9J2N1cnJlbnQnIC0+ICdmdXR1cmUn' \
+                  'CiAgICAgICAgYyA9IHJlLnN1YihyImNvbG9yU2NoZW1lPSdjdXJyZW50JyIs' \
+                  'ICJjb2xvclNjaGVtZT0nZnV0dXJlJyIsIGMpCiAgICAgICAgYyA9IHJlLnN1' \
+                  'YihyJ2NvbG9yU2NoZW1lPSJjdXJyZW50IicsICdjb2xvclNjaGVtZT0iZnV0' \
+                  'dXJlIicsIGMpCiAgICAgICAgYyA9IHJlLnN1YihyImNvbG9yU2NoZW1lOlxz' \
+                  'KidjdXJyZW50JyIsICJjb2xvclNjaGVtZTogJ2Z1dHVyZSciLCBjKQogICAg' \
+                  'ICAgIGMgPSByZS5zdWIocidjb2xvclNjaGVtZTpccyoiY3VycmVudCInLCAn' \
+                  'Y29sb3JTY2hlbWU6ICJmdXR1cmUiJywgYykKCiAgICAgICAgIyBGaXggMjog' \
+                  'b3JhbmdlICNGRjk1MDUgLT4gYmx1ZSAjMDA1QkE2CiAgICAgICAgYyA9IGMu' \
+                  'cmVwbGFjZSgnI0ZGOTUwNScsICcjMDA1QkE2JykKICAgICAgICBjID0gYy5y' \
+                  'ZXBsYWNlKCcjZmY5NTA1JywgJyMwMDVCQTYnKQoKICAgICAgICAjIEZpeCAz' \
+                  'OiBjaGVja2JveC9yYWRpbyB3aWR0aC9oZWlnaHQgMjBweCAtPiAyNHB4CiAg' \
+                  'ICAgICAgYyA9IHJlLnN1YihyJyh3aWR0aHxoZWlnaHQpOlxzKjIwKD8hWzAt' \
+                  'OV0pJywgbGFtYmRhIG06IG0uZ3JvdXAoMCkucmVwbGFjZSgnMjAnLCAnMjQn' \
+                  'KSwgYykKCiAgICAgICAgIyBGaXggNDogcGFnZVNoZWxsL3BhZ2Utc2hlbGwg' \
+                  'aGVpZ2h0IDU2IC0+IDYwCiAgICAgICAgYyA9IHJlLnN1YihyJyhoZWlnaHR8' \
+                  'bWluSGVpZ2h0KTpccyo1Nig/IVswLTldKScsIGxhbWJkYSBtOiBtLmdyb3Vw' \
+                  'KDApLnJlcGxhY2UoJzU2JywgJzYwJyksIGMpCgogICAgICAgICMgRml4IDU6' \
+                  'IHNlbGVjdCBob3ZlciBiYWNrZ3JvdW5kICNGMUYxRjEgLT4gI0RDRUFFRAog' \
+                  'ICAgICAgIGMgPSBjLnJlcGxhY2UoIicjRjFGMUYxJyIsICInI0RDRUFFRCci' \
+                  'KQogICAgICAgIGMgPSBjLnJlcGxhY2UoJyIjRjFGMUYxIicsICciI0RDRUFF' \
+                  'RCInKQogICAgICAgIGMgPSByZS5zdWIociIoYmFja2dyb3VuZENvbG9yfGJh' \
+                  'Y2tncm91bmQpOlxzKicjRjFGMUYxJyIsIGxhbWJkYSBtOiBtLmdyb3VwKDAp' \
+                  'LnJlcGxhY2UoJyNGMUYxRjEnLCAnI0RDRUFFRCcpLCBjKQoKICAgICAgICAj' \
+                  'IEZpeCA2OiB0YWJsZSBzdGlja3lIZWFkZXIgLSBhZGQgcHJvcCBpZiBtaXNz' \
+                  'aW5nCiAgICAgICAgaWYgJ1RhYmxlJyBpbiBmbmFtZSBhbmQgJ3N0aWNreUhl' \
+                  'YWRlcicgbm90IGluIGM6CiAgICAgICAgICAgIGMgPSByZS5zdWIocicoPFRh' \
+                  'YmxlXGIpJywgcidcMSBzdGlja3lIZWFkZXInLCBjKQoKICAgICAgICAjIEZp' \
+                  'eCA3OiBtb2RhbCBtYXhXaWR0aCA2MDAgLT4gNjQwCiAgICAgICAgYyA9IHJl' \
+                  'LnN1YihyJ21heFdpZHRoOlxzKjYwMCg/IVswLTldKScsICdtYXhXaWR0aDog' \
+                  'NjQwJywgYykKICAgICAgICBjID0gcmUuc3ViKHIibWF4V2lkdGg6XHMqJzYw' \
+                  'MHB4JyIsICJtYXhXaWR0aDogJzY0MHB4JyIsIGMpCgogICAgICAgICMgRml4' \
+                  'IDg6IGN0YUJhciBib3JkZXJSYWRpdXMgMTAwIC0+IDQKICAgICAgICBpZiAn' \
+                  'Y3RhJyBpbiBmbmFtZS5sb3dlcigpIG9yICdDdGFCYXInIGluIGZuYW1lOgog' \
+                  'ICAgICAgICAgICBjID0gcmUuc3ViKHInYm9yZGVyUmFkaXVzOlxzKjEwMCg/' \
+                  'IVswLTldKScsICdib3JkZXJSYWRpdXM6IDQnLCBjKQoKICAgICAgICBpZiBj' \
+                  'ICE9IG9yaWc6CiAgICAgICAgICAgIGNoYW5nZWQgKz0gMQogICAgICAgICAg' \
+                  'ICB3cml0ZShwYXRoLCBjKQoKcHJpbnQoZiJEb25lLiB7Y2hhbmdlZH0gZmls' \
+                  'ZXMgdXBkYXRlZC4iKQo='
+            | base64 -d | python3
       - name: Commit fixes
         run: |
           git config user.name "github-actions[bot]"
