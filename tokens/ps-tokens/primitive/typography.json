@@ -8,12 +8,12 @@
           "$description": "Primary typeface — all product UI"
         },
         "ui": {
-          "$value": "Inter",
+          "$value": "Source Sans Pro",
           "$type": "fontFamily",
           "$description": "UI / internal tools"
         },
         "mono": {
-          "$value": "JetBrains Mono",
+          "$value": "Source Code Pro",
           "$type": "fontFamily",
           "$description": "Code, part numbers"
         }
