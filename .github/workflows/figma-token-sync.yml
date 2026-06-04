@@ -1,8 +1,10 @@
 name: Figma Token Sync
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 6 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'tokens/**'
 
 env:
   FIGMA_FILE_KEY: pyZ5wKN9KGBUfgi47UwQ0q
@@ -17,31 +19,29 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Validate FIGMA_TOKEN secret
-        run: |
-          if [ -z "${{ secrets.FIGMA_TOKEN }}" ]; then
-            echo "::error::FIGMA_TOKEN secret is not set. Add it at Settings > Secrets > Actions."
-            exit 1
-          fi
-          echo "FIGMA_TOKEN is present."
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Fetch Figma design variables
-        run: |
-          mkdir -p tokens/figma
-          HTTP_STATUS=$(curl -s -o tokens/figma/variables.json -w "%{http_code}" \
-            -H "X-Figma-Token: ${{ secrets.FIGMA_TOKEN }}" \
-            "https://api.figma.com/v1/files/${{ env.FIGMA_FILE_KEY }}/variables/local")
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "::error::Figma API returned HTTP $HTTP_STATUS"
-            cat tokens/figma/variables.json
-            exit 1
-          fi
-          echo "Fetch OK. Size: $(wc -c < tokens/figma/variables.json) bytes"
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Commit updated tokens
+      - name: Build design tokens
+        run: |
+          if [ -f "package.json" ] && grep -q '"build:tokens"' package.json; then
+            npm run build:tokens
+          elif [ -f "style-dictionary.config.js" ] || [ -f "config.json" ]; then
+            npx style-dictionary build
+          else
+            echo "No token build script found — tokens are raw JSON, skipping build step."
+          fi
+
+      - name: Commit built tokens
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add tokens/
-          git diff --cached --quiet && echo "No token changes to commit" || git commit -m "chore: sync Figma design tokens"
+          git add dist/ build/ tokens/ 2>/dev/null || true
+          git diff --cached --quiet && echo "No built token changes to commit" || git commit -m "chore: rebuild design tokens from Token Studio sync"
           git push
