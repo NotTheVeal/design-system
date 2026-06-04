@@ -154,8 +154,8 @@
   --primitive-spacing-20: 80px;
   --primitive-spacing-24: 96px;
   --primitive-typography-font-family-sans: Source Sans Pro;
-  --primitive-typography-font-family-ui: Inter;
-  --primitive-typography-font-family-mono: JetBrains Mono;
+  --primitive-typography-font-family-ui: Source Sans Pro;
+  --primitive-typography-font-family-mono: Source Code Pro;
   --primitive-typography-font-weight-light: 300;
   --primitive-typography-font-weight-regular: 400;
   --primitive-typography-font-weight-semibold: 600;
