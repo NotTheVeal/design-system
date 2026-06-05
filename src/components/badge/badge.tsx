@@ -8,27 +8,27 @@ interface BadgeProps {
   variant?: BadgeVariant;
   type?: BadgeType;
   filled?: boolean;
-  className?: string;
+  style?: React.CSSProperties;
 }
 
-// Status badges — small, colored-bg + border, 4px radius
-const STATUS_STYLES: Record<BadgeVariant, string> = {
-  success: 'bg-[#E2F5EE] text-[#0E7C55] border-[#0E7C55]',
-  error:   'bg-[#FEF0F0] text-[#E00000] border-[#E00000]',
-  warning: 'bg-[#FFF4E5] text-[#B45309] border-[#B45309]',
-  info:    'bg-[#EFF9FE] text-[#005BA6] border-[#005BA6]',
-  neutral: 'bg-[#F1F1F1] text-[#4A4A4A] border-[#DCDCDC]',
-  primary: 'bg-[#E8F0FB] text-[#005BA6] border-[#005BA6]',
+const FONT_FAMILY = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
+const STATUS_COLORS: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
+  success: { bg: '#E2F5EE', color: '#0E7C55', border: '#0E7C55' },
+  error:   { bg: '#FEF0F0', color: '#E00000', border: '#E00000' },
+  warning: { bg: '#FFF4E5', color: '#B45309', border: '#B45309' },
+  info:    { bg: '#EFF9FE', color: '#005BA6', border: '#005BA6' },
+  neutral: { bg: '#F1F1F1', color: '#4A4A4A', border: '#DCDCDC' },
+  primary: { bg: '#E8F0FB', color: '#005BA6', border: '#005BA6' },
 };
 
-// List badges — large pill, outlined (colored border + colored text, white bg)
-const LIST_STYLES: Record<BadgeVariant, string> = {
-  success: 'border-[#0E7C55] text-[#0E7C55] bg-white',
-  error:   'border-[#E00000] text-[#E00000] bg-white',
-  warning: 'border-[#B45309] text-[#B45309] bg-white',
-  info:    'border-[#005BA6] text-[#005BA6] bg-white',
-  neutral: 'border-[#949494] text-[#777777] bg-white',
-  primary: 'border-[#005BA6] text-[#005BA6] bg-white',
+const LIST_COLORS: Record<BadgeVariant, { color: string; border: string }> = {
+  success: { color: '#0E7C55', border: '#0E7C55' },
+  error:   { color: '#E00000', border: '#E00000' },
+  warning: { color: '#B45309', border: '#B45309' },
+  info:    { color: '#005BA6', border: '#005BA6' },
+  neutral: { color: '#4A4A4A', border: '#DCDCDC' },
+  primary: { color: '#005BA6', border: '#005BA6' },
 };
 
 const Badge: React.FC<BadgeProps> = ({
@@ -36,35 +36,82 @@ const Badge: React.FC<BadgeProps> = ({
   variant = 'neutral',
   type = 'status',
   filled = false,
-  className = '',
+  style,
 }) => {
-  const font = { fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" };
-
-  // Assignment status — large, orange-outlined rectangle; filled=true for COMPLETED state
   if (type === 'assignment') {
-    const base = 'border-2 border-[#FF9505] rounded-[4px] h-[40px] px-5 text-[13px] font-bold uppercase tracking-[0.5px] inline-flex items-center justify-center';
-    const state = filled
-      ? 'bg-[#1A1A1A] text-white'
-      : 'bg-white text-[#2B2B2B]';
-    return <span className={`${base} ${state} ${className}`} style={font}>{label}</span>;
-  }
-
-  if (type === 'list') {
     return (
       <span
-        className={`inline-flex items-center px-4 h-[28px] rounded-full text-[12px] font-bold uppercase tracking-[0.5px] border ${LIST_STYLES[variant]} ${className}`}
-        style={font}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '4px 12px',
+          borderRadius: '4px',
+          borderWidth: '2px',
+          borderStyle: 'solid',
+          borderColor: '#FF9505',
+          backgroundColor: filled ? '#FF9505' : '#FFFFFF',
+          color: filled ? '#FFFFFF' : '#FF9505',
+          fontSize: '12px',
+          fontWeight: 700,
+          fontFamily: FONT_FAMILY,
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+          ...style,
+        }}
       >
         {label}
       </span>
     );
   }
 
-  // type === 'status' (default)
+  if (type === 'list') {
+    const c = LIST_COLORS[variant];
+    return (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2px 8px',
+          borderRadius: '100px',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: c.border,
+          backgroundColor: '#FFFFFF',
+          color: c.color,
+          fontSize: '12px',
+          fontWeight: 700,
+          fontFamily: FONT_FAMILY,
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+          ...style,
+        }}
+      >
+        {label}
+      </span>
+    );
+  }
+
+  const c = STATUS_COLORS[variant];
   return (
     <span
-      className={`inline-flex items-center px-2 h-[22px] rounded-[4px] text-[12px] font-bold border ${STATUS_STYLES[variant]} ${className}`}
-      style={font}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '4px',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderColor: c.border,
+        backgroundColor: c.bg,
+        color: c.color,
+        fontSize: '12px',
+        fontWeight: 700,
+        fontFamily: FONT_FAMILY,
+        ...style,
+      }}
     >
       {label}
     </span>
