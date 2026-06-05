@@ -15,7 +15,7 @@ const injectSkeletonStyles = () => {
       overflow: hidden;
       position: relative;
       border-radius: 4px;
-      background: linear-gradient(90deg, #E8E8E8 25%, #F4F4F4 50%, #E8E8E8 75%);
+      background: linear-gradient(90deg, #DCDCDC 25%, #F1F1F1 50%, #DCDCDC 75%);
       background-size: 200% 100%;
     }
     .ps-skeleton--animate {
