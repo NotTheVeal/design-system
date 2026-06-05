@@ -1,19 +1,14 @@
-name: Fix Cart Stories v2
+# DEPRECATED — one-off cart stories v2 fix, no longer needed.
+# Cart component is stable. Ongoing fixes go through normal PRs.
+
+name: Fix Cart Stories v2 (Deprecated)
+
 on:
   workflow_dispatch:
+
 jobs:
-  fix:
+  noop:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Write fixed Cart.stories.tsx
-        run: echo "aW1wb3J0IHR5cGUgeyBNZXRhLCBTdG9yeU9iaiB9IGZyb20gJ0BzdG9yeWJvb2svcmVhY3QnOwppbXBvcnQgQ2FydCBmcm9tICcuL2NhcnQnOwoKY29uc3QgbWV0YTogTWV0YTx0eXBlb2YgQ2FydD4gPSB7CiAgdGl0bGU6ICdDb21wb25lbnRzL0NhcnQnLAogIGNvbXBvbmVudDogQ2FydCwKICB0YWdzOiBbJ2F1dG9kb2NzJ10sCn07CgpleHBvcnQgZGVmYXVsdCBtZXRhOwp0eXBlIFN0b3J5ID0gU3RvcnlPYmo8dHlwZW9mIENhcnQ+OwoKZXhwb3J0IGNvbnN0IERlZmF1bHQ6IFN0b3J5ID0gewogIGFyZ3M6IHsKICAgIGNvbG9yU2NoZW1lOiAnZnV0dXJlJywKICAgIGl0ZW1zOiBbCiAgICAgIHsKICAgICAgICBpZDogJzEnLAogICAgICAgIG5hbWU6ICdNUkkgR3JhZGllbnQgQ29pbCBBc3NlbWJseScsCiAgICAgICAgcGFydE51bWJlcjogJ0dDQS03NzIwJywKICAgICAgICBxdWFudGl0eTogMSwKICAgICAgICBwcmljZTogJyQxLDI0OS45OScsCiAgICAgIH0sCiAgICAgIHsKICAgICAgICBpZDogJzInLAogICAgICAgIG5hbWU6ICdVbHRyYXNvdW5kIFRyYW5zZHVjZXIgUHJvYmUnLAogICAgICAgIHBhcnROdW1iZXI6ICdHRS1MT0dJUS1FOScsCiAgICAgICAgcXVhbnRpdHk6IDIsCiAgICAgICAgcHJpY2U6ICckMzg5LjAwJywKICAgICAgfSwKICAgIF0sCiAgICBvbkNoZWNrb3V0OiAoKSA9PiB7fSwKICB9LAp9Owo=" | base64 -d > src/components/cart/Cart.stories.tsx
-      - name: Commit fix
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/components/cart/Cart.stories.tsx
-          git diff --staged --quiet || git commit -m "fix: update Cart.stories.tsx to match new CartItem interface"
-          git push
+      - name: Info
+        run: echo "Deprecated. Cart stories have been fixed."
