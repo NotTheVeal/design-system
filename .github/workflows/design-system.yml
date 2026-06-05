@@ -73,7 +73,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build tokens
         run: |
@@ -111,7 +111,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run tests
         run: npm test --if-present || echo "No tests configured"
@@ -131,7 +131,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build Storybook
         run: npm run build-storybook --if-present || echo "No build-storybook script"
