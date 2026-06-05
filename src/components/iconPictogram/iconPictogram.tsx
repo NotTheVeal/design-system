@@ -15,9 +15,9 @@ const sizeMap = {
 };
 
 const backgroundMap = {
-    light: 'var(--ps-color-surface-default)',
-    subtle: 'var(--ps-color-surface-subtle)',
-    dark: 'var(--ps-color-brand-secondary)',
+    light: '#FFFFFF',
+    subtle: '#FAFAFA',
+    dark: '#002F48',
 };
 
 const IconPictogram: React.FC<IconPictogramProps> = ({
@@ -30,8 +30,8 @@ const IconPictogram: React.FC<IconPictogramProps> = ({
         width: sizeMap[size],
         height: sizeMap[size],
         backgroundColor: backgroundMap[background],
-        borderRadius: 'var(--ps-border-radius-8)',
-        padding: 'var(--ps-spacing-24)',
+        borderRadius: '8px',
+        padding: '24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
