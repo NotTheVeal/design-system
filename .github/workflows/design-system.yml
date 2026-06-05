@@ -27,7 +27,7 @@ permissions:
   pull-requests: read
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '24'
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -36,132 +36,66 @@ jobs:
     name: Validate Token Files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Validate token JSON files
-        run: |
-          echo "Checking token files..."
-          FAILED=0
-          while IFS= read -r f; do
-            if node -e "try { JSON.parse(require('fs').readFileSync('$f','utf8')); process.exit(0); } catch(e) { process.exit(1); }" 2>/dev/null; then
-              echo "ok: $f"
-            else
-              echo "INVALID JSON: $f"
-              FAILED=1
-            fi
-          done < <(find tokens/ -name "*.json" 2>/dev/null || true)
-          if [ $FAILED -ne 0 ]; then
-            echo "One or more token files have invalid JSON"
-            exit 1
-          fi
-          echo "All token files valid."
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
 
-  # ─── JOB 2: Build Tokens ────────────────────────────────────────────────────
-  build-tokens:
-    name: Build Design Tokens
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Validate token references
+        run: npm run validate
+
+  # ─── JOB 2: Lint & Test Components ─────────────────────────────────────────
+  lint-and-test:
+    name: Lint and Test
     runs-on: ubuntu-latest
     needs: validate-tokens
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build tokens
-        run: |
-          if grep -q '"build:tokens"' package.json 2>/dev/null; then
-            npm run build:tokens
-          elif [ -f "style-dictionary.config.js" ] || [ -f "config.json" ]; then
-            npx style-dictionary build
-          else
-            echo "No token build script — skipping"
-          fi
-
-      - name: Commit built tokens
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/tokens/ dist/ build/ 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "No token output changes — skipping push"
-          else
-            git commit -m "chore: rebuild tokens [pipeline]"
-            git pull --rebase
-            git push
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Remove tracked artifacts from git (storybook-static, node_modules)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          CHANGED=0
-          for DIR in storybook-static node_modules; do
-            COUNT=$(git ls-files "$DIR" | wc -l | tr -d ' ')
-            if [ "$COUNT" -gt 0 ]; then
-              echo "Removing $DIR/ from git tracking ($COUNT files)..."
-              git ls-files "$DIR" | xargs -r git rm --cached --ignore-unmatch --
-              CHANGED=1
-            else
-              echo "$DIR/ is already untracked — skipping"
-            fi
-          done
-          if [ $CHANGED -eq 1 ]; then
-            git commit -m "chore: remove build artifacts from git tracking (covered by .gitignore)"
-            git pull --rebase origin main
-            git push
-          else
-            echo "No artifact directories to untrack — nothing to do"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ─── JOB 3: Run Tests ───────────────────────────────────────────────────────
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    needs: build-tokens
     if: ${{ !inputs.skip_tests }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Run tests
-        run: npm test --if-present || echo "No tests configured"
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
 
-  # ─── JOB 4: Build Storybook ─────────────────────────────────────────────────
+      - name: Test
+        run: npm test -- --passWithNoTests
+        continue-on-error: true
+
+  # ─── JOB 3: Build Storybook ────────────────────────────────────────────────
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
-    needs: build-tokens
+    needs: validate-tokens
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
       - name: Build Storybook
-        run: npm run build-storybook --if-present || echo "No build-storybook script"
+        run: npm run build-storybook
+        continue-on-error: true
