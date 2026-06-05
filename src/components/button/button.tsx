@@ -1,75 +1,109 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'tertiary';
   size?: 'lg' | 'sm';
   disabled?: boolean;
-  className?: string;
+  style?: React.CSSProperties;
   children?: React.ReactNode;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
+
+const FONT = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'lg',
   disabled = false,
-  className,
+  style,
   children,
   onClick,
   ...rest
 }) => {
+  const [hovered, setHovered] = useState(false);
+  const [active, setActive]   = useState(false);
+
+  const base: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderStyle: 'solid',
+    borderRadius: '4px',
+    fontFamily: FONT,
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 200ms ease',
+    outline: 'none',
+    userSelect: 'none',
+  };
 
   if (disabled) {
-    const sizeStyle = size === 'lg'
-      ? 'h-[50px] px-6 text-[15px] font-semibold uppercase tracking-wide'
-      : size === 'sm'
-      ? 'h-[32px] px-4 text-[14px] font-semibold'
-      : 'h-[40px] px-6 text-[15px] font-semibold';
+    const sz: React.CSSProperties = size === 'lg'
+      ? { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.08em' }
+      : { height: '32px', padding: '0 16px', fontSize: '14px' };
     return (
       <button
-        className={`border rounded-[4px] transition-all cursor-not-allowed bg-[#DCDCDC] border-[#777777] text-[#777777] ${sizeStyle} ${className ?? ''}`}
-        disabled
-        tabIndex={-1}
-        style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
         {...rest}
+        disabled
+        style={{ ...base, ...sz, borderWidth: '1px', borderColor: '#777777', backgroundColor: '#DCDCDC', color: '#777777', cursor: 'not-allowed', ...style }}
       >
         {children}
       </button>
     );
   }
 
-  const getStyles = () => {
-    if (variant === 'secondary' && size === 'sm') {
-      return {
-        base: 'border rounded-[4px] transition-all duration-200 focus:outline-none',
-        visual: 'bg-white border-[#DCDCDC] text-[#4A4A4A] hover:bg-[#005BA6] hover:border-[#005BA6] hover:text-white active:bg-[#004A84] active:border-[#004A84] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
-        sizing: 'h-[32px] px-4 text-[14px] font-semibold',
-      };
-    }
-    if (variant === 'tertiary') {
-      return {
-        base: 'rounded-full border-0 transition-all duration-200 focus:outline-none',
-        visual: 'bg-[#F1F1F1] text-[#2B2B2B] hover:bg-[#DCDCDC] active:bg-[#CCCCCC] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
-        sizing: 'h-[40px] px-6 text-[15px] font-semibold',
-      };
-    }
-    // Primary (default) — outline → fills on hover, border stays brand blue
-    return {
-      base: 'border-2 rounded-[4px] transition-all duration-200 focus:outline-none',
-      visual: 'bg-white border-[#005BA6] text-[#005BA6] hover:bg-[#005BA6] hover:border-[#005BA6] hover:text-white active:bg-[#004A84] active:border-[#004A84] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
-      sizing: 'h-[50px] px-6 text-[15px] font-semibold uppercase tracking-wide',
-    };
-  };
+  if (variant === 'tertiary') {
+    const bg = active ? '#CCCCCC' : hovered ? '#DCDCDC' : '#F1F1F1';
+    return (
+      <button
+        {...rest}
+        onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => { setHovered(false); setActive(false); }}
+        onMouseDown={() => setActive(true)}
+        onMouseUp={() => setActive(false)}
+        style={{ ...base, height: '40px', padding: '0 24px', fontSize: '15px', borderRadius: '100px', borderWidth: '0', backgroundColor: bg, color: '#2B2B2B', ...style }}
+      >
+        {children}
+      </button>
+    );
+  }
 
-  const { base, visual, sizing } = getStyles();
+  if (variant === 'secondary') {
+    const bg = active ? '#004A84' : hovered ? '#005BA6' : '#FFFFFF';
+    const clr = hovered || active ? '#FFFFFF' : '#4A4A4A';
+    const bdr = hovered || active ? '#005BA6' : '#DCDCDC';
+    return (
+      <button
+        {...rest}
+        onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => { setHovered(false); setActive(false); }}
+        onMouseDown={() => setActive(true)}
+        onMouseUp={() => setActive(false)}
+        style={{ ...base, height: '32px', padding: '0 16px', fontSize: '14px', borderWidth: '1px', borderColor: bdr, backgroundColor: bg, color: clr, ...style }}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  // Primary — outline → fills on hover
+  const bg = active ? '#004A84' : hovered ? '#005BA6' : '#FFFFFF';
+  const clr = hovered || active ? '#FFFFFF' : '#005BA6';
+  const sz: React.CSSProperties = size === 'sm'
+    ? { height: '32px', padding: '0 16px', fontSize: '14px' }
+    : { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.08em' };
 
   return (
     <button
-      className={`${base} ${visual} ${sizing} ${className ?? ''}`}
-      onClick={onClick}
-      style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
       {...rest}
-      tabIndex={0}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setActive(false); }}
+      onMouseDown={() => setActive(true)}
+      onMouseUp={() => setActive(false)}
+      style={{ ...base, ...sz, borderWidth: '2px', borderColor: '#005BA6', backgroundColor: bg, color: clr, ...style }}
     >
       {children}
     </button>
