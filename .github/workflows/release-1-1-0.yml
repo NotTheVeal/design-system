@@ -1,32 +1,14 @@
-name: Release v1.1.0
+# DEPRECATED — one-off v1.1.0 release script, no longer needed.
+# Future releases are handled by publish.yml (workflow_dispatch with version input).
+
+name: Release 1.1.0 (Deprecated)
+
 on:
   workflow_dispatch:
+
 jobs:
-  release:
+  noop:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Bump version to 1.1.0
-        run: npm version 1.1.0 --no-git-tag-version
-      - name: Prepend CHANGELOG entry
-        run: |
-          NEW=$(echo "IyMgWzEuMS4wXSAtIDIwMjYtMDYtMDMKCiMjIyBBZGRlZAotIGBjb2xvclNjaGVtZWAgcHJvcCAoYCdjdXJyZW50JyB8ICdmdXR1cmUnYCkgb24gOCBvcmFuZ2UtcHJpbWFyeSBjb21wb25lbnRzOiBDYXJ0LCBDaGVja2JveCwgRGF0ZVBpY2tlciwgTW9kYWwsIFByb2R1Y3RDYXJkLCBSYWRpbywgU3RlcHBlciwgVG9nZ2xlCi0gYGZ1dHVyZWAgdmFyaWFudCB1c2VzIFBTIEJsdWUgYCMwMDVCQTZgIOKAlCBBREEtY29tcGxpYW50ICg0Ljg6MSBjb250cmFzdCByYXRpbykKLSBgY3VycmVudGAgdmFyaWFudCBwcmVzZXJ2ZXMgbGVnYWN5IE9yYW5nZSBgI0ZGOTUwNWAgZm9yIGJhY2t3YXJkIGNvbXBhdGliaWxpdHkgKGRlcHJlY2F0ZWQsIDIuOToxIOKAlCBkbyBub3QgdXNlIGluIG5ldyB3b3JrKQotIFNpZGUtYnktU2lkZSBhbmQgaW5kaXZpZHVhbCBDdXJyZW50L0Z1dHVyZSBTdG9yeWJvb2sgc3RvcmllcyBmb3IgYWxsIDggY29tcG9uZW50cwotIENocm9tYXRpYyB2aXN1YWwgYmFzZWxpbmVzIGVzdGFibGlzaGVkIGZvciBhbGwgbmV3IHN0b3JpZXMgKEJ1aWxkIDUyKQoKIyMjIE1pZ3JhdGlvbgpSZXBsYWNlIG9yYW5nZS1wcmltYXJ5IGNvbXBvbmVudCB1c2FnZSB3aXRoIGBjb2xvclNjaGVtZT0iZnV0dXJlImAgdG8gb3B0IGludG8gdGhlIEFEQS1jb21wbGlhbnQgYmx1ZToKCmBgYHRzeAovLyBCZWZvcmUKPENoZWNrYm94IGNoZWNrZWQ9e3RydWV9IC8+CgovLyBBZnRlciAoQURBIGNvbXBsaWFudCkKPENoZWNrYm94IGNoZWNrZWQ9e3RydWV9IGNvbG9yU2NoZW1lPSJmdXR1cmUiIC8+CmBgYAoKVGhlIGBjb2xvclNjaGVtZWAgcHJvcCBkZWZhdWx0cyB0byBgJ2Z1dHVyZSdgIG9uIGFsbCB1cGRhdGVkIGNvbXBvbmVudHMuCgo=" | base64 -d)
-          OLD=$(cat CHANGELOG.md 2>/dev/null || echo "# Changelog")
-          printf '%s\n\n%s\n' "$NEW" "$OLD" > CHANGELOG.md
-      - name: Commit and tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json CHANGELOG.md
-          git commit -m "chore: release v1.1.0"
-          git tag v1.1.0
-          git push origin main
-          git push origin v1.1.0
+      - name: Info
+        run: echo "This one-off release workflow is deprecated. Use publish.yml for releases."
