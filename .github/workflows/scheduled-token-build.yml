@@ -1,0 +1,63 @@
+name: Scheduled Token Pipeline
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if tokens changed recently
+        id: check
+        run: |
+          RECENT=$(git log --since="20 minutes ago" --oneline -- tokens/ | head -1)
+          if [ -n "$RECENT" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Recent token change: $RECENT"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No recent token changes — skipping"
+          fi
+
+      - name: Set up Node.js
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
+        run: npm ci
+
+      - name: Build design tokens
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          if grep -q '"build:tokens"' package.json 2>/dev/null; then
+            npm run build:tokens
+          elif [ -f "style-dictionary.config.js" ] || [ -f "config.json" ]; then
+            npx style-dictionary build
+          else
+            echo "No token build script found — skipping"
+          fi
+
+      - name: Commit any rebuilt output
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/ build/ src/tokens/ 2>/dev/null || true
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: auto-rebuild tokens [scheduled]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
