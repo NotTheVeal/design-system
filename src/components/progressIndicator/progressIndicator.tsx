@@ -1,87 +1,149 @@
 import React from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
 interface ProgressIndicatorProps {
-  steps: { label: string; status: 'complete' | 'active' | 'inactive' }[];
+  /** 0â100 for bar mode, or use steps */
+  value?: number;
+  /** Total steps for step mode */
+  totalSteps?: number;
+  /** Current step (1-based) for step mode */
+  currentStep?: number;
+  /** Labels for each step */
+  labels?: string[];
+  /** Height of the progress bar in px */
+  height?: number;
+  /** Show percentage label */
+  showLabel?: boolean;
   className?: string;
-  currentStep: number;
 }
 
-const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ steps, className, currentStep }) => {
+const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
+  value,
+  totalSteps,
+  currentStep = 1,
+  labels = [],
+  height = 8,
+  showLabel = false,
+  className = '',
+}) => {
+
+  // Step mode
+  if (totalSteps) {
+    return (
+      <div className={className} style={{ fontFamily, width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
+          {Array.from({ length: totalSteps }, (_, i) => {
+            const stepNum = i + 1;
+            const isCompleted = stepNum < currentStep;
+            const isActive = stepNum === currentStep;
+            const label = labels[i];
+
+            return (
+              <div
+                key={i}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  position: 'relative',
+                }}
+              >
+                {/* Connector line */}
+                {i > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 11,
+                      left: '-50%',
+                      width: '100%',
+                      height: 2,
+                      background: isCompleted || isActive ? '#005BA6' : '#DCDCDC',
+                      zIndex: 0,
+                    }}
+                  />
+                )}
+                {/* Step circle */}
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: isCompleted || isActive ? '#005BA6' : '#FFFFFF',
+                    border: `2px solid ${isCompleted || isActive ? '#005BA6' : '#DCDCDC'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    zIndex: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {isCompleted ? (
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="2 6 5 9 10 3" />
+                    </svg>
+                  ) : (
+                    <span style={{ fontSize: 11, fontWeight: 600, color: isActive ? '#FFFFFF' : '#949494', fontFamily }}>
+                      {stepNum}
+                    </span>
+                  )}
+                </div>
+                {/* Step label */}
+                {label && (
+                  <span style={{
+                    marginTop: 6,
+                    fontSize: 12,
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? '#005BA6' : isCompleted ? '#4A4A4A' : '#777777',
+                    textAlign: 'center',
+                    fontFamily,
+                  }}>
+                    {label}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Bar mode
+  const pct = Math.min(100, Math.max(0, value ?? 0));
   return (
-    <div className={`progress-indicator ${className}`}>
-      <style jsx>{`
-        :root {
-          --ps-primary-color: #005BA6;
-          --ps-background-color: #ffffff;
-          --ps-border-color: #DCDCDC;
-          --ps-text-secondary: #6B6B6B;
-          --ps blue: #005BA6;
-          --ps-font-family: 'Source Sans Pro', sans-serif;
-          --ps-progress-height: 8px;
-          --ps-progress-radius: 100px;
-          --ps-label-color: var(--ps-text-secondary);
-          --ps-label-font-size: 13px;
-          --ps-label-font-weight: 400;
-          --ps-label-gap: 8px;
-        }
-
-        .progress-indicator {
-          font-family: var(--ps-font-family);
-          width: 100%;
-          display: flex;
-          align-items: center;
-        }
-
-        .step {
-          position: relative;
-          flex: 1;
-          text-align: center;
-        }
-
-        .step-label {
-          color: var(--ps-label-color);
-          font-size: var(--ps-label-font-size);
-          font-weight: var(--ps-label-font-weight);
-          margin-bottom: var(--ps-label-gap);
-        }
-
-        .step-node {
-          width: var(--ps-progress-height);
-          height: var(--ps-progress-height);
-          border-radius: 100px;
-          display: inline-block;
-          transition: background 0.3s;
-        }
-
-        .connector {
-          height: 2px;
-          background-color: var(--ps-border-color);
-          flex: 1;
-          margin: auto 0;
-        }
-
-        .step.complete .step-node {
-          background-color: var(--ps-primary-color);
-        }
-
-        .step.active .step-node {
-          background-color: var(--ps-background-color);
-          border: 2px solid var(--ps-primary-color);
-        }
-
-        .step.inactive .step-node {
-          background-color: var(--ps-border-color);
-        }
-      `}</style>
-      {steps.map((step, index) => (
-        <React.Fragment key={index}>
-          <div className={`step ${step.status}`}>
-            <div className="step-node" />
-            <div className="step-label">{step.label}</div>
-          </div>
-          {index < steps.length - 1 && <div className="connector" />}
-        </React.Fragment>
-      ))}
+    <div className={className} style={{ fontFamily, width: '100%' }}>
+      {showLabel && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12, color: '#777777', fontFamily }}>
+          <span>Progress</span>
+          <span style={{ fontWeight: 600, color: '#4A4A4A' }}>{pct}%</span>
+        </div>
+      )}
+      <div
+        role="progressbar"
+        aria-valuenow={pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        style={{
+          width: '100%',
+          height,
+          background: '#DCDCDC',
+          borderRadius: height / 2,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            background: '#005BA6',
+            borderRadius: height / 2,
+            transition: 'width 300ms ease',
+          }}
+        />
+      </div>
     </div>
   );
 };
