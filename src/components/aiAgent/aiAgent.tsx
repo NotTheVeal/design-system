@@ -1,101 +1,264 @@
 import React, { useState } from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
 interface Message {
-  id: string | number;
   role: 'user' | 'assistant';
   content: string;
-  timestamp?: string;
 }
 
 interface AiAgentProps {
+  agentName?: string;
   messages?: Message[];
   onSend?: (message: string) => void;
   placeholder?: string;
-  agentName?: string;
-  agentAvatar?: string;
-  isLoading?: boolean;
   className?: string;
 }
 
+const SendIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="14" y1="2" x2="6" y2="10" />
+    <polyline points="14 2 9 14 6 10 2 7 14 2" />
+  </svg>
+);
+
 const AiAgent: React.FC<AiAgentProps> = ({
+  agentName = 'AI',
   messages = [],
   onSend,
-  placeholder = 'Ask a question...',
-  agentName = 'AI Assistant',
-  isLoading = false,
+  placeholder = 'Type a messageâ¦',
   className = '',
 }) => {
-  const [input, setInput] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [focused, setFocused] = useState(false);
+  const [sendHovered, setSendHovered] = useState(false);
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    onSend?.(input.trim());
-    setInput('');
+    const trimmed = inputValue.trim();
+    if (!trimmed) return;
+    onSend?.(trimmed);
+    setInputValue('');
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
+
+  const initials = agentName.slice(0, 2).toUpperCase();
 
   return (
-    <div className={`flex flex-col bg-white border border-[#DCDCDC] rounded-[8px] shadow-[0_1px_4px_rgba(0,47,72,0.08)] overflow-hidden ${className}`}>
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#DCDCDC] bg-[#FAFAFA]">
-        <div className="w-[32px] h-[32px] rounded-full bg-[#005BA6] flex items-center justify-center text-white text-[14px] font-bold select-none">
-          AI
+    <div
+      className={className}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#FFFFFF',
+        border: '1px solid #DCDCDC',
+        borderRadius: 8,
+        boxShadow: '0 1px 4px rgba(0,47,72,0.08)',
+        overflow: 'hidden',
+        fontFamily,
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          padding: '12px 16px',
+          borderBottom: '1px solid #DCDCDC',
+          background: '#FAFAFA',
+        }}
+      >
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            background: '#005BA6',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            fontSize: 14,
+            fontWeight: 700,
+            userSelect: 'none',
+            flexShrink: 0,
+            fontFamily,
+          }}
+        >
+          {initials}
         </div>
-        <span className="text-[14px] font-semibold text-[#4A4A4A]">{agentName}</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 text-[12px] text-[#0E7C55]">
-          <span className="w-[6px] h-[6px] rounded-full bg-[#17AB78]" />
-          Active
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: '#4A4A4A',
+            fontFamily,
+          }}
+        >
+          {agentName}
         </span>
+        <div
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 12,
+            color: '#0E7C55',
+            fontFamily,
+          }}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: '#17AB78',
+              display: 'inline-block',
+            }}
+          />
+          Online
+        </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-4 flex flex-col gap-3 min-h-[200px]">
+      {/* Messages */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          minHeight: 200,
+        }}
+      >
         {messages.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center text-[14px] text-[#949494]">
-            Start a conversation...
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 14,
+              color: '#949494',
+              fontFamily,
+            }}
+          >
+            Start a conversationâ¦
           </div>
         ) : (
-          messages.map((msg) => (
-            <div key={msg.id} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          messages.map((msg, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                gap: 8,
+                justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+              }}
+            >
               {msg.role === 'assistant' && (
-                <div className="w-[28px] h-[28px] rounded-full bg-[#005BA6] flex-shrink-0 flex items-center justify-center text-white text-[11px] font-bold">AI</div>
+                <div
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: '#005BA6',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    fontFamily,
+                  }}
+                >
+                  {initials}
+                </div>
               )}
-              <div className={`max-w-[80%] px-3 py-2 rounded-[8px] text-[14px] ${msg.role === 'user' ? 'bg-[#005BA6] text-white rounded-tr-[2px]' : 'bg-[#F1F1F1] text-[#4A4A4A] rounded-tl-[2px]'}`}>
+              <div
+                style={{
+                  maxWidth: '80%',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                  borderTopLeftRadius: msg.role === 'assistant' ? 2 : 8,
+                  borderTopRightRadius: msg.role === 'user' ? 2 : 8,
+                  fontSize: 14,
+                  background: msg.role === 'user' ? '#005BA6' : '#F1F1F1',
+                  color: msg.role === 'user' ? '#FFFFFF' : '#4A4A4A',
+                  fontFamily,
+                  lineHeight: 1.5,
+                }}
+              >
                 {msg.content}
               </div>
             </div>
           ))
         )}
-        {isLoading && (
-          <div className="flex gap-2 justify-start">
-            <div className="w-[28px] h-[28px] rounded-full bg-[#005BA6] flex-shrink-0 flex items-center justify-center text-white text-[11px] font-bold">AI</div>
-            <div className="bg-[#F1F1F1] rounded-[8px] rounded-tl-[2px] px-3 py-2 flex items-center gap-1">
-              {[0,1,2].map(i => (
-                <span key={i} className="w-[6px] h-[6px] rounded-full bg-[#949494] animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
-      <div className="px-4 py-3 border-t border-[#DCDCDC]">
-        <div className="flex items-end gap-2">
+      {/* Input */}
+      <div
+        style={{
+          padding: '12px 16px',
+          borderTop: '1px solid #DCDCDC',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
           <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             placeholder={placeholder}
             rows={1}
-            className="flex-1 resize-none border border-[#DCDCDC] rounded-[4px] px-3 py-2 text-[14px] text-[#4A4A4A] placeholder-[#949494] focus:outline-none focus:border-[#005BA6] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)] transition-all"
+            style={{
+              flex: 1,
+              resize: 'none',
+              border: `1px solid ${focused ? '#005BA6' : '#DCDCDC'}`,
+              borderRadius: 4,
+              padding: '8px 12px',
+              fontSize: 14,
+              color: '#4A4A4A',
+              fontFamily,
+              outline: 'none',
+              boxShadow: focused ? '0 0 0 3px rgba(0,147,244,0.3)' : 'none',
+              transition: 'border-color 150ms ease, box-shadow 150ms ease',
+            }}
           />
           <button
+            type="button"
             onClick={handleSend}
-            disabled={!input.trim()}
-            aria-label="Send message"
-            className="flex-shrink-0 h-[36px] px-4 bg-[#005BA6] text-white text-[14px] font-semibold rounded-[4px] hover:bg-[#004A84] disabled:bg-[#DCDCDC] disabled:cursor-not-allowed transition-colors"
+            disabled={!inputValue.trim()}
+            onMouseEnter={() => setSendHovered(true)}
+            onMouseLeave={() => setSendHovered(false)}
+            style={{
+              flexShrink: 0,
+              height: 36,
+              padding: '0 16px',
+              background: !inputValue.trim() ? '#DCDCDC' : sendHovered ? '#004A84' : '#005BA6',
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 600,
+              borderRadius: 4,
+              border: 'none',
+              cursor: !inputValue.trim() ? 'not-allowed' : 'pointer',
+              fontFamily,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'background 150ms ease',
+            }}
           >
-            Send
+            <SendIcon />
           </button>
         </div>
       </div>
