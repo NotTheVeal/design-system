@@ -100,16 +100,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Remove storybook-static from git tracking
+      - name: Remove tracked artifacts from git (storybook-static, node_modules)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git ls-files --error-unmatch storybook-static/ >/dev/null 2>&1; then
-            git rm -r --cached storybook-static/
-            git diff --cached --quiet && echo "Already untracked" || git commit -m "chore: remove storybook-static from git tracking (covered by .gitignore)"
+          CHANGED=0
+          for DIR in storybook-static node_modules; do
+            if git ls-files --error-unmatch "$DIR/" >/dev/null 2>&1; then
+              echo "Removing $DIR/ from git tracking..."
+              git rm -r --cached "$DIR/"
+              CHANGED=1
+            else
+              echo "$DIR/ is already untracked — skipping"
+            fi
+          done
+          if [ $CHANGED -eq 1 ]; then
+            git commit -m "chore: remove build artifacts from git tracking (covered by .gitignore)"
+            git pull --rebase
             git push
           else
-            echo "storybook-static/ is already untracked — nothing to do"
+            echo "No artifact directories to untrack — nothing to do"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
