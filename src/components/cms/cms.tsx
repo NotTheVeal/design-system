@@ -1,4 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
+interface GridItem {
+  icon?: React.ReactNode;
+  title: string;
+  body?: string;
+}
 
 interface CmsBlockProps {
   type: 'hero' | 'text' | 'image' | 'cta' | 'grid' | 'divider';
@@ -6,10 +14,40 @@ interface CmsBlockProps {
   subtitle?: string;
   body?: string;
   image?: { src: string; alt: string };
-  action?: { label: string; href?: string; onClick?: () => void };
-  items?: Array<{ title: string; body: string; icon?: React.ReactNode }>;
+  items?: GridItem[];
+  label?: string;
+  onClick?: () => void;
   className?: string;
 }
+
+const CtaButton: React.FC<{ label: string; onClick?: () => void }> = ({ label, onClick }) => {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 50,
+        padding: '0 32px',
+        background: hovered ? '#004A84' : '#005BA6',
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 600,
+        borderRadius: 4,
+        border: '2px solid #005BA6',
+        cursor: 'pointer',
+        fontFamily,
+        transition: 'background 150ms ease',
+      }}
+    >
+      {label}
+    </button>
+  );
+};
 
 const CmsBlock: React.FC<CmsBlockProps> = ({
   type,
@@ -17,76 +55,316 @@ const CmsBlock: React.FC<CmsBlockProps> = ({
   subtitle,
   body,
   image,
-  action,
   items = [],
+  label,
+  onClick,
   className = '',
 }) => {
-  const Action = action ? (
-    <a href={action.href} onClick={action.onClick}
-      className="inline-flex items-center h-[50px] px-8 bg-[#005BA6] text-white text-[16px] font-semibold rounded-[4px] hover:bg-[#004A84] transition-colors border-2 border-[#005BA6]">
-      {action.label}
-    </a>
-  ) : null;
+  if (type === 'divider') {
+    return (
+      <hr
+        className={className}
+        style={{
+          width: '100%',
+          border: 'none',
+          borderTop: '1px solid #DCDCDC',
+          margin: '0',
+        }}
+      />
+    );
+  }
 
   if (type === 'hero') {
     return (
-      <section className={`w-full py-20 px-6 text-center bg-[#002F48] text-white ${className}`}>
-        {subtitle && <p className="text-[14px] font-semibold text-[#009CF4] uppercase tracking-widest mb-4">{subtitle}</p>}
-        {title && <h1 className="text-[48px] font-light text-white mb-6 leading-tight max-w-[800px] mx-auto">{title}</h1>}
-        {body && <p className="text-[18px] text-white opacity-80 mb-8 max-w-[600px] mx-auto">{body}</p>}
-        {Action}
-      </section>
+      <div
+        className={className}
+        style={{
+          width: '100%',
+          padding: '80px 24px',
+          textAlign: 'center',
+          background: '#002F48',
+          color: '#FFFFFF',
+          fontFamily,
+          boxSizing: 'border-box',
+        }}
+      >
+        {subtitle && (
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: '#009CF4',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: 16,
+              fontFamily,
+            }}
+          >
+            {subtitle}
+          </div>
+        )}
+        {title && (
+          <h1
+            style={{
+              fontSize: 48,
+              fontWeight: 300,
+              color: '#FFFFFF',
+              lineHeight: 1.2,
+              maxWidth: 800,
+              margin: '0 auto 24px',
+              fontFamily,
+            }}
+          >
+            {title}
+          </h1>
+        )}
+        {body && (
+          <p
+            style={{
+              fontSize: 18,
+              color: '#FFFFFF',
+              opacity: 0.8,
+              maxWidth: 600,
+              margin: '0 auto 32px',
+              fontFamily,
+              lineHeight: 1.6,
+            }}
+          >
+            {body}
+          </p>
+        )}
+        {label && <CtaButton label={label} onClick={onClick} />}
+      </div>
     );
   }
 
   if (type === 'image') {
     return (
-      <div className={`w-full overflow-hidden rounded-[4px] ${className}`}>
-        {image && <img src={image.src} alt={image.alt} className="w-full h-auto object-cover" />}
-        {title && <p className="mt-2 text-[12px] text-[#777777] text-center">{title}</p>}
+      <div
+        className={className}
+        style={{
+          width: '100%',
+          overflow: 'hidden',
+          borderRadius: 4,
+          boxSizing: 'border-box',
+        }}
+      >
+        {image && (
+          <>
+            <img
+              src={image.src}
+              alt={image.alt}
+              style={{ width: '100%', height: 'auto', objectFit: 'cover', display: 'block' }}
+            />
+            {image.alt && (
+              <div
+                style={{
+                  marginTop: 8,
+                  fontSize: 12,
+                  color: '#777777',
+                  textAlign: 'center',
+                  fontFamily,
+                }}
+              >
+                {image.alt}
+              </div>
+            )}
+          </>
+        )}
       </div>
     );
   }
 
   if (type === 'cta') {
     return (
-      <section className={`w-full py-16 px-6 text-center bg-[#EFF9FE] rounded-[8px] ${className}`}>
-        {title && <h2 className="text-[32px] font-light text-[#002F48] mb-4">{title}</h2>}
-        {body && <p className="text-[16px] text-[#777777] mb-8 max-w-[500px] mx-auto">{body}</p>}
-        {Action}
-      </section>
+      <div
+        className={className}
+        style={{
+          width: '100%',
+          padding: '64px 24px',
+          textAlign: 'center',
+          background: '#EFF9FE',
+          borderRadius: 8,
+          fontFamily,
+          boxSizing: 'border-box',
+        }}
+      >
+        {title && (
+          <h2
+            style={{
+              fontSize: 32,
+              fontWeight: 300,
+              color: '#002F48',
+              marginBottom: 16,
+              fontFamily,
+            }}
+          >
+            {title}
+          </h2>
+        )}
+        {subtitle && (
+          <p
+            style={{
+              fontSize: 16,
+              color: '#777777',
+              maxWidth: 500,
+              margin: '0 auto 32px',
+              fontFamily,
+              lineHeight: 1.6,
+            }}
+          >
+            {subtitle}
+          </p>
+        )}
+        {label && <CtaButton label={label} onClick={onClick} />}
+      </div>
     );
   }
 
   if (type === 'grid') {
     return (
-      <section className={`w-full py-12 px-6 ${className}`}>
-        {title && <h2 className="text-[28px] font-semibold text-[#002F48] mb-8 text-center">{title}</h2>}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        className={className}
+        style={{
+          width: '100%',
+          padding: '48px 24px',
+          fontFamily,
+          boxSizing: 'border-box',
+        }}
+      >
+        {title && (
+          <h2
+            style={{
+              fontSize: 28,
+              fontWeight: 600,
+              color: '#002F48',
+              marginBottom: 32,
+              textAlign: 'center',
+              fontFamily,
+            }}
+          >
+            {title}
+          </h2>
+        )}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 24,
+          }}
+        >
           {items.map((item, i) => (
-            <div key={i} className="flex flex-col gap-3 p-6 bg-white border border-[#DCDCDC] rounded-[8px] shadow-[0_1px_4px_rgba(0,47,72,0.08)]">
-              {item.icon && <div className="w-[48px] h-[48px] rounded-full bg-[#EFF9FE] flex items-center justify-center text-[#005BA6]">{item.icon}</div>}
-              <h3 className="text-[16px] font-semibold text-[#4A4A4A]">{item.title}</h3>
-              <p className="text-[14px] text-[#777777] leading-relaxed">{item.body}</p>
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                padding: 24,
+                background: '#FFFFFF',
+                border: '1px solid #DCDCDC',
+                borderRadius: 8,
+                boxShadow: '0 1px 4px rgba(0,47,72,0.08)',
+              }}
+            >
+              {item.icon && (
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    background: '#EFF9FE',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#005BA6',
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.icon}
+                </div>
+              )}
+              <div
+                style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: '#4A4A4A',
+                  fontFamily,
+                }}
+              >
+                {item.title}
+              </div>
+              {item.body && (
+                <div
+                  style={{
+                    fontSize: 14,
+                    color: '#777777',
+                    lineHeight: 1.6,
+                    fontFamily,
+                  }}
+                >
+                  {item.body}
+                </div>
+              )}
             </div>
           ))}
         </div>
-      </section>
+      </div>
     );
   }
 
-  if (type === 'divider') {
-    return <div className={`w-full h-[1px] bg-[#DCDCDC] ${className}`} />;
-  }
-
-  // default: text
+  // type === 'text'
   return (
-    <section className={`w-full py-8 px-6 ${className}`}>
-      {title && <h2 className="text-[28px] font-semibold text-[#002F48] mb-4">{title}</h2>}
-      {subtitle && <p className="text-[16px] font-semibold text-[#005BA6] mb-3">{subtitle}</p>}
-      {body && <p className="text-[16px] text-[#4A4A4A] leading-relaxed mb-6">{body}</p>}
-      {Action}
-    </section>
+    <div
+      className={className}
+      style={{
+        width: '100%',
+        padding: '48px 24px',
+        fontFamily,
+        boxSizing: 'border-box',
+      }}
+    >
+      {subtitle && (
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 600,
+            color: '#005BA6',
+            marginBottom: 12,
+            fontFamily,
+          }}
+        >
+          {subtitle}
+        </div>
+      )}
+      {title && (
+        <h2
+          style={{
+            fontSize: 28,
+            fontWeight: 600,
+            color: '#002F48',
+            marginBottom: 16,
+            fontFamily,
+          }}
+        >
+          {title}
+        </h2>
+      )}
+      {body && (
+        <p
+          style={{
+            fontSize: 16,
+            color: '#4A4A4A',
+            lineHeight: 1.6,
+            marginBottom: 24,
+            fontFamily,
+          }}
+        >
+          {body}
+        </p>
+      )}
+      {label && <CtaButton label={label} onClick={onClick} />}
+    </div>
   );
 };
 
