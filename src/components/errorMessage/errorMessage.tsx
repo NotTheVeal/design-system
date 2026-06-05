@@ -1,25 +1,60 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
+
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
 interface ErrorMessageProps {
-  message: string;
   title?: string;
+  message?: string;
+  children?: React.ReactNode;
   className?: string;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, title, className = '' }) => (
+const ErrorMessage: React.FC<ErrorMessageProps> = ({
+  title,
+  message,
+  children,
+  className = '',
+}) => (
   <div
+    className={className}
     role="alert"
-    className={`flex items-start gap-3 p-4 bg-[#FACBCB] border border-[#FF0000] rounded-[4px] ${className}`}
+    style={{
+      display: 'flex',
+      gap: 12,
+      padding: '12px 16px',
+      background: '#FACBCB',
+      borderRadius: 4,
+      fontFamily,
+    }}
   >
-    <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-[#FF0000] text-white mt-0.5">
-      <AlertCircle size={12} strokeWidth={2.5} />
+    <span
+      style={{
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 20,
+        height: 20,
+        borderRadius: '50%',
+        background: '#E00000',
+        color: '#FFFFFF',
+        marginTop: 2,
+      }}
+    >
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <line x1="6" y1="4" x2="6" y2="6.5" />
+        <circle cx="6" cy="9" r="0.5" fill="currentColor" stroke="none" />
+      </svg>
     </span>
     <div>
       {title && (
-        <p className="text-[14px] font-semibold text-[#E00000] mb-0.5">{title}</p>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#E00000', marginBottom: 2, fontFamily }}>
+          {title}
+        </div>
       )}
-      <p className="text-[14px] text-[#E00000]">{message}</p>
+      <div style={{ fontSize: 14, color: '#E00000', fontFamily }}>
+        {message ?? children}
+      </div>
     </div>
   </div>
 );
