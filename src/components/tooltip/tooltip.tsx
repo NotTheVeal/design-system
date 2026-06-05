@@ -1,82 +1,98 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
+// One-time global style injection
+const STYLE_ID = 'ps-tooltip-styles';
+const injectTooltipStyles = () => {
+  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = STYLE_ID;
+  style.textContent = `
+    .ps-tooltip-wrapper { position: relative; display: inline-flex; }
+    .ps-tooltip-bubble {
+      position: absolute;
+      z-index: 500;
+      background: #323232;
+      color: #FFFFFF;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      max-width: 240px;
+      white-space: normal;
+      word-break: break-word;
+      box-shadow: 0 2px 10px rgba(0,47,72,0.15);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+    .ps-tooltip-bubble.visible { opacity: 1; }
+
+    /* Placement: top (default) */
+    .ps-tooltip-bubble.top    { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
+    .ps-tooltip-bubble.bottom { top: calc(100% + 8px);    left: 50%; transform: translateX(-50%); }
+    .ps-tooltip-bubble.left   { right: calc(100% + 8px);  top: 50%;  transform: translateY(-50%); }
+    .ps-tooltip-bubble.right  { left: calc(100% + 8px);   top: 50%;  transform: translateY(-50%); }
+
+    /* Arrow */
+    .ps-tooltip-bubble::after {
+      content: '';
+      position: absolute;
+      border: 5px solid transparent;
+    }
+    .ps-tooltip-bubble.top::after    { top: 100%;  left: 50%; transform: translateX(-50%); border-top-color: #323232; }
+    .ps-tooltip-bubble.bottom::after { bottom: 100%; left: 50%; transform: translateX(-50%); border-bottom-color: #323232; }
+    .ps-tooltip-bubble.left::after   { left: 100%; top: 50%;  transform: translateY(-50%); border-left-color: #323232; }
+    .ps-tooltip-bubble.right::after  { right: 100%; top: 50%; transform: translateY(-50%); border-right-color: #323232; }
+  `;
+  document.head.appendChild(style);
+};
+
+type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
 interface TooltipProps {
-  content: string;
-  className?: string;
+  content: React.ReactNode;
+  placement?: TooltipPlacement;
   children: React.ReactNode;
+  className?: string;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ content, className, children }) => {
+const Tooltip: React.FC<TooltipProps> = ({
+  content,
+  placement = 'top',
+  children,
+  className = '',
+}) => {
+  if (typeof document !== 'undefined') injectTooltipStyles();
+  const [visible, setVisible] = useState(false);
+  const id = useRef(`tt-${Math.random().toString(36).slice(2, 8)}`).current;
+
   return (
-    <>
-      <style jsx>{`
-        :root {
-          --ps-tooltip-background: #323232;
-          --ps-tooltip-text: var(--semantic-color-surface-default);
-          --ps-tooltip-border: transparent;
-          --ps-tooltip-radius: 4px;
-          --ps-tooltip-shadow: var(--semantic-shadow-md);
-          --ps-tooltip-padding-v: 6px;
-          --ps-tooltip-padding-h: 10px;
-          --ps-tooltip-max-width: 240px;
-          --ps-tooltip-z-index: 500;
-          --ps-tooltip-font-size: 12px;
-          --ps-tooltip-font-weight: 400;
-          --ps-tooltip-line-height: 16px;
-          --ps-tooltip-arrow-size: 6px;
-          --ps-tooltip-arrow-color: #323232;
-          --ps-tooltip-animation-duration: 150ms;
-          --ps-tooltip-animation-easing: ease;
-        }
-
-        .tooltip {
-          position: relative;
-          display: inline-block;
-          z-index: var(--ps-tooltip-z-index);
-        }
-
-        .tooltip-content {
-          visibility: hidden;
-          width: var(--ps-tooltip-max-width);
-          background-color: var(--ps-tooltip-background);
-          color: var(--ps-tooltip-text);
-          text-align: center;
-          border-radius: var(--ps-tooltip-radius);
-          padding: var(--ps-tooltip-padding-v) var(--ps-tooltip-padding-h);
-          position: absolute;
-          z-index: var(--ps-tooltip-z-index);
-          bottom: 125%; /* Position above the tooltip */
-          left: 50%;
-          transform: translateX(-50%);
-          opacity: 0;
-          transition: opacity var(--ps-tooltip-animation-duration) var(--ps-tooltip-animation-easing);
-          box-shadow: var(--ps-tooltip-shadow);
-        }
-
-        .tooltip:hover .tooltip-content,
-        .tooltip:focus .tooltip-content {
-          visibility: visible;
-          opacity: 1;
-        }
-
-        .tooltip-arrow {
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          margin-left: -3px;
-          border-width: var(--ps-tooltip-arrow-size);
-          border-style: solid;
-          border-color: var(--ps-tooltip-arrow-color) transparent transparent transparent;
-        }
-      `}</style>
-      <div className={`tooltip ${className || ''}`} role="tooltip" aria-label={content}>
+    <span
+      className={`ps-tooltip-wrapper ${className}`}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+      onFocus={() => setVisible(true)}
+      onBlur={() => setVisible(false)}
+      style={{ fontFamily }}
+    >
+      <span
+        aria-describedby={id}
+        style={{ display: 'inline-flex' }}
+      >
         {children}
-        <div className="tooltip-content">
-          {content}
-          <div className="tooltip-arrow" />
-        </div>
-      </div>
-    </>
+      </span>
+      <span
+        id={id}
+        role="tooltip"
+        className={`ps-tooltip-bubble ${placement}${visible ? ' visible' : ''}`}
+        style={{ fontFamily }}
+      >
+        {content}
+      </span>
+    </span>
   );
 };
 
