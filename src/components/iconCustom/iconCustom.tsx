@@ -27,13 +27,13 @@ const IconCustom: React.FC<IconCustomProps> = ({
     '--ps-icon-padding': '8px',
     '--ps-icon-border-radius': variant.includes('circle') ? '100px' : '4px',
     '--ps-icon-background': variant.includes('Filled')
-      ? 'var(--ps-color-brand-primary)'
+      ? '#005BA6'
       : 'white',
     '--ps-icon-color': variant.includes('Outline')
-      ? 'var(--ps-color-brand-primary)'
+      ? '#005BA6'
       : 'white',
     '--ps-icon-border-color': variant.includes('Outline') 
-      ? 'var(--ps-color-brand-primary)' 
+      ? '#005BA6' 
       : 'transparent',
   };
 
