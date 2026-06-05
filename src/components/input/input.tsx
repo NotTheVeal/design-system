@@ -55,6 +55,8 @@ const Input: React.FC<InputProps> = ({
     onChange?.(e);
   };
 
+  const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
   return (
     <div className={`relative w-full ${className}`}>
       <div className={`relative ${height} border ${borderColor} rounded-[4px] bg-white transition-all duration-150 ${disabled ? 'bg-[#F1F1F1] cursor-not-allowed' : ''}`}>
@@ -65,6 +67,7 @@ const Input: React.FC<InputProps> = ({
               ? 'top-2 text-[12px] font-semibold text-[color:var(--ps-brand-primary)]'
               : 'top-1/2 -translate-y-1/2 text-[16px] text-[#777777]'
           } ${error ? '!text-[color:var(--ps-border-error)]' : ''}`}
+          style={{ fontFamily }}
         >
           {label}{required && ' *'}
         </label>
@@ -78,11 +81,11 @@ const Input: React.FC<InputProps> = ({
           disabled={disabled}
           placeholder={floated ? placeholder : ''}
           className={`absolute bottom-0 left-0 right-0 px-3 pb-2 bg-transparent border-none outline-none text-[16px] text-[color:var(--ps-fg-primary)] w-full ${floated ? 'pt-6' : 'pt-2'} ${disabled ? 'cursor-not-allowed text-[#777777]' : ''}`}
-          style={{ fontFamily: "'Source Sans Pro', sans-serif" }}
+          style={{ fontFamily }}
         />
       </div>
-      {error && <p className="mt-1 text-[12px] text-[color:var(--ps-border-error)]">{error}</p>}
-      {!error && helperText && <p className="mt-1 text-[12px] text-[#777777]">{helperText}</p>}
+      {error && <p className="mt-1 text-[12px] text-[color:var(--ps-border-error)]" style={{ fontFamily }}>{error}</p>}
+      {!error && helperText && <p className="mt-1 text-[12px] text-[#777777]" style={{ fontFamily }}>{helperText}</p>}
     </div>
   );
 };
