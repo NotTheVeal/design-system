@@ -1,78 +1,48 @@
 import React from 'react';
 
 const styles = `
-:root {
-  --ps-font: 'Source Sans Pro', sans-serif;
-  --ps-blue: #005BA6;
-  --ps-midnight: #002F48;
-  --ps-border-radius: 4px;
-  --ps-border-radius-modal: 8px;
-  --ps-border-radius-pill: 100px;
-  --ps-nav-background: #002F48;
-  --ps-nav-border: #005BA6;
-  --ps-nav-divider: #DCDCDC;
-  --ps-nav-width: 240px;
-  --ps-nav-width-collapsed: 64px;
-  --ps-user-badge-background: #005BA6;
-  --ps-user-badge-text: #FFFFFF;
-  --ps-user-badge-border: #DCDCDC;
-  --ps-item-background: transparent;
-  --ps-item-hover-background: #DCDCDC;
-  --ps-item-active-background: #DCDCDC;
-  --ps-item-disabled-background: transparent;
-  --ps-item-disabled-text: #A0A0A0;
-  --ps-padding-v: 16px;
-  --ps-padding-h: 16px;
-  --ps-item-height: 40px;
-  --ps-item-gap: 4px;
-  --ps-top-nav-background: #005BA6;
-  --ps-top-nav-text: #FFFFFF;
-  --ps-top-nav-border: #DCDCDC;
-  --ps-top-nav-padding-h: 24px;
-}
-
 .navigation {
-  font-family: var(--ps-font);
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 .left-nav {
-  background: var(--ps-nav-background);
-  border-right: 1px solid var(--ps-nav-border);
-  width: var(--ps-nav-width);
-  padding: var(--ps-padding-v) var(--ps-padding-h);
+  background: #002F48;
+  border-right: 1px solid #005BA6;
+  width: 240px;
+  padding: 16px 16px;
 }
 
 .left-nav-item {
-  height: var(--ps-item-height);
-  background: var(--ps-item-background);
-  padding: var(--ps-padding-h);
-  margin-bottom: var(--ps-item-gap);
+  height: 40px;
+  background: transparent;
+  padding: 16px;
+  margin-bottom: 4px;
   transition: background 0.3s;
 }
 
 .left-nav-item:hover {
-  background: var(--ps-item-hover-background);
+  background: #DCDCDC;
 }
 
 .left-nav-item.active {
-  background: var(--ps-item-active-background);
+  background: #DCDCDC;
 }
 
 .top-nav {
-  background: var(--ps-top-nav-background);
-  color: var(--ps-top-nav-text);
+  background: #005BA6;
+  color: #FFFFFF;
   height: 64px;
-  padding: var(--ps-top-nav-padding-h);
+  padding: 24px;
   display: flex;
   align-items: center;
 }
 
 .user-badge {
-  background: var(--ps-user-badge-background);
-  color: var(--ps-user-badge-text);
-  border: 1px solid var(--ps-user-badge-border);
+  background: #005BA6;
+  color: #FFFFFF;
+  border: 1px solid #DCDCDC;
   padding: 8px;
-  border-radius: var(--ps-border-radius);
+  border-radius: 4px;
 }
 
 `;
