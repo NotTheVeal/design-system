@@ -2,24 +2,24 @@ import React from 'react';
 
 const Icon: React.FC<IconProps> = ({ size = 'default', color = 'default', className, 'aria-label': ariaLabel }) => {
   const sizes = {
-    xs: 'var(--ps-icon-size-xs)',
-    sm: 'var(--ps-icon-size-sm)',
-    md: 'var(--ps-icon-size-md)',
-    default: 'var(--ps-icon-size-default)',
-    lg: 'var(--ps-icon-size-lg)',
+    xs: '14px',
+    sm: '16px',
+    md: '20px',
+    default: '24px',
+    lg: '32px',
   };
 
   const colors = {
-    default: 'var(--ps-icon-color-default)',
-    secondary: 'var(--ps-icon-color-secondary)',
-    tertiary: 'var(--ps-icon-color-tertiary)',
-    brand: 'var(--ps-icon-color-brand)',
-    light: 'var(--ps-icon-color-light)',
-    onDark: 'var(--ps-icon-color-onDark)',
-    success: 'var(--ps-icon-color-success)',
-    error: 'var(--ps-icon-color-error)',
-    warning: 'var(--ps-icon-color-warning)',
-    disabled: 'var(--ps-icon-color-disabled)',
+    default: '#4A4A4A',
+    secondary: '#777777',
+    tertiary: '#949494',
+    brand: '#005BA6',
+    light: '#009CF4',
+    onDark: '#FFFFFF',
+    success: '#0E7C55',
+    error: '#E00000',
+    warning: '#B45309',
+    disabled: '#CCCCCC',
   };
 
   return (
@@ -54,13 +54,7 @@ export interface IconProps {
 }
 
 const styles = `
-:root {
-  --ps-icon-size-xs: 14px;
-  --ps-icon-size-sm: 16px;
-  --ps-icon-size-md: 20px;
-  --ps-icon-size-default: 24px;
-  --ps-icon-size-lg: 32px;
-  --ps-icon-color-default: {semantic.color.text.primary};
+;
   --ps-icon-color-secondary: {semantic.color.text.secondary};
   --ps-icon-color-tertiary: {semantic.color.text.tertiary};
   --ps-icon-color-brand: {semantic.color.brand.primary};
