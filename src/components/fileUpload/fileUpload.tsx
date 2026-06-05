@@ -1,94 +1,164 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
+
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
 interface FileUploadProps {
-  onUpload?: (files: File[]) => void;
   accept?: string;
   multiple?: boolean;
-  maxSize?: number;
+  maxSize?: number; // bytes
+  onFiles?: (files: File[]) => void;
+  error?: string;
   disabled?: boolean;
   className?: string;
-  label?: string;
-  hint?: string;
 }
 
 const UploadIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-    <path d="M16 20V12M12 15l4-4 4 4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M10 22a6 6 0 1 1 2-11.66A8 8 0 1 1 26 18h-2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15l-5-5-5 5" />
+    <line x1="16" y1="10" x2="16" y2="22" />
+    <path d="M6 26h20" />
+  </svg>
+);
+
+const FileIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z" />
+    <polyline points="9 2 9 6 13 6" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+    <line x1="3" y1="3" x2="11" y2="11" /><line x1="11" y1="3" x2="3" y2="11" />
   </svg>
 );
 
 const FileUpload: React.FC<FileUploadProps> = ({
-  onUpload,
   accept,
   multiple = false,
   maxSize,
+  onFiles,
+  error,
   disabled = false,
   className = '',
-  label = 'Drop files here or click to upload',
-  hint,
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
-    const fileArr = Array.from(files);
-    const invalid = maxSize ? fileArr.filter(f => f.size > maxSize) : [];
-    if (invalid.length) {
-      setError(`File too large. Max size: ${Math.round(maxSize! / 1024 / 1024)}MB`);
-      return;
-    }
-    setError('');
-    setUploadedFiles(prev => multiple ? [...prev, ...fileArr] : fileArr);
-    onUpload?.(fileArr);
+    const arr = Array.from(files);
+    setSelectedFiles(multiple ? [...selectedFiles, ...arr] : arr);
+    onFiles?.(multiple ? [...selectedFiles, ...arr] : arr);
   };
 
-  const removeFile = (i: number) => {
-    setUploadedFiles(prev => prev.filter((_, idx) => idx !== i));
+  const removeFile = (index: number) => {
+    const next = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(next);
+    onFiles?.(next);
   };
+
+  const borderColor = error ? '#D32F2F' : dragging ? '#005BA6' : '#DCDCDC';
 
   return (
-    <div className={`flex flex-col gap-3 ${className}`}>
+    <div className={className} style={{ fontFamily }}>
       <div
-        className={`relative flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-[8px] text-center transition-all duration-150 cursor-pointer
-          ${isDragging ? 'border-[color:var(--ps-brand-primary)] bg-[#EFF9FE]' : 'border-[color:var(--ps-border-default)] bg-[color:var(--ps-neutral-50)] hover:border-[color:var(--ps-brand-primary)] hover:bg-[#EFF9FE]'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onDragOver={e => { e.preventDefault(); !disabled && setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={e => { e.preventDefault(); setDragging(false); !disabled && handleFiles(e.dataTransfer.files); }}
         onClick={() => !disabled && inputRef.current?.click()}
-        onDragOver={e => { e.preventDefault(); if (!disabled) setIsDragging(true); }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={e => { e.preventDefault(); setIsDragging(false); if (!disabled) handleFiles(e.dataTransfer.files); }}
-        aria-label="File upload area"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+          padding: '24px 16px',
+          border: `2px dashed ${borderColor}`,
+          borderRadius: 4,
+          background: dragging ? '#EFF9FE' : '#FAFAFA',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          transition: 'border-color 150ms ease, background 150ms ease',
+          opacity: disabled ? 0.5 : 1,
+        }}
       >
-        <div className="text-[color:var(--ps-brand-primary)]"><UploadIcon /></div>
-        <div>
-          <p className="text-[14px] font-semibold text-[color:var(--ps-fg-primary)]">{label}</p>
-          {hint && <p className="text-[12px] text-[#777777] mt-1">{hint}</p>}
+        <span style={{ color: '#005BA6' }}>
+          <UploadIcon />
+        </span>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#4A4A4A', fontFamily }}>
+            Drag & drop files here
+          </span>
+          <div style={{ fontSize: 12, color: '#777777', marginTop: 4, fontFamily }}>
+            or{' '}
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); !disabled && inputRef.current?.click(); }}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                color: '#005BA6',
+                fontWeight: 600,
+                fontSize: 12,
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                fontFamily,
+                textDecoration: 'underline',
+              }}
+            >
+              browse files
+            </button>
+            {accept && <span> ({accept})</span>}
+            {maxSize && <span> â max {(maxSize / 1024 / 1024).toFixed(0)}MB</span>}
+          </div>
         </div>
-        <button type="button" className="h-[36px] px-4 bg-white border border-[color:var(--ps-brand-primary)] text-[color:var(--ps-brand-primary)] text-[14px] font-semibold rounded-[4px] hover:bg-[#EFF9FE] transition-colors">
-          Browse Files
-        </button>
-        <input ref={inputRef} type="file" accept={accept} multiple={multiple} disabled={disabled} className="sr-only"
-          onChange={e => handleFiles(e.target.files)} />
+        <input
+          ref={inputRef}
+          type="file"
+          accept={accept}
+          multiple={multiple}
+          disabled={disabled}
+          onChange={e => handleFiles(e.target.files)}
+          style={{ display: 'none' }}
+        />
       </div>
 
-      {error && <p className="text-[12px] text-[color:var(--ps-border-error)]">{error}</p>}
+      {error && (
+        <div style={{ fontSize: 12, color: '#E00000', marginTop: 4, fontFamily }}>
+          {error}
+        </div>
+      )}
 
-      {uploadedFiles.length > 0 && (
-        <div className="flex flex-col gap-2">
-          {uploadedFiles.map((file, i) => (
-            <div key={i} className="flex items-center gap-3 px-3 py-2 bg-white border border-[color:var(--ps-border-default)] rounded-[4px]">
-              <span className="text-[14px] text-[color:var(--ps-brand-primary)]">📄</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-[color:var(--ps-fg-primary)] truncate">{file.name}</p>
-                <p className="text-[11px] text-[#777777]">{(file.size / 1024).toFixed(1)} KB</p>
-              </div>
-              <button onClick={() => removeFile(i)} aria-label="Remove file" className="text-[#777777] hover:text-[#E00000] transition-colors">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                </svg>
+      {selectedFiles.length > 0 && (
+        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {selectedFiles.map((file, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 12px',
+                background: '#FFFFFF',
+                border: '1px solid #DCDCDC',
+                borderRadius: 4,
+                fontFamily,
+              }}
+            >
+              <span style={{ color: '#005BA6', flexShrink: 0 }}><FileIcon /></span>
+              <span style={{ flex: 1, fontSize: 13, color: '#4A4A4A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily }}>
+                {file.name}
+              </span>
+              <span style={{ fontSize: 12, color: '#777777', flexShrink: 0, fontFamily }}>
+                {(file.size / 1024).toFixed(1)}KB
+              </span>
+              <button
+                type="button"
+                onClick={() => removeFile(i)}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#949494', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+              >
+                <CloseIcon />
               </button>
             </div>
           ))}
