@@ -95,6 +95,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Remove storybook-static from git tracking
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-files --error-unmatch storybook-static/ >/dev/null 2>&1; then
+            git rm -r --cached storybook-static/
+            git diff --cached --quiet && echo "Already untracked" || git commit -m "chore: remove storybook-static from git tracking (covered by .gitignore)"
+            git push
+          else
+            echo "storybook-static/ is already untracked — nothing to do"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   # ─── JOB 3: Run Tests ───────────────────────────────────────────────────────
   test:
     name: Run Tests
