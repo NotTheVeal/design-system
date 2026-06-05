@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
 interface InputProps {
   label: string;
   value?: string;
@@ -33,6 +35,7 @@ const Input: React.FC<InputProps> = ({
 }) => {
   const [focused, setFocused] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
+  const [hovered, setHovered] = useState(false);
 
   const controlled = value !== undefined;
   const currentValue = controlled ? value : internalValue;
@@ -40,34 +43,52 @@ const Input: React.FC<InputProps> = ({
   const floated = focused || hasValue;
 
   const inputId = id ?? `input-${label.toLowerCase().replace(/\s+/g, '-')}`;
-  const height = size === 'large' ? 'h-[80px]' : 'h-[48px]';
+  const height = size === 'large' ? 80 : 48;
 
   const borderColor = error
-    ? 'border-[color:var(--ps-border-error)]'
+    ? '#D32F2F'
     : focused
-    ? 'border-[color:var(--ps-brand-primary)]'
-    : disabled
-    ? 'border-[color:var(--ps-border-default)]'
-    : 'border-[color:var(--ps-border-default)] hover:border-[#949494]';
+    ? '#005BA6'
+    : hovered && !disabled
+    ? '#949494'
+    : '#DCDCDC';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!controlled) setInternalValue(e.target.value);
     onChange?.(e);
   };
 
-  const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
   return (
-    <div className={`relative w-full ${className}`}>
-      <div className={`relative ${height} border ${borderColor} rounded-[4px] bg-white transition-all duration-150 ${disabled ? 'bg-[#F1F1F1] cursor-not-allowed' : ''}`}>
+    <div className={className} style={{ position: 'relative', width: '100%', fontFamily }}>
+      <div
+        style={{
+          position: 'relative',
+          height,
+          border: `1px solid ${borderColor}`,
+          borderRadius: 4,
+          background: disabled ? '#F1F1F1' : '#FFFFFF',
+          transition: 'border-color 150ms ease',
+          boxShadow: focused ? '0 0 0 3px rgba(0,147,244,0.3)' : 'none',
+          cursor: disabled ? 'not-allowed' : undefined,
+        }}
+        onMouseEnter={() => !disabled && setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <label
           htmlFor={inputId}
-          className={`absolute left-3 transition-all duration-150 pointer-events-none select-none ${
-            floated
-              ? 'top-2 text-[12px] font-semibold text-[color:var(--ps-brand-primary)]'
-              : 'top-1/2 -translate-y-1/2 text-[16px] text-[#777777]'
-          } ${error ? '!text-[color:var(--ps-border-error)]' : ''}`}
-          style={{ fontFamily }}
+          style={{
+            position: 'absolute',
+            left: 12,
+            top: floated ? 6 : '50%',
+            transform: floated ? 'none' : 'translateY(-50%)',
+            fontSize: floated ? 12 : 16,
+            fontWeight: floated ? 600 : 400,
+            color: error ? '#D32F2F' : floated ? '#005BA6' : '#777777',
+            transition: 'all 150ms ease',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            fontFamily,
+          }}
         >
           {label}{required && ' *'}
         </label>
@@ -80,12 +101,37 @@ const Input: React.FC<InputProps> = ({
           onBlur={() => setFocused(false)}
           disabled={disabled}
           placeholder={floated ? placeholder : ''}
-          className={`absolute bottom-0 left-0 right-0 px-3 pb-2 bg-transparent border-none outline-none text-[16px] text-[color:var(--ps-fg-primary)] w-full ${floated ? 'pt-6' : 'pt-2'} ${disabled ? 'cursor-not-allowed text-[#777777]' : ''}`}
-          style={{ fontFamily }}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingBottom: 8,
+            paddingTop: floated ? 22 : 8,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            fontSize: 16,
+            color: disabled ? '#777777' : '#2B2B2B',
+            width: '100%',
+            boxSizing: 'border-box',
+            cursor: disabled ? 'not-allowed' : undefined,
+            fontFamily,
+          }}
         />
       </div>
-      {error && <p className="mt-1 text-[12px] text-[color:var(--ps-border-error)]" style={{ fontFamily }}>{error}</p>}
-      {!error && helperText && <p className="mt-1 text-[12px] text-[#777777]" style={{ fontFamily }}>{helperText}</p>}
+      {error && (
+        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#D32F2F', fontFamily }}>
+          {error}
+        </p>
+      )}
+      {!error && helperText && (
+        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#777777', fontFamily }}>
+          {helperText}
+        </p>
+      )}
     </div>
   );
 };
