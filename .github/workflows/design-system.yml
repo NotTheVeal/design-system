@@ -106,7 +106,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           CHANGED=0
           for DIR in storybook-static node_modules; do
-            if git ls-files --error-unmatch "$DIR/" >/dev/null 2>&1; then
+            if git ls-files "$DIR" | grep -q .; then
               echo "Removing $DIR/ from git tracking..."
               git rm -r --cached "$DIR/"
               CHANGED=1
