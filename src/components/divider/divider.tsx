@@ -1,23 +1,22 @@
 import React from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
 type DividerWeight = 'subtle' | 'default' | 'strong';
 
 interface DividerProps {
   orientation?: 'horizontal' | 'vertical';
   label?: string;
   weight?: DividerWeight;
-  /** Override color directly — prefer using `weight` for semantic variants */
   color?: string;
   className?: string;
 }
 
 const WEIGHT_COLORS: Record<DividerWeight, string> = {
-  subtle:  '#EDEDED',  // Inside cards and panels on white backgrounds
-  default: '#CCCCCC',  // Standard divider on page backgrounds — most common
-  strong:  '#999999',  // High-contrast for dense tables and data grids
+  subtle: '#EDEDED',
+  default: '#CCCCCC',
+  strong: '#999999',
 };
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
 const Divider: React.FC<DividerProps> = ({
   orientation = 'horizontal',
@@ -33,23 +32,20 @@ const Divider: React.FC<DividerProps> = ({
       <div
         role="separator"
         aria-orientation="vertical"
-        className={`inline-block self-stretch w-px ${className}`}
-        style={{ backgroundColor: lineColor }}
+        className={className}
+        style={{ display: 'inline-block', alignSelf: 'stretch', width: 1, backgroundColor: lineColor }}
       />
     );
   }
 
   if (label) {
     return (
-      <div role="separator" className={`flex items-center gap-3 ${className}`}>
-        <div className="flex-1 h-px" style={{ backgroundColor: lineColor }} />
-        <span
-          className="text-[12px] font-semibold text-[#777777] uppercase tracking-wide whitespace-nowrap"
-          style={{ fontFamily }}
-        >
+      <div role="separator" className={className} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1, height: 1, backgroundColor: lineColor }} />
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#777777', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', fontFamily }}>
           {label}
         </span>
-        <div className="flex-1 h-px" style={{ backgroundColor: lineColor }} />
+        <div style={{ flex: 1, height: 1, backgroundColor: lineColor }} />
       </div>
     );
   }
@@ -58,8 +54,8 @@ const Divider: React.FC<DividerProps> = ({
     <div
       role="separator"
       aria-orientation="horizontal"
-      className={`w-full h-px ${className}`}
-      style={{ backgroundColor: lineColor }}
+      className={className}
+      style={{ width: '100%', height: 1, backgroundColor: lineColor }}
     />
   );
 };
