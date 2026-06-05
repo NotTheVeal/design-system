@@ -1,32 +1,63 @@
 import React from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
 interface EmptyStateProps {
-  title: string;
-  description?: string;
   icon?: React.ReactNode;
+  title?: string;
+  description?: string;
   action?: React.ReactNode;
   className?: string;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
+  icon,
   title,
   description,
-  icon,
   action,
   className = '',
-}) => {
-  return (
-    <div className={`flex flex-col items-center justify-center text-center py-12 px-6 ${className}`}>
-      {icon && (
-        <div className="w-[64px] h-[64px] flex items-center justify-center rounded-full bg-[#F1F1F1] text-[#949494] mb-4">
-          {icon}
-        </div>
-      )}
-      <h3 className="text-[18px] font-semibold text-[#4A4A4A] mb-2">{title}</h3>
-      {description && <p className="text-[14px] text-[#777777] max-w-[400px] mb-6">{description}</p>}
-      {action && <div>{action}</div>}
-    </div>
-  );
-};
+}) => (
+  <div
+    className={className}
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      textAlign: 'center',
+      padding: '48px 24px',
+      fontFamily,
+    }}
+  >
+    {icon && (
+      <div
+        style={{
+          width: 64,
+          height: 64,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          background: '#F1F1F1',
+          color: '#949494',
+          marginBottom: 16,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </div>
+    )}
+    {title && (
+      <div style={{ fontSize: 18, fontWeight: 600, color: '#4A4A4A', marginBottom: 8, fontFamily }}>
+        {title}
+      </div>
+    )}
+    {description && (
+      <div style={{ fontSize: 14, color: '#777777', maxWidth: 400, marginBottom: 24, lineHeight: 1.5, fontFamily }}>
+        {description}
+      </div>
+    )}
+    {action}
+  </div>
+);
 
 export default EmptyState;
