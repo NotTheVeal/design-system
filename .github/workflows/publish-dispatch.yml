@@ -1,48 +1,14 @@
-name: Publish to npm (Manual)
+# DEPRECATED — superseded by publish.yml which has version input and better error handling.
+# Use publish.yml (workflow_dispatch with version input) for all npm releases.
+
+name: Publish to npm - Manual (Deprecated)
+
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Git tag to publish (e.g. v1.1.0)'
-        required: true
-        default: 'v1.1.0'
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  publish:
+  noop:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
-      - name: Checkout tag
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.tag }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Build library
-        run: npx vite build --config vite.lib.config.ts
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  release:
-    needs: publish
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.tag }}
-          generate_release_notes: true
+      - name: Info
+        run: echo "Deprecated. Use publish.yml for npm releases — it accepts a version input."
