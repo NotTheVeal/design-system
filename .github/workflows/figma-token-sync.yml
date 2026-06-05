@@ -1,47 +1,30 @@
-name: Figma Token Sync
+# DEPRECATED — replaced by scheduled-token-build.yml
+# This workflow duplicated the push trigger on tokens/**. All token build logic
+# is now consolidated in scheduled-token-build.yml which also handles:
+#   - push to tokens/** (immediate trigger on Token Studio push)
+#   - repository_dispatch type: token-push (Token Studio GitHub App webhook)
+#   - daily cron at 06:00 UTC (safety net)
+#   - workflow_dispatch (manual trigger)
+#
+# Token Studio setup (one-time, done in Figma plugin settings):
+#   1. In Figma, open Token Studio plugin → Settings → Sync → GitHub
+#   2. Repository: NotTheVeal/design-system
+#   3. Branch: main
+#   4. Token path: tokens/
+#   5. Secret: a GitHub PAT with repo write scope
+#      (store as TOKENS_STUDIO_PAT secret in GitHub repo settings for reference)
+
+name: Figma Token Sync (Deprecated)
+
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'tokens/**'
-
-env:
-  FIGMA_FILE_KEY: pyZ5wKN9KGBUfgi47UwQ0q
 
 jobs:
-  sync:
+  noop:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build design tokens
+      - name: Info
         run: |
-          if [ -f "package.json" ] && grep -q '"build:tokens"' package.json; then
-            npm run build:tokens
-          elif [ -f "style-dictionary.config.js" ] || [ -f "config.json" ]; then
-            npx style-dictionary build
-          else
-            echo "No token build script found — tokens are raw JSON, skipping build step."
-          fi
-
-      - name: Commit built tokens
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add dist/ build/ tokens/ 2>/dev/null || true
-          git diff --cached --quiet && echo "No built token changes to commit" || git commit -m "chore: rebuild design tokens from Token Studio sync"
-          git push
+          echo "This workflow is deprecated."
+          echo "Token sync is handled by scheduled-token-build.yml"
+          echo "Use Token Studio plugin to push tokens to GitHub."
