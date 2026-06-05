@@ -29,22 +29,22 @@ If you output anything other than valid TypeScript, the file will be broken. Sta
 
 ## Token Rules — CRITICAL
 
-### Always use tokens. Never use raw values.
+### Always use React inline styles with hardcoded PS Design System hex values. Never use CSS custom properties or Tailwind classes.
 
-❌ WRONG:
-```tsx
-<button style={{ backgroundColor: '#005ba7', padding: '12px 24px', borderRadius: '4px' }}>
-```
-
-✅ RIGHT:
+❌ WRONG (Tailwind + CSS vars):
 ```tsx
 <button className="bg-[var(--ps-button-primary-default-background)] px-[var(--ps-button-primary-paddingH-lg)] rounded-[var(--ps-button-primary-radius)]">
 ```
 
-### Token hierarchy:
-1. **Component tokens first**: `--ps-button-primary-default-background`
-2. **Semantic tokens second**: `--ps-semantic-color-brand-primary`
-3. **Primitive tokens never directly in components**
+✅ RIGHT (inline styles, hardcoded hex):
+```tsx
+<button style={{ backgroundColor: '#005BA6', padding: '12px 24px', borderRadius: '4px', color: '#FFFFFF' }}>
+```
+
+### PS Design System hex values (use these — never CSS vars):
+- Brand primary: `#005BA6` | Hover: `#004A84` | Midnight: `#002F48`
+- fg-primary: `#4A4A4A` | fg-secondary: `#777777` | fg-tertiary: `#949494` | border: `#DCDCDC`
+- Success: `#0E7C55` | Danger: `#E00000` | Warning: `#B45309` | Info-subtle: `#EFF9FE`
 
 ### Token naming pattern:
 `--ps-{level}-{category}-{variant}-{state}-{property}`
@@ -52,7 +52,7 @@ If you output anything other than valid TypeScript, the file will be broken. Sta
 ### Reading token files:
 Before generating any component, read:
 - `tokens/ps-tokens/component/{componentName}.json` — component-specific tokens
-- `src/tokens/tokens.css` — all CSS custom property names
+- `src/tokens/tokens.ts` — reference only; always translate to hardcoded hex in component code
 - `src/tokens/tokens.ts` — TypeScript token map
 
 The top-level keys in the component JSON are the variant groups. Generate all variants found — do not skip any.
@@ -869,7 +869,7 @@ Responsive layout wrapper: `max-width: 1440px`, centered, responsive content pad
 No custom component — use Lucide directly:
 ```tsx
 import { ShoppingCart } from 'lucide-react';
-<ShoppingCart size={24} style={{ color: 'var(--ps-icon-color-brand)', strokeWidth: 1.75 }} />
+<ShoppingCart size={24} style={{ color: '#005BA6', strokeWidth: 1.75 }} />
 ```
 
 ---
@@ -879,7 +879,7 @@ import { ShoppingCart } from 'lucide-react';
 | Rule | Detail |
 |------|--------|
 | Output format | Raw TypeScript ONLY — no markdown, no explanations |
-| No raw values | Use `--ps-*` CSS vars or token imports |
+| No CSS vars | Use hardcoded hex values — never `var(--ps-*)` or Tailwind CSS |
 | All states | default, hover, pressed, focused, disabled |
 | All variants | Read from component token JSON — generate all found |
 | Semantic HTML | `<button>`, `<nav>`, `<input>` — never `<div>` |
@@ -889,8 +889,8 @@ import { ShoppingCart } from 'lucide-react';
 
 ## What NOT to do
 
-- ❌ No `style={{ color: '#005ba7' }}` — use CSS variables
-- ❌ No hardcoded Tailwind colors — `bg-blue-600` is WRONG
+- ❌ No `style={{ color: 'var(--ps-brand-primary)' }}` — use `#005BA6` directly
+- ❌ No `className="bg-[var(--ps-...)]"` — use inline styles with hardcoded hex
 - ❌ No missing states
 - ❌ No `any` TypeScript type
 - ❌ No `div` pretending to be interactive
