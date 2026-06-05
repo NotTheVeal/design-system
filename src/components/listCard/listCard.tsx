@@ -1,48 +1,95 @@
 import React from 'react';
 
-interface ListCardItem {
-  id: string | number;
-  primary: string;
-  secondary?: string;
-  meta?: string;
-  icon?: React.ReactNode;
-  action?: React.ReactNode;
-  status?: React.ReactNode;
-}
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
 interface ListCardProps {
-  items: ListCardItem[];
-  onItemClick?: (item: ListCardItem) => void;
+  icon?: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  meta?: string;
+  action?: React.ReactNode;
+  onClick?: () => void;
   className?: string;
 }
 
-const ListCard: React.FC<ListCardProps> = ({ items = [], onItemClick, className = '' }) => {
-  return (
-    <div className={`bg-white border border-[color:var(--ps-border-default)] rounded-[4px] shadow-[var(--ps-shadow-sm)] overflow-hidden ${className}`}>
-      {items.map((item, index) => (
+const ListCard: React.FC<ListCardProps> = ({
+  icon,
+  title,
+  subtitle,
+  meta,
+  action,
+  onClick,
+  className = '',
+}) => (
+  <div
+    className={className}
+    onClick={onClick}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 12,
+      padding: '12px 16px',
+      background: '#FFFFFF',
+      border: '1px solid #DCDCDC',
+      borderRadius: 4,
+      boxShadow: '0 1px 4px rgba(0,47,72,0.08)',
+      cursor: onClick ? 'pointer' : 'default',
+      fontFamily,
+    }}
+  >
+    {icon && (
+      <span
+        style={{
+          flexShrink: 0,
+          width: 40,
+          height: 40,
+          borderRadius: '50%',
+          background: '#DCEAED',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#005BA6',
+        }}
+      >
+        {icon}
+      </span>
+    )}
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div
+        style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: '#4A4A4A',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          fontFamily,
+        }}
+      >
+        {title}
+      </div>
+      {subtitle && (
         <div
-          key={item.id}
-          className={`flex items-center gap-3 px-4 py-3 transition-colors duration-150 ${index < items.length - 1 ? 'border-b border-[color:var(--ps-border-default)]' : ''} ${onItemClick ? 'cursor-pointer hover:bg-[#FAFAFA]' : ''}`}
-          onClick={() => onItemClick?.(item)}
-          role={onItemClick ? 'button' : undefined}
-          tabIndex={onItemClick ? 0 : undefined}
+          style={{
+            fontSize: 12,
+            color: '#777777',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            fontFamily,
+          }}
         >
-          {item.icon && (
-            <div className="flex-shrink-0 w-[40px] h-[40px] rounded-full bg-[#DCEAED] flex items-center justify-center text-[color:var(--ps-brand-primary)]">
-              {item.icon}
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold text-[color:var(--ps-fg-primary)] truncate">{item.primary}</p>
-            {item.secondary && <p className="text-[12px] text-[#777777] truncate">{item.secondary}</p>}
-          </div>
-          {item.status && <div className="flex-shrink-0">{item.status}</div>}
-          {item.meta && <span className="flex-shrink-0 text-[12px] text-[#949494]">{item.meta}</span>}
-          {item.action && <div className="flex-shrink-0">{item.action}</div>}
+          {subtitle}
         </div>
-      ))}
+      )}
     </div>
-  );
-};
+    {meta && (
+      <span style={{ flexShrink: 0, fontSize: 12, color: '#949494', fontFamily }}>
+        {meta}
+      </span>
+    )}
+    {action && <span style={{ flexShrink: 0 }}>{action}</span>}
+  </div>
+);
 
 export default ListCard;
