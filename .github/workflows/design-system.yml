@@ -106,9 +106,10 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           CHANGED=0
           for DIR in storybook-static node_modules; do
-            if git ls-files "$DIR" | grep -q .; then
-              echo "Removing $DIR/ from git tracking..."
-              git rm -r --cached "$DIR/"
+            COUNT=$(git ls-files "$DIR" | wc -l | tr -d ' ')
+            if [ "$COUNT" -gt 0 ]; then
+              echo "Removing $DIR/ from git tracking ($COUNT files)..."
+              git ls-files "$DIR" | xargs -r git rm --cached --ignore-unmatch --
               CHANGED=1
             else
               echo "$DIR/ is already untracked — skipping"
@@ -116,7 +117,7 @@ jobs:
           done
           if [ $CHANGED -eq 1 ]; then
             git commit -m "chore: remove build artifacts from git tracking (covered by .gitignore)"
-            git pull --rebase
+            git pull --rebase origin main
             git push
           else
             echo "No artifact directories to untrack — nothing to do"
