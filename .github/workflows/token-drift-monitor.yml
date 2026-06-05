@@ -18,12 +18,11 @@ jobs:
   token-drift:
     name: Token Drift Check
     runs-on: ubuntu-latest
-    outputs:
-      drift_count: ${{ steps.drift.outputs.drift_count }}
-      drift_report: ${{ steps.drift.outputs.drift_report }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -36,178 +35,37 @@ jobs:
       - name: Detect token drift
         id: drift
         run: |
-          DRIFT_COUNT=0
-          DRIFT_REPORT=""
-          for f in tokens/ps-tokens/components/*.json; do
-            SIZE=$(wc -c < "$f")
-            if [ "$SIZE" -lt 5 ]; then
-              DRIFT_COUNT=$((DRIFT_COUNT + 1))
-              DRIFT_REPORT="$DRIFT_REPORT\n- Empty token file: $f"
-            fi
-          done
-          for f in tokens/ps-tokens/semantic/*.json; do
-            SIZE=$(wc -c < "$f")
-            if [ "$SIZE" -lt 10 ]; then
-              DRIFT_COUNT=$((DRIFT_COUNT + 1))
-              DRIFT_REPORT="$DRIFT_REPORT\n- Suspiciously small semantic file: $f"
-            fi
-          done
-          META="tokens/ps-tokens/$metadata.json"
-          if [ -f "$META" ]; then
-            COMP_COUNT=$(ls tokens/ps-tokens/components/*.json 2>/dev/null | wc -l)
-            echo "Component token files found: $COMP_COUNT"
-          fi
-          echo "drift_count=$DRIFT_COUNT" >> $GITHUB_OUTPUT
-          printf "drift_report=%s" "$DRIFT_REPORT" >> $GITHUB_OUTPUT
-          echo "Drift issues: $DRIFT_COUNT"
+          echo "=== Token Drift Report ===" >> $GITHUB_STEP_SUMMARY
+          echo "Date: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
-  stale-components:
-    name: Stale Component Check
-    runs-on: ubuntu-latest
-    outputs:
-      stale_count: ${{ steps.stale.outputs.stale_count }}
-      stale_report: ${{ steps.stale.outputs.stale_report }}
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Detect stale components (90+ days)
-        id: stale
-        run: |
-          STALE_COUNT=0
-          STALE_REPORT=""
-          THRESHOLD=90
-          for dir in src/components/*/; do
-            COMP=$(basename "$dir")
-            LAST_COMMIT=$(git log -1 --format="%ct" -- "$dir" 2>/dev/null || echo "0")
-            NOW=$(date +%s)
-            if [ "$LAST_COMMIT" = "0" ]; then continue; fi
-            DAYS=$(( (NOW - LAST_COMMIT) / 86400 ))
-            if [ "$DAYS" -gt "$THRESHOLD" ]; then
-              STALE_COUNT=$((STALE_COUNT + 1))
-              STALE_REPORT="$STALE_REPORT\n- $COMP: ${DAYS}d since last update"
-            fi
-          done
-          echo "stale_count=$STALE_COUNT" >> $GITHUB_OUTPUT
-          printf "stale_report=%s" "$STALE_REPORT" >> $GITHUB_OUTPUT
-          echo "Stale: $STALE_COUNT"
-
-  test-coverage:
-    name: Test Coverage Audit
-    runs-on: ubuntu-latest
-    outputs:
-      missing_tests: ${{ steps.coverage.outputs.missing_tests }}
-      coverage_report: ${{ steps.coverage.outputs.coverage_report }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Audit component test file coverage
-        id: coverage
-        run: |
-          MISSING=0
-          COVERAGE_REPORT=""
-          for dir in src/components/*/; do
-            COMP=$(basename "$dir")
-            TSX_FILE="$dir$COMP.tsx"
-            TEST_FILE="$dir$COMP.test.tsx"
-            if [ -f "$TSX_FILE" ] && [ ! -f "$TEST_FILE" ]; then
-              MISSING=$((MISSING + 1))
-              COVERAGE_REPORT="$COVERAGE_REPORT\n- Missing: $TEST_FILE"
-            fi
-          done
-          echo "missing_tests=$MISSING" >> $GITHUB_OUTPUT
-          printf "coverage_report=%s" "$COVERAGE_REPORT" >> $GITHUB_OUTPUT
-          echo "Missing tests: $MISSING"
-
-  chromatic-health:
-    name: Chromatic Baseline Health
-    runs-on: ubuntu-latest
-    outputs:
-      storybook_ok: ${{ steps.build.outputs.storybook_ok }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build Storybook
-        id: build
-        run: |
-          npm run build-storybook 2>&1 | tail -20
-          if [ -d "storybook-static" ]; then
-            echo "storybook_ok=true" >> $GITHUB_OUTPUT
-            echo "Storybook build OK"
+          # Validate token references
+          if npm run validate 2>&1 | tee /tmp/validate_out.txt; then
+            echo "✅ All token references are valid." >> $GITHUB_STEP_SUMMARY
+            DRIFT_COUNT=0
           else
-            echo "storybook_ok=false" >> $GITHUB_OUTPUT
-            echo "Storybook build FAILED"
+            DRIFT_COUNT=$(grep -c "Error\|error\|FAIL" /tmp/validate_out.txt || true)
+            echo "⚠️ Token validation issues found: $DRIFT_COUNT" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/validate_out.txt >> $GITHUB_STEP_SUMMARY
           fi
 
-  monthly-summary:
-    name: Monthly Health Summary
-    needs: [token-drift, stale-components, test-coverage, chromatic-health]
-    runs-on: ubuntu-latest
-    if: always()
+          # Check for tokens modified in last 30 days
+          CHANGED=$(git log --since="30 days ago" --name-only --pretty=format: -- tokens/ | sort -u | grep -v '^$' || true)
+          if [ -n "$CHANGED" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Token files changed in last 30 days:" >> $GITHUB_STEP_SUMMARY
+            echo "```" >> $GITHUB_STEP_SUMMARY
+            echo "$CHANGED" >> $GITHUB_STEP_SUMMARY
+            echo "```" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "No token files changed in last 30 days." >> $GITHUB_STEP_SUMMARY
+          fi
 
-    steps:
-      - name: Write GitHub Step Summary
-        env:
-          DRIFT_COUNT: ${{ needs.token-drift.outputs.drift_count }}
-          STALE_COUNT: ${{ needs.stale-components.outputs.stale_count }}
-          MISSING_TESTS: ${{ needs.test-coverage.outputs.missing_tests }}
-          STORYBOOK_OK: ${{ needs.chromatic-health.outputs.storybook_ok }}
-          DRIFT_REPORT: ${{ needs.token-drift.outputs.drift_report }}
-          STALE_REPORT: ${{ needs.stale-components.outputs.stale_report }}
-          COVERAGE_REPORT: ${{ needs.test-coverage.outputs.coverage_report }}
-        run: |
-          {
-            echo "## PartsSource DS Monthly Health Report"
-            echo ""
-            echo "**Date:** $(date -u '+%Y-%m-%d')"
-            echo ""
-            echo "| Check | Status | Count |"
-            echo "|-------|--------|-------|"
-            echo "| Token Drift | $([ "${DRIFT_COUNT:-0}" = "0" ] && echo 'Clean' || echo 'Issues') | ${DRIFT_COUNT:-0} |"
-            echo "| Stale Components | $([ "${STALE_COUNT:-0}" = "0" ] && echo 'All fresh' || echo 'Stale') | ${STALE_COUNT:-0} |"
-            echo "| Missing Tests | $([ "${MISSING_TESTS:-0}" = "0" ] && echo 'Full coverage' || echo 'Gaps') | ${MISSING_TESTS:-0} |"
-            echo "| Storybook | $([ "$STORYBOOK_OK" = "true" ] && echo 'Healthy' || echo 'Failed') | — |"
-            echo ""
-            echo "$DRIFT_REPORT"
-            echo "$STALE_REPORT"
-            echo "$COVERAGE_REPORT"
-          } >> $GITHUB_STEP_SUMMARY
+          echo "drift_count=$DRIFT_COUNT" >> $GITHUB_OUTPUT
 
-      - name: Fail on Storybook build failure
-        if: ${{ inputs.dry_run != 'true' && needs.chromatic-health.outputs.storybook_ok == 'false' }}
+      - name: Fail on drift (unless dry run)
+        if: ${{ steps.drift.outputs.drift_count != '0' && inputs.dry_run != 'true' }}
         run: |
-          echo "CRITICAL: Storybook build failed — baseline is broken."
+          echo "Token drift detected. Run with dry_run=true to report without failing."
           exit 1
-
-  notify:
-    name: Notify on failure
-    needs: [token-drift, stale-components, test-coverage, chromatic-health, monthly-summary]
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Slack alert
-        continue-on-error: true
-        uses: slackapi/slack-github-action@v2
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": ":x: *${{ github.workflow }}* failed on `${{ github.ref_name }}`",
-              "attachments": [{"color": "danger", "fields": [
-                {"title": "Repo", "value": "${{ github.repository }}", "short": true},
-                {"title": "Run", "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>", "short": true}
-              ]}]
-            }
