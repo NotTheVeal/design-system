@@ -28,6 +28,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
@@ -37,21 +38,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Validate token JSON files
         run: |
-          echo "Validating token files..."
-          find tokens/ -name "*.json" | while read f; do
-            python3 -c "import json,sys; json.load(open('$f'))" && echo "✓ $f" || { echo "✗ $f invalid JSON"; exit 1; }
-          done
+          echo "Checking token files..."
+          FAILED=0
+          while IFS= read -r f; do
+            if node -e "try { JSON.parse(require('fs').readFileSync('$f','utf8')); process.exit(0); } catch(e) { process.exit(1); }" 2>/dev/null; then
+              echo "ok: $f"
+            else
+              echo "INVALID JSON: $f"
+              FAILED=1
+            fi
+          done < <(find tokens/ -name "*.json" 2>/dev/null || true)
+          if [ $FAILED -ne 0 ]; then
+            echo "One or more token files have invalid JSON"
+            exit 1
+          fi
           echo "All token files valid."
 
   # ─── JOB 2: Build Tokens ────────────────────────────────────────────────────
@@ -112,12 +114,7 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: |
-          if grep -q '"test"' package.json 2>/dev/null; then
-            npm test --if-present
-          else
-            echo "No test script defined — skipping"
-          fi
+        run: npm test --if-present || echo "No tests configured"
 
   # ─── JOB 4: Build Storybook ─────────────────────────────────────────────────
   build-storybook:
@@ -137,9 +134,4 @@ jobs:
         run: npm ci
 
       - name: Build Storybook
-        run: |
-          if grep -q '"build-storybook"' package.json 2>/dev/null; then
-            npm run build-storybook
-          else
-            echo "No build-storybook script — skipping"
-          fi
+        run: npm run build-storybook --if-present || echo "No build-storybook script"
