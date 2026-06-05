@@ -1,9 +1,0 @@
-import{i as e}from"./preload-helper-xPQekRTU.js";import{k as t}from"./iframe-3lkUr0nI.js";import{t as n}from"./jsx-runtime-CaZkqeYb.js";var r,i,a=e((()=>{t(),r=n(),i=({title:e,content:t,footer:n,className:i,onClick:a})=>(0,r.jsxs)(`div`,{className:`card ${i}`,role:`button`,tabIndex:0,onClick:a,onKeyPress:e=>{(e.key===`Enter`||e.key===` `)&&a?.()},"aria-label":e,style:{backgroundColor:`var(--ps-card-base-background)`,border:`1px solid var(--ps-card-base-border)`,borderRadius:`var(--ps-card-base-radius)`,boxShadow:`var(--ps-card-base-shadow)`,padding:`16px`,transition:`box-shadow 0.2s`},onMouseEnter:()=>{document.documentElement.style.setProperty(`--ps-card-base-shadow`,`var(--ps-card-base-hoverShadow)`)},onMouseLeave:()=>{document.documentElement.style.setProperty(`--ps-card-base-shadow`,`var(--ps-card-base-shadow)`)},children:[(0,r.jsx)(`h2`,{children:e}),(0,r.jsx)(`div`,{children:t}),n&&(0,r.jsx)(`div`,{className:`card-footer`,children:n})]})})),o,s,c;e((()=>{a(),o={title:`Components/Card`,component:i,tags:[`autodocs`],argTypes:{title:{control:`text`},content:{control:`text`},footer:{control:`text`},className:{control:`text`},onClick:{action:`called`}}},s={args:{title:`Sample Title`,content:`Sample content`,footer:`Sample content`,className:`className`,onClick:()=>{}}},s.parameters={...s.parameters,docs:{...s.parameters?.docs,source:{originalSource:`{
-  args: {
-    title: 'Sample Title',
-    content: 'Sample content',
-    footer: 'Sample content',
-    className: 'className',
-    onClick: () => {}
-  }
-}`,...s.parameters?.docs?.source}}},c=[`Default`]}))();export{s as Default,c as __namedExportsOrder,o as default};
