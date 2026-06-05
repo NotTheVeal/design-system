@@ -1,70 +1,74 @@
 import React from 'react';
+import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 interface AlertProps {
   type: 'success' | 'danger' | 'warning' | 'info';
   title: string;
-  message: string;
+  message?: string;
   onDismiss?: () => void;
   className?: string;
+  actions?: React.ReactNode;
 }
 
-const Alert: React.FC<AlertProps> = ({ type, title, message, onDismiss, className }) => {
-  const alertStyles = {
-    success: {
-      background: 'var(--ps-alert-success-background)',
-      color: 'var(--ps-alert-success-text)',
-    },
-    danger: {
-      background: 'var(--ps-alert-danger-background)',
-      color: 'var(--ps-alert-danger-text)',
-    },
-    warning: {
-      background: 'var(--ps-alert-warning-background)',
-      color: 'var(--ps-alert-warning-text)',
-    },
-    info: {
-      background: 'var(--ps-alert-info-background)',
-      color: 'var(--ps-alert-info-text)',
-    },
-  };
+const ALERT_CONFIG = {
+  success: {
+    bg: '#E2F5EE',
+    color: '#0E7C55',
+    Icon: CheckCircle2,
+  },
+  danger: {
+    bg: '#FEF0F0',
+    color: '#E00000',
+    Icon: XCircle,
+  },
+  warning: {
+    bg: '#FFF4E5',
+    color: '#B45309',
+    Icon: AlertTriangle,
+  },
+  info: {
+    bg: '#EFF9FE',
+    color: '#005BA6',
+    Icon: Info,
+  },
+} as const;
+
+const Alert: React.FC<AlertProps> = ({ type, title, message, onDismiss, className = '', actions }) => {
+  const { bg, color, Icon } = ALERT_CONFIG[type];
 
   return (
     <div
       role="alert"
       aria-live="assertive"
-      style={{
-        background: alertStyles[type].background,
-        color: alertStyles[type].color,
-        padding: 'var(--ps-alert-paddingV) var(--ps-alert-paddingH)',
-        borderRadius: 'var(--ps-alert-radius)',
-        borderWidth: 'var(--ps-alert-borderWidth)',
-        borderStyle: 'solid',
-        borderColor: 'transparent',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      }}
-      className={className}
+      className={`flex items-start gap-3 px-4 py-3 rounded-[4px] w-full ${className}`}
+      style={{ backgroundColor: bg, color }}
     >
-      <div>
-        <strong style={{ fontSize: 'var(--ps-alert-title-fontSize)', fontWeight: 'var(--ps-alert-title-fontWeight)' }}>
+      <Icon size={18} strokeWidth={1.75} className="flex-shrink-0 mt-[1px]" />
+      <div className="flex-1 min-w-0">
+        <span
+          className="text-[14px] font-semibold leading-snug"
+          style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
+        >
           {title}
-        </strong>
-        <p style={{ fontSize: 'var(--ps-alert-body-fontSize)', fontWeight: 'var(--ps-alert-body-fontWeight)' }}>
-          {message}
-        </p>
+        </span>
+        {message && (
+          <p
+            className="text-[14px] font-normal mt-0.5 leading-snug"
+            style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
+          >
+            {message}
+          </p>
+        )}
+        {actions && <div className="flex items-center gap-2 mt-2">{actions}</div>}
       </div>
       {onDismiss && (
         <button
           onClick={onDismiss}
           aria-label="Dismiss alert"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--ps-alert-dismiss-icon)',
-            fontSize: 'var(--ps-alert-dismiss-size)',
-          }}
+          className="flex-shrink-0 hover:opacity-70 transition-opacity"
+          style={{ color }}
         >
-          ✕
+          <X size={18} strokeWidth={1.75} />
         </button>
       )}
     </div>
