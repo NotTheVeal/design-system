@@ -1,6 +1,5 @@
 name: Design System Pipeline
 
-
 on:
   push:
     branches: [main]
@@ -13,29 +12,134 @@ on:
   workflow_dispatch:
     inputs:
       component:
-        description: 'Component name to generate (e.g. Button, Modal, Badge). Leave blank to auto-detect from token changes.'
+        description: 'Component name to generate. Leave blank to auto-detect.'
         required: false
         type: string
       skip_tests:
-        description: 'Skip test jobs (use for debugging only)'
+        description: 'Skip test jobs (debugging only)'
         required: false
         type: boolean
         default: false
-
 
 permissions:
   contents: write
   issues: write
   pull-requests: read
 
-
 env:
-  NODE_VERSION: '24'
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
+  NODE_VERSION: '20'
 
 jobs:
-  # ─── JOB 1: Validate Tokens ─────────────────────────────────────────────────────────────────────────────
+  # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
   validate-tokens:
     name: Validate Token Files
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate token JSON files
+        run: |
+          echo "Validating token files..."
+          find tokens/ -name "*.json" | while read f; do
+            python3 -c "import json,sys; json.load(open('$f'))" && echo "✓ $f" || { echo "✗ $f invalid JSON"; exit 1; }
+          done
+          echo "All token files valid."
+
+  # ─── JOB 2: Build Tokens ────────────────────────────────────────────────────
+  build-tokens:
+    name: Build Design Tokens
+    runs-on: ubuntu-latest
+    needs: validate-tokens
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build tokens
+        run: |
+          if grep -q '"build:tokens"' package.json 2>/dev/null; then
+            npm run build:tokens
+          elif [ -f "style-dictionary.config.js" ] || [ -f "config.json" ]; then
+            npx style-dictionary build
+          else
+            echo "No token build script — skipping"
+          fi
+
+      - name: Commit built tokens
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/tokens/ dist/ build/ 2>/dev/null || true
+          git diff --cached --quiet && echo "No token output changes" || git commit -m "chore: rebuild tokens [pipeline]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─── JOB 3: Run Tests ───────────────────────────────────────────────────────
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: build-tokens
+    if: ${{ !inputs.skip_tests }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: |
+          if grep -q '"test"' package.json 2>/dev/null; then
+            npm test --if-present
+          else
+            echo "No test script defined — skipping"
+          fi
+
+  # ─── JOB 4: Build Storybook ─────────────────────────────────────────────────
+  build-storybook:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+    needs: build-tokens
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: |
+          if grep -q '"build-storybook"' package.json 2>/dev/null; then
+            npm run build-storybook
+          else
+            echo "No build-storybook script — skipping"
+          fi
