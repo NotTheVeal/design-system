@@ -1,54 +1,96 @@
 import React from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
+type TrendDirection = 'up' | 'down' | 'neutral';
+
 interface MetricProps {
-  value: string | number;
   label?: string;
-  trend?: 'up' | 'down' | 'neutral';
-  trendValue?: string;
-  prefix?: string;
-  suffix?: string;
-  size?: 'sm' | 'md' | 'lg';
+  value: string | number;
+  unit?: string;
+  trend?: TrendDirection;
+  trendValue?: string | number;
+  trendLabel?: string;
   className?: string;
 }
 
-const TrendUpIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M2 11l4-4 3 3 5-5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M10 5h4v4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+const TrendUp = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="1 10 5 5 8 8 13 2" />
+    <polyline points="9 2 13 2 13 6" />
   </svg>
 );
-const TrendDownIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M2 5l4 4 3-3 5 5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M10 11h4V7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+
+const TrendDown = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="1 4 5 9 8 6 13 12" />
+    <polyline points="9 12 13 12 13 8" />
   </svg>
 );
+
+const TREND_COLORS: Record<TrendDirection, string> = {
+  up: '#0E7C55',
+  down: '#E00000',
+  neutral: '#777777',
+};
 
 const Metric: React.FC<MetricProps> = ({
-  value,
   label,
-  trend,
+  value,
+  unit,
+  trend = 'neutral',
   trendValue,
-  prefix,
-  suffix,
-  size = 'md',
+  trendLabel,
   className = '',
 }) => {
-  const valueSizes: Record<string, string> = { sm: 'text-[24px]', md: 'text-[32px]', lg: 'text-[48px]' };
-  const trendColors: Record<string, string> = { up: 'text-[#0E7C55]', down: 'text-[#E00000]', neutral: 'text-[#777777]' };
+  const trendColor = TREND_COLORS[trend];
 
   return (
-    <div className={`flex flex-col gap-1 ${className}`}>
-      {label && <span className="text-[12px] font-semibold text-[#777777] uppercase tracking-wide">{label}</span>}
-      <div className="flex items-baseline gap-1">
-        {prefix && <span className="text-[16px] font-semibold text-[#4A4A4A]">{prefix}</span>}
-        <span className={`${valueSizes[size]} font-bold text-[#002F48]`}>{value}</span>
-        {suffix && <span className="text-[16px] font-semibold text-[#4A4A4A]">{suffix}</span>}
+    <div className={className} style={{ fontFamily }}>
+      {label && (
+        <div
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#777777',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: 4,
+            fontFamily,
+          }}
+        >
+          {label}
+        </div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+        <span style={{ fontSize: 32, fontWeight: 300, color: '#002F48', lineHeight: 1, fontFamily }}>
+          {value}
+        </span>
+        {unit && (
+          <span style={{ fontSize: 16, fontWeight: 600, color: '#4A4A4A', fontFamily }}>
+            {unit}
+          </span>
+        )}
       </div>
-      {trend && trendValue && (
-        <div className={`flex items-center gap-1 ${trendColors[trend]}`}>
-          {trend === 'up' ? <TrendUpIcon /> : trend === 'down' ? <TrendDownIcon /> : null}
-          <span className="text-[14px] font-semibold">{trendValue}</span>
+      {(trendValue !== undefined || trendLabel) && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            marginTop: 6,
+            fontSize: 14,
+            fontWeight: 600,
+            color: trendColor,
+            fontFamily,
+          }}
+        >
+          {trend === 'up' && <TrendUp />}
+          {trend === 'down' && <TrendDown />}
+          {trendValue !== undefined && <span>{trendValue}</span>}
+          {trendLabel && (
+            <span style={{ fontWeight: 400, color: '#777777' }}>{trendLabel}</span>
+          )}
         </div>
       )}
     </div>
