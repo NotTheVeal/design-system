@@ -10,38 +10,38 @@ interface IconModalityProps {
 
 const IconModality: React.FC<IconModalityProps> = ({ type, icon, size = 'md', className, 'aria-label': ariaLabel }) => {
   const sizes = {
-    sm: 'var(--ps-iconModality-size-sm)',
-    md: 'var(--ps-iconModality-size-md)',
-    lg: 'var(--ps-iconModality-size-lg)',
-    xl: 'var(--ps-iconModality-size-xl)',
+    sm: '24px',
+    md: '32px',
+    lg: '40px',
+    xl: '48px',
   };
 
   const styles = {
     squareFilled: {
-      background: 'var(--ps-iconModality-squareFilled-background)',
-      color: 'var(--ps-iconModality-squareFilled-icon)',
-      borderRadius: 'var(--ps-iconModality-squareFilled-radius)',
-      padding: 'var(--ps-iconModality-squareFilled-padding)',
+      background: '#EFF9FE',
+      color: '#005BA6',
+      borderRadius: '4px',
+      padding: '8px',
     },
     squareOutline: {
-      background: 'var(--ps-iconModality-squareOutline-background)',
-      color: 'var(--ps-iconModality-squareOutline-icon)',
-      border: `1px solid var(--ps-iconModality-squareOutline-border)`,
-      borderRadius: 'var(--ps-iconModality-squareOutline-radius)',
-      padding: 'var(--ps-iconModality-squareOutline-padding)',
+      background: 'transparent',
+      color: '#005BA6',
+      border: '1px solid #DCDCDC',
+      borderRadius: '4px',
+      padding: '8px',
     },
     circleFilled: {
-      background: 'var(--ps-iconModality-circleFilled-background)',
-      color: 'var(--ps-iconModality-circleFilled-icon)',
-      borderRadius: 'var(--ps-iconModality-circleFilled-radius)',
-      padding: 'var(--ps-iconModality-circleFilled-padding)',
+      background: '#EFF9FE',
+      color: '#005BA6',
+      borderRadius: '50%',
+      padding: '8px',
     },
     circleOutline: {
-      background: 'var(--ps-iconModality-circleOutline-background)',
-      color: 'var(--ps-iconModality-circleOutline-icon)',
-      border: `1px solid var(--ps-iconModality-circleOutline-border)`,
-      borderRadius: 'var(--ps-iconModality-circleOutline-radius)',
-      padding: 'var(--ps-iconModality-circleOutline-padding)',
+      background: 'transparent',
+      color: '#005BA6',
+      border: '1px solid #DCDCDC',
+      borderRadius: '50%',
+      padding: '8px',
     },
   };
 
