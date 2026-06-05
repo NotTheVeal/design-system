@@ -1,55 +1,15 @@
-name: Fix Cart Stories
+# DEPRECATED — one-off cart stories fix, no longer needed.
+# Replaced by the main design-system.yml pipeline.
+# Removed push trigger to prevent errors on every commit.
+
+name: Fix Cart Stories (Deprecated)
+
 on:
   workflow_dispatch:
+
 jobs:
-  fix:
+  noop:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Write fixed Cart.stories.tsx
-        run: |
-          cat > src/components/cart/Cart.stories.tsx << 'ENDOFFILE'
-import type { Meta, StoryObj } from '@storybook/react';
-import Cart from './cart';
-
-const meta: Meta<typeof Cart> = {
-  title: 'Components/Cart',
-  component: Cart,
-  tags: ['autodocs'],
-};
-
-export default meta;
-type Story = StoryObj<typeof Cart>;
-
-export const Default: Story = {
-  args: {
-    colorScheme: 'future',
-    items: [
-      {
-        id: '1',
-        name: 'MRI Gradient Coil Assembly',
-        partNumber: 'GCA-7720',
-        quantity: 1,
-        price: '$1,249.99',
-      },
-      {
-        id: '2',
-        name: 'Ultrasound Transducer Probe',
-        partNumber: 'GE-LOGIQ-E9',
-        quantity: 2,
-        price: '$389.00',
-      },
-    ],
-    onCheckout: () => {},
-  },
-};
-ENDOFFILE
-      - name: Commit fix
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/components/cart/Cart.stories.tsx
-          git diff --staged --quiet || git commit -m "fix: update Cart.stories.tsx to match new CartItem interface"
-          git push
+      - name: Info
+        run: echo "This workflow is deprecated. Use design-system.yml pipeline."
