@@ -5,7 +5,7 @@ interface AvatarProps {
   alt?: string;
   name?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  className?: string;
+  style?: React.CSSProperties;
   status?: 'online' | 'offline' | 'away' | 'busy';
 }
 
@@ -14,50 +14,76 @@ const Avatar: React.FC<AvatarProps> = ({
   alt,
   name,
   size = 'md',
-  className = '',
+  style,
   status,
 }) => {
-  const sizeClasses: Record<string, string> = {
-    xs: 'w-[24px] h-[24px] text-[10px]',
-    sm: 'w-[32px] h-[32px] text-[12px]',
-    md: 'w-[40px] h-[40px] text-[14px]',
-    lg: 'w-[48px] h-[48px] text-[18px]',
-    xl: 'w-[64px] h-[64px] text-[24px]',
+  const sizeDims: Record<string, { width: string; height: string; fontSize: string }> = {
+    xs: { width: '24px', height: '24px', fontSize: '10px' },
+    sm: { width: '32px', height: '32px', fontSize: '12px' },
+    md: { width: '40px', height: '40px', fontSize: '14px' },
+    lg: { width: '48px', height: '48px', fontSize: '18px' },
+    xl: { width: '64px', height: '64px', fontSize: '24px' },
   };
 
-  const statusSizeClasses: Record<string, string> = {
-    xs: 'w-[8px] h-[8px] border',
-    sm: 'w-[10px] h-[10px] border',
-    md: 'w-[12px] h-[12px] border-2',
-    lg: 'w-[14px] h-[14px] border-2',
-    xl: 'w-[18px] h-[18px] border-2',
+  const statusSizeDims: Record<string, { width: string; height: string; borderWidth: string }> = {
+    xs: { width: '8px',  height: '8px',  borderWidth: '1px' },
+    sm: { width: '10px', height: '10px', borderWidth: '1px' },
+    md: { width: '12px', height: '12px', borderWidth: '2px' },
+    lg: { width: '14px', height: '14px', borderWidth: '2px' },
+    xl: { width: '18px', height: '18px', borderWidth: '2px' },
   };
 
-  const statusColorClasses: Record<string, string> = {
-    online:  'bg-[#17AB78]',
-    offline: 'bg-[#CCCCCC]',
-    away:    'bg-[#E3A92D]',
-    busy:    'bg-[#E00000]',
+  const statusColors: Record<string, string> = {
+    online:  '#17AB78',
+    offline: '#CCCCCC',
+    away:    '#E3A92D',
+    busy:    '#E00000',
   };
 
   const initials = name
     ? name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
     : '?';
 
+  const dims = sizeDims[size];
+  const sDims = statusSizeDims[size];
+
   return (
-    <div className={`relative inline-flex flex-shrink-0 ${className}`}>
+    <div style={{ position: 'relative', display: 'inline-flex', flexShrink: 0, ...style }}>
       <div
-        className={`${sizeClasses[size]} rounded-full overflow-hidden bg-[#005BA6] text-white font-semibold flex items-center justify-center select-none`}
-        style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
+        style={{
+          width: dims.width,
+          height: dims.height,
+          borderRadius: '50%',
+          overflow: 'hidden',
+          backgroundColor: '#005BA6',
+          color: '#FFFFFF',
+          fontWeight: 600,
+          fontSize: dims.fontSize,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          userSelect: 'none',
+          fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif",
+        }}
       >
         {src
-          ? <img src={src} alt={alt || name || 'Avatar'} className="w-full h-full object-cover" />
-          : <span>{initials}</span>
-        }
+          ? (<img src={src} alt={alt || initials} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />)
+          : (<span>{initials}</span>)}
       </div>
       {status && (
         <span
-          className={`absolute bottom-0 right-0 rounded-full border-white ${statusSizeClasses[size]} ${statusColorClasses[status]}`}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            borderRadius: '50%',
+            borderStyle: 'solid',
+            borderColor: '#FFFFFF',
+            width: sDims.width,
+            height: sDims.height,
+            borderWidth: sDims.borderWidth,
+            backgroundColor: statusColors[status],
+          }}
           aria-label={status}
         />
       )}
