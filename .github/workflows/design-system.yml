@@ -90,8 +90,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/tokens/ dist/ build/ 2>/dev/null || true
-          git diff --cached --quiet && echo "No token output changes" || git commit -m "chore: rebuild tokens [pipeline]"
-          git push
+          if git diff --cached --quiet; then
+            echo "No token output changes — skipping push"
+          else
+            git commit -m "chore: rebuild tokens [pipeline]"
+            git pull --rebase
+            git push
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
