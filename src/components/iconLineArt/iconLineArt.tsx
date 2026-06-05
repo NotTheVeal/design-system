@@ -21,10 +21,10 @@ const IconLineArt: React.FC<IconLineArtProps> = ({
   };
 
   const colorMap = {
-    default: 'var(--ps-iconLineArt-color-default)',
-    brand: 'var(--ps-iconLineArt-color-brand)',
-    onDark: 'var(--ps-iconLineArt-color-onDark)',
-    subtle: 'var(--ps-iconLineArt-color-subtle)',
+    default: '#DCDCDC',
+    brand: '#005BA6',
+    onDark: '#DCDCDC',
+    subtle: '#808080',
   };
 
   return (
@@ -35,24 +35,15 @@ const IconLineArt: React.FC<IconLineArtProps> = ({
       style={{
         width: sizeMap[size],
         height: sizeMap[size],
-        backgroundColor: 'var(--ps-iconLineArt-container-background)',
-        borderRadius: 'var(--ps-iconLineArt-container-radius)',
-        padding: 'var(--ps-iconLineArt-container-padding)',
+        backgroundColor: '#F0F0F0',
+        borderRadius: '8px',
+        padding: '24px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
       }}
     >
       <style>
         {`
-          :root {
-            --ps-iconLineArt-color-default: #DCDCDC;
-            --ps-iconLineArt-color-brand: #005BA6;
-            --ps-iconLineArt-color-onDark: #DCDCDC;
-            --ps-iconLineArt-color-subtle: #808080;
-            --ps-iconLineArt-container-background: #F0F0F0;
-            --ps-iconLineArt-container-radius: 8px;
-            --ps-iconLineArt-container-padding: 24px;
-          }
-        `}
+          `}
       </style>
     </div>
   );
