@@ -1,20 +1,31 @@
 import React, { useEffect } from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
 interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children?: React.ReactNode;
+  footer?: React.ReactNode;
   position?: 'left' | 'right';
   width?: string;
   className?: string;
 }
+
+const CloseIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
 
 const Drawer: React.FC<DrawerProps> = ({
   isOpen,
   onClose,
   title,
   children,
+  footer,
   position = 'right',
   width = '400px',
   className = '',
@@ -27,25 +38,111 @@ const Drawer: React.FC<DrawerProps> = ({
 
   return (
     <>
+      {/* Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-[#002F48] bg-opacity-60 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 40,
+          background: 'rgba(0,47,72,0.6)',
+          opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? 'auto' : 'none',
+          transition: 'opacity 300ms ease',
+        }}
         onClick={onClose}
         aria-hidden="true"
       />
+
+      {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'drawer-title' : undefined}
-        className={`fixed top-0 ${position === 'right' ? 'right-0' : 'left-0'} h-full z-50 bg-white shadow-[0_6px_20px_rgba(0,47,72,0.18)] flex flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : position === 'right' ? 'translate-x-full' : '-translate-x-full'} ${className}`}
-        style={{ width }}
+        style={{
+          position: 'fixed',
+          top: 0,
+          [position === 'right' ? 'right' : 'left']: 0,
+          height: '100%',
+          width,
+          zIndex: 50,
+          background: '#FFFFFF',
+          boxShadow: '0 6px 20px rgba(0,47,72,0.18)',
+          display: 'flex',
+          flexDirection: 'column',
+          transform: isOpen ? 'translateX(0)' : position === 'right' ? 'translateX(100%)' : 'translateX(-100%)',
+          transition: 'transform 300ms ease',
+          fontFamily,
+        }}
+        className={className}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#DCDCDC]">
-          {title && <h2 id="drawer-title" className="text-[18px] font-semibold text-[#002F48]">{title}</h2>}
-          <button onClick={onClose} aria-label="Close drawer" className="ml-auto text-[#777777] hover:text-[#4A4A4A] transition-colors text-[24px] leading-none w-[32px] h-[32px] flex items-center justify-center">
-            ×
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 24px',
+          height: 56,
+          borderBottom: '1px solid #DCDCDC',
+          flexShrink: 0,
+        }}>
+          {title && (
+            <h2 id="drawer-title" style={{
+              margin: 0,
+              fontSize: 18,
+              fontWeight: 600,
+              color: '#002F48',
+              fontFamily,
+            }}>
+              {title}
+            </h2>
+          )}
+          <button
+            onClick={onClose}
+            aria-label="Close drawer"
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              border: 'none',
+              background: 'transparent',
+              color: '#777777',
+              cursor: 'pointer',
+              borderRadius: 4,
+              transition: 'color 150ms ease, background 150ms ease',
+              fontFamily,
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.color = '#4A4A4A';
+              (e.currentTarget as HTMLButtonElement).style.background = '#F1F1F1';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.color = '#777777';
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+            }}
+          >
+            <CloseIcon />
           </button>
         </div>
-        <div className="flex-1 overflow-auto px-6 py-4">{children}</div>
+
+        {/* Content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+          {children}
+        </div>
+
+        {/* Footer (optional) */}
+        {footer && (
+          <div style={{
+            padding: '16px 24px',
+            borderTop: '1px solid #DCDCDC',
+            display: 'flex',
+            gap: 8,
+            justifyContent: 'flex-end',
+            flexShrink: 0,
+          }}>
+            {footer}
+          </div>
+        )}
       </div>
     </>
   );
