@@ -1,43 +1,14 @@
-name: Publish v1.1.0 to npm
+# DEPRECATED — one-off v1.1.0 npm publish, no longer needed.
+# Use publish.yml for all future npm releases.
+
+name: Publish v1.1.0 to npm (Deprecated)
+
 on:
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
-  publish:
+  noop:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
-      - name: Checkout v1.1.0
-        uses: actions/checkout@v4
-        with:
-          ref: v1.1.0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-      - name: Build library
-        run: npx vite build --config vite.lib.config.ts
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  release:
-    needs: publish
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v1.1.0
-          generate_release_notes: true
+      - name: Info
+        run: echo "Deprecated. v1.1.0 has been published. Use publish.yml for future releases."
