@@ -30,6 +30,7 @@ const Button: React.FC<ButtonProps> = ({
         className={`border rounded-[4px] transition-all cursor-not-allowed bg-[#DCDCDC] border-[#777777] text-[#777777] ${sizeStyle} ${className ?? ''}`}
         disabled
         tabIndex={-1}
+        style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
         {...rest}
       >
         {children}
@@ -52,9 +53,10 @@ const Button: React.FC<ButtonProps> = ({
         sizing: 'h-[40px] px-6 text-[15px] font-semibold',
       };
     }
+    // Primary (default) — outline → fills on hover, border stays brand blue
     return {
       base: 'border-2 rounded-[4px] transition-all duration-200 focus:outline-none',
-      visual: 'bg-white border-[#005BA6] text-[#005BA6] hover:bg-[#005BA6] hover:border-[#009CF4] hover:text-white active:bg-[#004A84] active:border-[#004A84] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
+      visual: 'bg-white border-[#005BA6] text-[#005BA6] hover:bg-[#005BA6] hover:border-[#005BA6] hover:text-white active:bg-[#004A84] active:border-[#004A84] focus:shadow-[0_0_0_3px_rgba(0,147,244,0.3)]',
       sizing: 'h-[50px] px-6 text-[15px] font-semibold uppercase tracking-wide',
     };
   };
@@ -65,6 +67,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       className={`${base} ${visual} ${sizing} ${className ?? ''}`}
       onClick={onClick}
+      style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
       {...rest}
       tabIndex={0}
     >
