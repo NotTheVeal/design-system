@@ -34,27 +34,6 @@ jobs:
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          buildScriptName: build-storybook
           exitZeroOnChanges: true
-          autoAcceptChanges: false
-
-  notify:
-    name: Notify on failure
-    needs: [chromatic]
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Slack alert
+          exitOnceUploaded: true
         continue-on-error: true
-        uses: slackapi/slack-github-action@v2
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": ":x: *${{ github.workflow }}* failed on `${{ github.ref_name }}`",
-              "attachments": [{"color": "danger", "fields": [
-                {"title": "Repo", "value": "${{ github.repository }}", "short": true},
-                {"title": "Run", "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>", "short": true}
-              ]}]
-            }
