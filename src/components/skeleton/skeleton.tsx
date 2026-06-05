@@ -1,56 +1,67 @@
 import React from 'react';
 
+const STYLE_ID = 'ps-skeleton-styles';
+const injectSkeletonStyles = () => {
+  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = STYLE_ID;
+  style.textContent = `
+    @keyframes ps-skeleton-shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .ps-skeleton {
+      display: block;
+      overflow: hidden;
+      position: relative;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #E8E8E8 25%, #F4F4F4 50%, #E8E8E8 75%);
+      background-size: 200% 100%;
+    }
+    .ps-skeleton--animate {
+      animation: ps-skeleton-shimmer 1400ms ease-in-out infinite;
+    }
+  `;
+  document.head.appendChild(style);
+};
+
 interface SkeletonProps {
-  className?: string;
   height?: number;
-  width?: number;
-  style?: React.CSSProperties;
+  width?: number | string;
+  borderRadius?: number;
   animate?: boolean;
+  circle?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({ className, height = 24, width = '100%', style, animate = true }) => {
+const Skeleton: React.FC<SkeletonProps> = ({
+  height = 20,
+  width = '100%',
+  borderRadius,
+  animate = true,
+  circle = false,
+  className = '',
+  style,
+}) => {
+  if (typeof document !== 'undefined') injectSkeletonStyles();
+
+  const radius = circle ? '50%' : borderRadius !== undefined ? `${borderRadius}px` : '4px';
+  const w = circle ? height : (typeof width === 'number' ? `${width}px` : width);
+
   return (
-    <div
-      className={`skeleton ${className}`}
-      style={{
-        ...style,
-        height: `${height}px`,
-        width: typeof width === 'number' ? `${width}px` : width,
-        backgroundColor: 'var(--ps-skeleton-background)',
-        borderRadius: 'var(--ps-skeleton-radius.text)',
-        animation: animate ? `skeleton-loading var(--ps-skeleton-animation-duration) var(--ps-skeleton-animation-easing) infinite` : undefined,
-      }}
+    <span
       role="status"
-      aria-label="Loading content"
-      tabIndex={0}
-    >
-      <style>
-        {`
-          :root {
-            --ps-skeleton-background: #f0f0f0;
-            --ps-skeleton-radius: 4px;
-            --ps-skeleton-animation-duration: 1400ms;
-            --ps-skeleton-animation-easing: ease-in-out;
-          }
-          .skeleton {
-            display: inline-block;
-            overflow: hidden;
-            position: relative;
-            background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-            background-size: 200% 100%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          }
-          @keyframes skeleton-loading {
-            0% {
-              background-position: 200% 0;
-            }
-            100% {
-              background-position: 0 0;
-            }
-          }
-        `}
-      </style>
-    </div>
+      aria-label="Loading"
+      className={`ps-skeleton${animate ? ' ps-skeleton--animate' : ''} ${className}`}
+      style={{
+        display: 'block',
+        height: `${height}px`,
+        width: typeof w === 'number' ? `${w}px` : w,
+        borderRadius: radius,
+        ...style,
+      }}
+    />
   );
 };
 
