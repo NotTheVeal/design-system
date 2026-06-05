@@ -1,27 +1,82 @@
 import React from 'react';
 
+const STYLE_ID = 'ps-loading-styles';
+const injectStyles = () => {
+  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = STYLE_ID;
+  style.textContent = `
+    @keyframes ps-spin { to { transform: rotate(360deg); } }
+    .ps-loading-spinner { animation: ps-spin 0.8s linear infinite; transform-origin: center; }
+  `;
+  document.head.appendChild(style);
+};
+
+const SIZES: Record<string, number> = { sm: 24, md: 40, lg: 64 };
+
 interface LoadingProps {
-  size?: 'sm' | 'md' | 'lg';
-  label?: string;
+  size?: 'sm' | 'md' | 'lg' | number;
+  color?: string;
+  trackColor?: string;
   className?: string;
+  label?: string;
 }
 
-const sizeMap = { sm: 'w-4 h-4', md: 'w-8 h-8', lg: 'w-12 h-12' };
+const Loading: React.FC<LoadingProps> = ({
+  size = 'md',
+  color = '#005BA6',
+  trackColor = '#DCDCDC',
+  className = '',
+  label = 'Loadingâ¦',
+}) => {
+  if (typeof document !== 'undefined') injectStyles();
 
-const Loading: React.FC<LoadingProps> = ({ size = 'md', label, className = '' }) => {
+  const px = typeof size === 'number' ? size : SIZES[size];
+  const stroke = px <= 24 ? 3 : px <= 40 ? 4 : 6;
+  const r = (px - stroke * 2) / 2;
+  const cx = px / 2;
+  const circ = 2 * Math.PI * r;
+  // Show 75% arc
+  const dasharray = `${circ * 0.75} ${circ * 0.25}`;
+
   return (
-    <div className={`flex flex-col items-center justify-center gap-2 ${className}`} role="status" aria-label={label || 'Loading'}>
+    <span
+      role="status"
+      aria-label={label}
+      className={className}
+      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+    >
       <svg
-        className={`animate-spin text-blue-600 ${sizeMap[size]}`}
-        xmlns="http://www.w3.org/2000/svg"
+        width={px}
+        height={px}
+        viewBox={`0 0 ${px} ${px}`}
         fill="none"
-        viewBox="0 0 24 24"
+        className="ps-loading-spinner"
       >
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        {/* Track */}
+        <circle
+          cx={cx}
+          cy={cx}
+          r={r}
+          stroke={trackColor}
+          strokeWidth={stroke}
+        />
+        {/* Active arc */}
+        <circle
+          cx={cx}
+          cy={cx}
+          r={r}
+          stroke={color}
+          strokeWidth={stroke}
+          strokeDasharray={dasharray}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${cx} ${cx})`}
+        />
       </svg>
-      {label && <span className="text-sm text-gray-600">{label}</span>}
-    </div>
+      <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+        {label}
+      </span>
+    </span>
   );
 };
 
