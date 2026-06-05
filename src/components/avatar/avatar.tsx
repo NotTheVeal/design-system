@@ -6,7 +6,7 @@ interface AvatarProps {
   name?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
-  status?: 'online' | 'offline' | 'away';
+  status?: 'online' | 'offline' | 'away' | 'busy';
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -24,6 +24,7 @@ const Avatar: React.FC<AvatarProps> = ({
     lg: 'w-[48px] h-[48px] text-[18px]',
     xl: 'w-[64px] h-[64px] text-[24px]',
   };
+
   const statusSizeClasses: Record<string, string> = {
     xs: 'w-[8px] h-[8px] border',
     sm: 'w-[10px] h-[10px] border',
@@ -31,22 +32,34 @@ const Avatar: React.FC<AvatarProps> = ({
     lg: 'w-[14px] h-[14px] border-2',
     xl: 'w-[18px] h-[18px] border-2',
   };
+
   const statusColorClasses: Record<string, string> = {
-    online: 'bg-[#17AB78]',
+    online:  'bg-[#17AB78]',
     offline: 'bg-[#CCCCCC]',
-    away: 'bg-[#E3A92D]',
+    away:    'bg-[#E3A92D]',
+    busy:    'bg-[#E00000]',
   };
+
   const initials = name
     ? name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
     : '?';
 
   return (
     <div className={`relative inline-flex flex-shrink-0 ${className}`}>
-      <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-[#DCEAED] text-[#005BA6] font-semibold flex items-center justify-center select-none`}>
-        {src ? <img src={src} alt={alt || name || 'Avatar'} className="w-full h-full object-cover" /> : <span>{initials}</span>}
+      <div
+        className={`${sizeClasses[size]} rounded-full overflow-hidden bg-[#005BA6] text-white font-semibold flex items-center justify-center select-none`}
+        style={{ fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif" }}
+      >
+        {src
+          ? <img src={src} alt={alt || name || 'Avatar'} className="w-full h-full object-cover" />
+          : <span>{initials}</span>
+        }
       </div>
       {status && (
-        <span className={`absolute bottom-0 right-0 rounded-full border-white ${statusSizeClasses[size]} ${statusColorClasses[status]}`} aria-label={status} />
+        <span
+          className={`absolute bottom-0 right-0 rounded-full border-white ${statusSizeClasses[size]} ${statusColorClasses[status]}`}
+          aria-label={status}
+        />
       )}
     </div>
   );
