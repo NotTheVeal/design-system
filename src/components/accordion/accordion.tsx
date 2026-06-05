@@ -1,49 +1,116 @@
-import React, { useState, ReactNode } from 'react';
+import React, { useState } from 'react';
 
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
-interface AccordionProps {
+interface AccordionItem {
   title: string;
-  children: ReactNode;
-  className?: string;
-  id?: string;
+  content: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
-const Accordion: React.FC<AccordionProps> = ({ title, children, className, id }) => {
-  const [isOpen, setIsOpen] = useState(false);
+interface AccordionProps {
+  items: AccordionItem[];
+  allowMultiple?: boolean;
+  className?: string;
+}
 
-  const toggleAccordion = () => {
-    setIsOpen(prev => !prev);
+const ChevronIcon: React.FC<{ open: boolean }> = ({ open }) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{
+      transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+      transition: 'transform 200ms ease',
+      flexShrink: 0,
+    }}
+  >
+    <polyline points="5 8 10 13 15 8" />
+  </svg>
+);
+
+const Accordion: React.FC<AccordionProps> = ({
+  items,
+  allowMultiple = false,
+  className = '',
+}) => {
+  const [openIndexes, setOpenIndexes] = useState<Set<number>>(
+    () => new Set(items.map((item, i) => (item.defaultOpen ? i : -1)).filter(i => i >= 0))
+  );
+
+  const toggle = (index: number) => {
+    setOpenIndexes(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        if (!allowMultiple) next.clear();
+        next.add(index);
+      }
+      return next;
+    });
   };
 
   return (
-    <div className={`accordion ${className}`} id={id} role="region" aria-labelledby={title}>
-      <button
-        className={`accordion-header ${isOpen ? 'expanded' : ''}`}
-        onClick={toggleAccordion}
-        aria-expanded={isOpen}
-        aria-controls={`${title}-content`}
-        style={{
-          padding: 'var(--ps-accordion-spacing-headerPaddingY) var(--ps-accordion-spacing-headerPaddingX)',
-          border: `var(--ps-accordion-border-width) solid var(--ps-accordion.color.border)`,
-          borderRadius: 'var(--ps-accordion.border.radius)',
-          backgroundColor: isOpen ? 'var(--ps-accordion.color.background.header.expanded)' : 'var(--ps-accordion.color.background.header.default)',
-          color: 'var(--ps-accordion.color.text.header)',
-        }}
-      >
-        {title}
-      </button>
-      <div
-        className={`accordion-content ${isOpen ? 'visible' : ''}`}
-        id={`${title}-content`}
-        style={{
-          padding: 'var(--ps-accordion.spacing.contentPadding)',
-          backgroundColor: 'var(--ps-accordion.color.background.content)',
-          borderRadius: 'var(--ps-accordion.border.radius)',
-        }}
-        hidden={!isOpen}
-      >
-        {children}
-      </div>
+    <div className={className} style={{ fontFamily, width: '100%' }}>
+      {items.map((item, i) => {
+        const isOpen = openIndexes.has(i);
+        return (
+          <div
+            key={i}
+            style={{
+              border: '1px solid #DCDCDC',
+              borderRadius: 4,
+              marginBottom: i < items.length - 1 ? 8 : 0,
+              overflow: 'hidden',
+              background: '#FFFFFF',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => toggle(i)}
+              aria-expanded={isOpen}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px 20px',
+                background: isOpen ? '#F1F1F1' : '#FFFFFF',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 16,
+                fontWeight: 600,
+                color: '#2B2B2B',
+                fontFamily,
+                textAlign: 'left',
+                transition: 'background 150ms ease',
+              }}
+            >
+              <span>{item.title}</span>
+              <ChevronIcon open={isOpen} />
+            </button>
+            {isOpen && (
+              <div
+                style={{
+                  padding: '16px 20px',
+                  background: '#FFFFFF',
+                  fontSize: 14,
+                  color: '#4A4A4A',
+                  fontFamily,
+                }}
+              >
+                {item.content}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
