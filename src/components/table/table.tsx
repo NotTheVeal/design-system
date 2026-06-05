@@ -1,91 +1,128 @@
 import React from 'react';
 
-const Table: React.FC<TableProps> = ({ className, headers, data }) => {
-    return (
-        <table className={`ps-table ${className}`}>
-            <thead>
-                <tr>
-                    {headers.map((header, index) => (
-                        <th key={index} className="ps-table-header">
-                            {header}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {data.map((row, rowIndex) => (
-                    <tr key={rowIndex} className="ps-table-row">
-                        {row.map((cell, cellIndex) => (
-                            <td key={cellIndex} className="ps-table-cell">
-                                {cell}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-            </tbody>
-            <style jsx>{`
-                :root {
-                    --ps-primary-color: #005BA6;
-                    --ps-midnight-color: #002F48;
-                    --ps-header-bg: var(--ps-primary-color);
-                    --ps-row-default-bg: #fff;
-                    --ps-row-hover-bg: #f0f0f0;
-                    --ps-row-selected-bg: #e0e0e0;
-                    --ps-row-striped-bg: #f9f9f9;
-                    --ps-border-color: #DCDCDC;
-                    --ps-header-text-color: #555;
-                    --ps-cell-text-color: #222;
-                    --ps-border-radius: 4px;
-                    --ps-header-height: 42px;
-                    --ps-row-height: 48px;
-                    --ps-cell-padding-x: 16px;
-                    --ps-cell-padding-y: 12px;
-                    --ps-header-padding-y: 10px;
-                }
-                .ps-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                .ps-table-header {
-                    background: var(--ps-header-bg);
-                    color: var(--ps-header-text-color);
-                    font-size: var(--ps-typography-header-font-size);
-                    font-weight: var(--ps-typography-header-font-weight);
-                    height: var(--ps-header-height);
-                    padding: var(--ps-header-padding-y) var(--ps-cell-padding-x);
-                    text-align: left;
-                }
-                .ps-table-row {
-                    height: var(--ps-row-height);
-                }
-                .ps-table-cell {
-                    padding: var(--ps-cell-padding-y) var(--ps-cell-padding-x);
-                    background: var(--ps-row-default-bg);
-                    color: var(--ps-cell-text-color);
-                    border: 1px solid var(--ps-border-color);
-                }
-                .ps-table-row:hover {
-                    background: var(--ps-row-hover-bg);
-                }
-                .ps-table-row.selected {
-                    background: var(--ps-row-selected-bg);
-                }
-                .ps-table-row:nth-child(odd) .ps-table-cell {
-                    background: var(--ps-row-striped-bg);
-                }
-                .ps-table-cell:focus {
-                    outline: none;
-                    box-shadow: 0 0 0 3px rgba(0, 147, 244, 0.3);
-                }
-            `}</style>
-        </table>
-    );
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+
+const STYLE_ID = 'ps-table-styles';
+const injectTableStyles = () => {
+  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = STYLE_ID;
+  style.textContent = '.ps-table-row:hover td { background: #F1F1F1 !important; } .ps-table-cell:focus { outline: none; box-shadow: inset 0 0 0 2px rgba(0,147,244,0.4); }';
+  document.head.appendChild(style);
 };
 
-interface TableProps {
-    className?: string;
-    headers: string[];
-    data: string[][];
+type SortDirection = 'asc' | 'desc' | null;
+
+interface TableColumn {
+  key: string;
+  label: string;
+  width?: string | number;
+  align?: 'left' | 'center' | 'right';
+  sortable?: boolean;
 }
+
+interface TableProps {
+  columns?: TableColumn[];
+  headers?: string[];
+  data?: string[][];
+  rows?: Record<string, React.ReactNode>[];
+  striped?: boolean;
+  sortColumn?: string;
+  sortDirection?: SortDirection;
+  onSort?: (key: string) => void;
+  className?: string;
+}
+
+const SortIcon = ({ direction }: { direction: SortDirection }) => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 4, opacity: direction ? 1 : 0.4 }}>
+    {direction === 'asc'
+      ? <polyline points="18 15 12 9 6 15" />
+      : direction === 'desc'
+        ? <polyline points="6 9 12 15 18 9" />
+        : <><polyline points="18 9 12 3 6 9" /><polyline points="6 15 12 21 18 15" /></>}
+  </svg>
+);
+
+const Table: React.FC<TableProps> = ({
+  columns, headers, data, rows, striped = true,
+  sortColumn, sortDirection, onSort, className = '',
+}) => {
+  if (typeof document !== 'undefined') injectTableStyles();
+
+  const cols: TableColumn[] = columns ?? (headers?.map(h => ({ key: h, label: h })) ?? []);
+
+  const normalizedRows: Record<string, React.ReactNode>[] =
+    rows ?? data?.map(row => Object.fromEntries(cols.map((col, i) => [col.key, row[i] ?? '']))) ?? [];
+
+  const headerCellStyle: React.CSSProperties = {
+    padding: '0 16px',
+    height: 42,
+    textAlign: 'left',
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#4A4A4A',
+    background: '#F1F1F1',
+    borderBottom: '1px solid #DCDCDC',
+    whiteSpace: 'nowrap',
+    fontFamily,
+    userSelect: 'none',
+  };
+
+  return (
+    <div style={{ width: '100%', overflowX: 'auto', fontFamily }}>
+      <table
+        className={className}
+        style={{ width: '100%', borderCollapse: 'collapse', fontFamily, fontSize: 14, color: '#4A4A4A' }}
+      >
+        <thead>
+          <tr>
+            {cols.map((col, i) => (
+              <th
+                key={col.key ?? i}
+                style={{ ...headerCellStyle, textAlign: col.align ?? 'left', width: col.width, cursor: col.sortable ? 'pointer' : 'default' }}
+                onClick={() => col.sortable && onSort?.(col.key)}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  {col.label}
+                  {col.sortable && <SortIcon direction={sortColumn === col.key ? sortDirection ?? null : null} />}
+                </span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {normalizedRows.map((row, rowIdx) => {
+            const rowBg = striped && rowIdx % 2 === 1 ? '#FAFAFA' : '#FFFFFF';
+            return (
+              <tr key={rowIdx} className="ps-table-row">
+                {cols.map((col, colIdx) => (
+                  <td
+                    key={col.key ?? colIdx}
+                    className="ps-table-cell"
+                    tabIndex={0}
+                    style={{
+                      padding: '0 16px',
+                      height: 48,
+                      background: rowBg,
+                      borderBottom: '1px solid #DCDCDC',
+                      fontSize: 14,
+                      color: '#4A4A4A',
+                      textAlign: col.align ?? 'left',
+                      fontFamily,
+                      verticalAlign: 'middle',
+                      transition: 'background 100ms ease',
+                    }}
+                  >
+                    {row[col.key]}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export default Table;
