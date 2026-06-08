@@ -39,8 +39,9 @@ jobs:
 
       - name: Commit generated token artifacts
         run: |
-          git config user.name "github-actions[bot]"          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add dist/ src/stles/ 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/ src/styles/ 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No token artifacts changed — nothing to commit"
           else
