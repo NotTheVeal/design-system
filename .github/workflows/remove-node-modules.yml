@@ -1,0 +1,26 @@
+name: Remove node_modules from git tracking
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Remove node_modules from git tracking
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-files --error-unmatch node_modules > /dev/null 2>&1; then
+            git rm -r --cached node_modules
+            git commit -m "chore: remove node_modules from git tracking [skip ci]"
+            git push
+            echo "node_modules removed from git tracking"
+          else
+            echo "node_modules is not tracked by git - nothing to do"
+          fi
