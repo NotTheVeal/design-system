@@ -32,7 +32,7 @@ jobs:
           node-version: '24'
 
       - name: Install style-dictionary
-        run: npm install style-dictionary --legacy-peer-deps
+        run: npm install style-dictionary@3 --legacy-peer-deps
 
       - name: Build design tokens
         run: npm run build:tokens
