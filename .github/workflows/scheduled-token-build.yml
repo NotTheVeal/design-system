@@ -32,11 +32,10 @@ jobs:
           node-version: '24'
 
       - name: Install style-dictionary
-        run: npm install style-dictionary --no-save
+        run: npm install style-dictionary --legacy-peer-deps
 
       - name: Build design tokens
-        run: |
-          npm run build:tokens || npx style-dictionary build --config style-dictionary.config.js
+        run: npm run build:tokens
 
       - name: Commit generated token artifacts
         run: |
