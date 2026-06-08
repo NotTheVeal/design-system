@@ -30,10 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install style-dictionary
+        run: npm install style-dictionary --no-save
 
       - name: Build design tokens
         run: |
