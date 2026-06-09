@@ -3,7 +3,7 @@ export type StepperColorScheme='current'|'future';
 export type StepStatus='not-started'|'in-progress'|'completed';
 export interface Step{label:string;description?:string;}
 export interface StepperProps{colorScheme?:StepperColorScheme;steps:Step[];currentStep?:number;orientation?:'horizontal'|'vertical';className?:string;}
-const C={current:{active:'#005BA6',activeBg:'#FFF8EC'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
+const C={current:{active:'#005BA6',activeBg:'#DCEAED'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
 export const Stepper:React.FC<StepperProps>=({colorScheme='future',steps,currentStep=0,orientation='horizontal',className=''})=>{
   const c=C[colorScheme];
   const getStatus=(i:number):StepStatus=>i<currentStep?'completed':i===currentStep?'in-progress':'not-started';
