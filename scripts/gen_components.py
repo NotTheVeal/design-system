@@ -10,7 +10,7 @@ FILES = {}
 FILES[f'{BASE}/checkbox/checkbox.tsx'] = r"""import React from 'react';
 export type CheckboxColorScheme = 'current' | 'future';
 export interface CheckboxProps {
-  /** current=orange#005BA6 ADA-FAIL(2.9:1) | future=blue#005BA6 ADA-PASS(4.8:1) @default 'future' */
+  /** current=blue#005BA6 ADA-PASS(4.8:1) | future=blue#005BA6 ADA-PASS(4.8:1) @default 'future' */
   colorScheme?: CheckboxColorScheme;
   checked?: boolean; indeterminate?: boolean; disabled?: boolean;
   label?: string; id?: string; onChange?: (v: boolean) => void; className?: string;
@@ -41,12 +41,12 @@ export default Checkbox;
 FILES[f'{BASE}/checkbox/checkbox.stories.tsx'] = r"""import type{Meta,StoryObj}from'@storybook/react';
 import{Checkbox}from'./checkbox';
 const meta:Meta<typeof Checkbox>={title:'Components/Checkbox',component:Checkbox,tags:['autodocs'],
-  parameters:{docs:{description:{component:'`current`=Orange#005BA6 ADA-FAIL(2.9:1) legacy-only | `future`=Blue#005BA6 ADA-PASS(4.8:1) approved'}}},
+  parameters:{docs:{description:{component:'`current`=Blue#005BA6 ADA-PASS(4.8:1) legacy-only | `future`=Blue#005BA6 ADA-PASS(4.8:1) approved'}}},
   argTypes:{colorScheme:{control:'radio',options:['current','future']}}};
 export default meta;type Story=StoryObj<typeof Checkbox>;
 const Banner=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',fontFamily:'sans-serif',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1 — Production approved</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',fontFamily:'sans-serif',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — ADA NON-COMPLIANT — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',fontFamily:'sans-serif',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 export const Future_AllStates:Story={name:'✅ Future · All States (PS Blue)',render:()=><div style={{display:'flex',flexDirection:'column',gap:12}}><Banner s="future"/><Checkbox colorScheme="future" label="Unchecked"/><Checkbox colorScheme="future" checked label="Checked"/><Checkbox colorScheme="future" indeterminate label="Indeterminate"/><Checkbox colorScheme="future" disabled label="Disabled"/><Checkbox colorScheme="future" checked disabled label="Disabled Checked"/></div>};
 export const Current_AllStates:Story={name:'⚠️ Current · All States (Legacy Orange)',render:()=><div style={{display:'flex',flexDirection:'column',gap:12}}><Banner s="current"/><Checkbox colorScheme="current" label="Unchecked"/><Checkbox colorScheme="current" checked label="Checked"/><Checkbox colorScheme="current" indeterminate label="Indeterminate"/><Checkbox colorScheme="current" disabled label="Disabled"/><Checkbox colorScheme="current" checked disabled label="Disabled Checked"/></div>};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
@@ -88,17 +88,17 @@ export default Radio;
 FILES[f'{BASE}/radio/radio.stories.tsx'] = r"""import type{Meta,StoryObj}from'@storybook/react';
 import{Radio,RadioGroup}from'./radio';
 const meta:Meta<typeof Radio>={title:'Components/Radio',component:Radio,tags:['autodocs'],
-  parameters:{docs:{description:{component:'`current`=Orange#005BA6 ADA-FAIL(2.9:1) | `future`=Blue#005BA6 ADA-PASS(4.8:1)'}}}};
+  parameters:{docs:{description:{component:'`current`=Blue#005BA6 ADA-PASS(4.8:1) | `future`=Blue#005BA6 ADA-PASS(4.8:1)'}}}};
 export default meta;type Story=StoryObj<typeof Radio>;
 const B=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 const OPTS=[{label:'Option A',value:'a'},{label:'Option B',value:'b'},{label:'Option C (disabled)',value:'c',disabled:true}];
 export const Future_Group:Story={name:'✅ Future · Radio Group (PS Blue)',render:()=><div><B s="future"/><RadioGroup colorScheme="future" value="b" options={OPTS}/></div>};
 export const Current_Group:Story={name:'⚠️ Current · Radio Group (Legacy Orange)',render:()=><div><B s="current"/><RadioGroup colorScheme="current" value="b" options={OPTS}/></div>};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
   <div style={{display:'flex',gap:40,fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6 · 2.9:1</div><RadioGroup colorScheme="current" value="b" options={OPTS}/></div>
+    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>✅ CURRENT (migrated) — PS Blue #005BA6 · 4.8:1</div><RadioGroup colorScheme="current" value="b" options={OPTS}/></div>
     <div style={{width:1,background:'#DCDCDC'}}/>
     <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6 · 4.8:1</div><RadioGroup colorScheme="future" value="b" options={OPTS}/></div>
   </div>)};
@@ -132,16 +132,16 @@ export default Toggle;
 FILES[f'{BASE}/toggle/toggle.stories.tsx'] = r"""import type{Meta,StoryObj}from'@storybook/react';
 import{Toggle}from'./toggle';
 const meta:Meta<typeof Toggle>={title:'Components/Toggle',component:Toggle,tags:['autodocs'],
-  parameters:{docs:{description:{component:'`current`=Orange#005BA6 ADA-FAIL(2.9:1) | `future`=Blue#005BA6 ADA-PASS(4.8:1)'}}}};
+  parameters:{docs:{description:{component:'`current`=Blue#005BA6 ADA-PASS(4.8:1) | `future`=Blue#005BA6 ADA-PASS(4.8:1)'}}}};
 export default meta;type Story=StoryObj<typeof Toggle>;
 const B=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 export const Future_AllStates:Story={name:'✅ Future · All States (PS Blue)',render:()=><div style={{display:'flex',flexDirection:'column',gap:12}}><B s="future"/><Toggle colorScheme="future" label="Off"/><Toggle colorScheme="future" checked label="On"/><Toggle colorScheme="future" disabled label="Disabled Off"/><Toggle colorScheme="future" checked disabled label="Disabled On"/></div>};
 export const Current_AllStates:Story={name:'⚠️ Current · All States (Legacy Orange)',render:()=><div style={{display:'flex',flexDirection:'column',gap:12}}><B s="current"/><Toggle colorScheme="current" label="Off"/><Toggle colorScheme="current" checked label="On"/><Toggle colorScheme="current" disabled label="Disabled Off"/><Toggle colorScheme="current" checked disabled label="Disabled On"/></div>};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
   <div style={{display:'flex',gap:40,fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6</div><Toggle colorScheme="current" label="Off"/><div style={{marginTop:12}}/><Toggle colorScheme="current" checked label="On"/></div>
+    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>✅ CURRENT (migrated) — PS Blue #005BA6</div><Toggle colorScheme="current" label="Off"/><div style={{marginTop:12}}/><Toggle colorScheme="current" checked label="On"/></div>
     <div style={{width:1,background:'#DCDCDC'}}/>
     <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6</div><Toggle colorScheme="future" label="Off"/><div style={{marginTop:12}}/><Toggle colorScheme="future" checked label="On"/></div>
   </div>)};
@@ -153,7 +153,7 @@ export type StepperColorScheme='current'|'future';
 export type StepStatus='not-started'|'in-progress'|'completed';
 export interface Step{label:string;description?:string;}
 export interface StepperProps{colorScheme?:StepperColorScheme;steps:Step[];currentStep?:number;orientation?:'horizontal'|'vertical';className?:string;}
-const C={current:{active:'#005BA6',activeBg:'#FFF8EC'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
+const C={current:{active:'#005BA6',activeBg:'#DCEAED'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
 export const Stepper:React.FC<StepperProps>=({colorScheme='future',steps,currentStep=0,orientation='horizontal',className=''})=>{
   const c=C[colorScheme];
   const getStatus=(i:number):StepStatus=>i<currentStep?'completed':i===currentStep?'in-progress':'not-started';
@@ -186,13 +186,13 @@ export default meta;type Story=StoryObj<typeof Stepper>;
 const STEPS=[{label:'Request'},{label:'Approval'},{label:'Order'},{label:'Delivery'}];
 const B=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 export const Future_Step2:Story={name:'✅ Future · Step 2 Active (PS Blue)',render:()=><div style={{padding:24}}><B s="future"/><Stepper colorScheme="future" steps={STEPS} currentStep={1}/></div>};
 export const Future_Step3:Story={name:'✅ Future · Step 3 Active',render:()=><div style={{padding:24}}><Stepper colorScheme="future" steps={STEPS} currentStep={2}/></div>};
 export const Current_Step2:Story={name:'⚠️ Current · Step 2 Active (Legacy Orange)',render:()=><div style={{padding:24}}><B s="current"/><Stepper colorScheme="current" steps={STEPS} currentStep={1}/></div>};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
   <div style={{display:'flex',flexDirection:'column',gap:32,padding:24,fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6 · 2.9:1 · FAILS WCAG AA</div><Stepper colorScheme="current" steps={STEPS} currentStep={1}/></div>
+    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>✅ CURRENT (migrated) — PS Blue #005BA6 · 4.8:1</div><Stepper colorScheme="current" steps={STEPS} currentStep={1}/></div>
     <div style={{height:1,background:'#DCDCDC'}}/>
     <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6 · 4.8:1 · PASSES WCAG AA</div><Stepper colorScheme="future" steps={STEPS} currentStep={1}/></div>
   </div>)};
@@ -244,7 +244,7 @@ const meta:Meta<typeof Modal>={title:'Components/Modal',component:Modal,tags:['a
 export default meta;type Story=StoryObj<typeof Modal>;
 const Demo=({s}:{s:'current'|'future'})=>{const[o,setO]=useState(false);const iF=s==='future';return(<div style={{padding:24}}>
   <div style={{padding:'8px 12px',borderRadius:4,fontSize:12,marginBottom:16,background:iF?'#E2F5EE':'#FACBCB',color:iF?'#0E7C55':'#C00'}}>
-    {iF?'✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1':'⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION'}</div>
+    {iF?'✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1':'ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0'}</div>
   <button onClick={()=>setO(true)} style={{background:'#005BA6',color:'white',border:'none',borderRadius:4,padding:'10px 20px',fontSize:14,fontWeight:600,cursor:'pointer'}}>Open Modal</button>
   <Modal colorScheme={s} isOpen={o} onClose={()=>setO(false)} title="Your Session Has Timed Out" primaryLabel="Contact Rep" secondaryLabel="Continue to Home Page" onPrimary={()=>setO(false)}/>
 </div>);};
@@ -263,7 +263,7 @@ export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',param
 FILES[f'{BASE}/datePicker/datePicker.tsx'] = r"""import React,{useState}from'react';
 export type DatePickerColorScheme='current'|'future';
 export interface DatePickerProps{colorScheme?:DatePickerColorScheme;value?:Date|null;onChange?:(d:Date)=>void;label?:string;placeholder?:string;disabled?:boolean;id?:string;className?:string;}
-const C={current:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#FFF8EC',focus:'rgba(255,149,5,0.25)',label:'#005BA6',border:'#005BA6'},future:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#EFF9FE',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'}};
+const C={current:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#FFF8EC',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'},future:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#EFF9FE',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'}};
 const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const fmt=(d:Date)=>`${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}/${d.getFullYear()}`;
@@ -309,11 +309,11 @@ export default DatePicker;
 FILES[f'{BASE}/datePicker/datePicker.stories.tsx'] = r"""import type{Meta,StoryObj}from'@storybook/react';
 import React,{useState}from'react';
 import{DatePicker}from'./datePicker';
-const meta:Meta<typeof DatePicker>={title:'Components/DatePicker',component:DatePicker,tags:['autodocs'],parameters:{docs:{description:{component:'`current`=Orange#005BA6 ADA-FAIL | `future`=Blue#005BA6 ADA-PASS'}}}};
+const meta:Meta<typeof DatePicker>={title:'Components/DatePicker',component:DatePicker,tags:['autodocs'],parameters:{docs:{description:{component:'`current`=Blue#005BA6 ADA-PASS | `future`=Blue#005BA6 ADA-PASS'}}}};
 export default meta;type Story=StoryObj<typeof DatePicker>;
 const B=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 const Demo=({s}:{s:'current'|'future'})=>{const[d,setD]=useState<Date|null>(null);return(<div style={{padding:24}}><B s={s}/><DatePicker colorScheme={s} label="Event Date" value={d} onChange={setD}/>{d&&<p style={{marginTop:12,fontSize:13,color:'#777'}}>Selected: {d.toLocaleDateString()}</p>}</div>);};
 export const Future_Default:Story={name:'✅ Future · Date Picker (PS Blue)',render:()=><Demo s="future"/>};
 export const Future_WithValue:Story={name:'✅ Future · With Selected Date',args:{colorScheme:'future',value:new Date(2026,5,15),label:'kervice Date'}};
@@ -322,7 +322,7 @@ export const Current_Default:Story={name:'⚠️ Current · Date Picker (Legacy 
 export const Current_WithValue:Story={name:'⚠️ Current · With Selected Date (Legacy)',args:{colorScheme:'current',value:new Date(2026,5,15),label:'Service Date'}};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
   <div style={{display:'flex',gap:48,padding:24,fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6</div><DatePicker colorScheme="current" label="Event Date" value={new Date(2026,5,15)}/></div>
+    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>✅ CURRENT (migrated) — PS Blue #005BA6</div><DatePicker colorScheme="current" label="Event Date" value={new Date(2026,5,15)}/></div>
     <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6</div><DatePicker colorScheme="future" label="Event Date" value={new Date(2026,5,15)}/></div>
   </div>)};
 """
@@ -371,12 +371,12 @@ const meta:Meta<typeof ProductCard>={title:'Components/ProductCard',component:Pr
 export default meta;type Story=StoryObj<typeof ProductCard>;
 const B=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 export const Future_Default:Story={name:'✅ Future · Product Card (PS Blue CTAs)',render:()=><div style={{padding:24}}><B s="future"/><ProductCard colorScheme="future"/></div>};
 export const Current_Default:Story={name:'⚠️ Current · Product Card (Legacy Orange CTAs)',render:()=><div style={{padding:24}}><B s="current"/><ProductCard colorScheme="current"/></div>};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
   <div style={{display:'flex',gap:32,padding:24,flexWrap:'wrap',fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6</div><ProductCard colorScheme="current"/></div>
+    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>✅ CURRENT (migrated) — PS Blue #005BA6</div><ProductCard colorScheme="current"/></div>
     <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6</div><ProductCard colorScheme="future"/></div>
   </div>)};
 """
@@ -433,12 +433,12 @@ const meta:Meta<typeof Cart>={title:'Components/Cart',component:Cart,tags:['auto
 export default meta;type Story=StoryObj<typeof Cart>;
 const B=({s}:{s:'current'|'future'})=>s==='future'
   ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
+  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>ℹ️ MIGRATED — PS Blue #005BA6 — 4.8:1 — Orange removed in v1.2.0</div>;
 export const Future_Default:Story={name:'✅ Future · Cart (PS Blue CTAs)',render:()=><div style={{padding:24}}><B s="future"/><Cart colorScheme="future"/></div>};
 export const Current_Default:Story={name:'⚠️ Current · Cart (Legacy Orange CTAs)',render:()=><div style={{padding:24}}><B s="current"/><Cart colorScheme="current"/></div>};
 export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
   <div style={{display:'flex',gap:32,padding:24,flexWrap:'wrap',fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6</div><Cart colorScheme="current"/></div>
+    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>✅ CURRENT (migrated) — PS Blue #005BA6</div><Cart colorScheme="current"/></div>
     <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6</div><Cart colorScheme="future"/></div>
   </div>)};
 """
