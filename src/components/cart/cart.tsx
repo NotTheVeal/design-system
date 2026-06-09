@@ -2,7 +2,7 @@ import React from 'react';
 export type CartColorScheme='current'|'future';
 export interface CartItem{id:string;name:string;partNumber?:string;quantity:number;price:string;}
 export interface CartProps{colorScheme?:CartColorScheme;items?:CartItem[];title?:string;onAddToCart?:()=>void;onCheckout?:()=>void;className?:string;}
-const C={current:{btn:'#005BA6',hover:'#E88800',txt:'#FFF',border:'#005BA6'},future:{btn:'#005BA6',hover:'#004A84',txt:'#FFF',border:'#005BA6'}};
+const C={current:{btn:'#005BA6',hover:'#004A84',txt:'#FFF',border:'#005BA6'},future:{btn:'#005BA6',hover:'#004A84',txt:'#FFF',border:'#005BA6'}};
 const DEF:CartItem[]=[{id:'1',name:'Patient Cable, SpO2 Spot Check',partNumber:'OEM-89400-01',quantity:2,price:'$85.00'},{id:'2',name:'Blood Pressure Cuff, Adult Large',partNumber:'BP-5104-AL',quantity:1,price:'$34.50'},{id:'3',name:'ECG Electrode Snap, 10-pack',partNumber:'ECG-1001-10',quantity:5,price:'$62.00'}];
 export const Cart:React.FC<CartProps>=({colorScheme='future',items=DEF,title='My Cart',onAddToCart,onCheckout,className=''})=>{
   const c=C[colorScheme];
