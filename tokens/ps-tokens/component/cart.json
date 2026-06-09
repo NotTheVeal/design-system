@@ -125,7 +125,7 @@
       "$type": "dimension"
     },
     "itemAddToBtnBg": {
-      "$value": "#FF9505",
+      "$value": "#005BA6",
       "$type": "color",
       "$description": "Legacy orange CTA \u2014 deprecated for new work, use #005BA6 instead"
     },
