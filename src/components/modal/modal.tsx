@@ -17,7 +17,7 @@ export interface ModalProps {
 }
 
 const C = {
-  current: { btn: '#FF9505', hover: '#E88800', text: '#FFF', border: '#FF9505' },
+  current: { btn: '#005BA6', hover: '#004A84', text: '#FFF', border: '#005BA6' },
   future:  { btn: '#005BA6', hover: '#004A84', text: '#FFF', border: '#005BA6' },
 };
 
