@@ -1,7 +1,7 @@
 import React from 'react';
 export type ProductCardColorScheme='current'|'future';
 export interface ProductCardProps{colorScheme?:ProductCardColorScheme;productName?:string;partNumber?:string;oem?:string;price?:string;availability?:string;optionsCount?:number;imageSrc?:string;onSeeBuyingOptions?:()=>void;onPrimary?:()=>void;className?:string;}
-const C={current:{primary:'#005BA6',primaryHover:'#E88800',primaryTxt:'#FFF',primaryBorder:'#005BA6'},future:{primary:'#005BA6',primaryHover:'#004A84',primaryTxt:'#FFF',primaryBorder:'#005BA6'}};
+const C={current:{primary:'#005BA6',primaryHover:'#004A84',primaryTxt:'#FFF',primaryBorder:'#005BA6'},future:{primary:'#005BA6',primaryHover:'#004A84',primaryTxt:'#FFF',primaryBorder:'#005BA6'}};
 export const ProductCard:React.FC<ProductCardProps>=({colorScheme='future',productName='Patient Cable, SpO2 Spot Check',partNumber='OEM-89400-01',oem='Nellcor',price='$42.50',availability='In Stock',optionsCount=2,imageSrc,onSeeBuyingOptions,onPrimary,className=''})=>{
   const c=C[colorScheme];
   const btnBase:React.CSSProperties={borderRadius:4,padding:'8px 16px',fontSize:12,fontWeight:700,cursor:'pointer',letterSpacing:0.5,textTransform:'uppercase',fontFamily:'inherit',transition:'background 200ms ease',flex:1};
@@ -20,7 +20,7 @@ export const ProductCard:React.FC<ProductCardProps>=({colorScheme='future',produ
     </div>
     <div style={{padding:'12px 16px',borderTop:'1px solid #F1F1F1',display:'flex',gap:8}}>
       <button onClick={onSeeBuyingOptions} style={{...btnBase,background:colorScheme==='future'?'#FFF':c.primary,border:colorScheme==='future'?'2px solid #005BA6':`2px solid ${c.primaryBorder}`,color:colorScheme==='future'?'#005BA6':c.primaryTxt}}
-        onMouseEnter={e=>{if(colorScheme==='future'){(e.currentTarget as HTMLButtonElement).style.background='#005BA6';(e.currentTarget as HTMLButtonElement).style.color='#FFF';}else(e.currentTarget as HTMLButtonElement).style.background='#E88800';}}
+        onMouseEnter={e=>{if(colorScheme==='future'){(e.currentTarget as HTMLButtonElement).style.background='#005BA6';(e.currentTarget as HTMLButtonElement).style.color='#FFF';}else(e.currentTarget as HTMLButtonElement).style.background='#004A84';}}
         onMouseLeave={e=>{if(colorScheme==='future'){(e.currentTarget as HTMLButtonElement).style.background='#FFF';(e.currentTarget as HTMLButtonElement).style.color='#005BA6';}else(e.currentTarget as HTMLButtonElement).style.background=c.primary;}}>
         See Options ({optionsCount})
       </button>
