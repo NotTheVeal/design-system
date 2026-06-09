@@ -8,16 +8,16 @@
     "color": {
       "border": {
         "default": { "$value": "#4A4A4A", "$type": "color" },
-        "hover": { "$value": "#EC8000", "$type": "color", "$description": "Legacy orange — new work should use #005BA6" },
-        "focus": { "$value": "#EC8000", "$type": "color" },
+        "hover": { "$value": "#004A84", "$type": "color", "$description": "Legacy orange — new work should use #005BA6" },
+        "focus": { "$value": "#004A84", "$type": "color" },
         "pressed": { "$value": "#D27200", "$type": "color" },
         "disabled": { "$value": "#CCCCCC", "$type": "color" },
         "error": { "$value": "#D32F2F", "$type": "color" }
       },
       "fill": {
-        "selected": { "$value": "#FF9505", "$type": "color", "$description": "Legacy orange fill — prefer #005BA6 for new work" },
+        "selected": { "$value": "#005BA6", "$type": "color", "$description": "Legacy orange fill — prefer #005BA6 for new work" },
         "selectedNew": { "$value": "#005BA6", "$type": "color", "$description": "Preferred blue fill for new designs" },
-        "hover": { "$value": "#EC8000", "$type": "color" },
+        "hover": { "$value": "#004A84", "$type": "color" },
         "disabled": { "$value": "#CCCCCC", "$type": "color" }
       },
       "label": {
