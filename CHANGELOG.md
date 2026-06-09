@@ -1,3 +1,9 @@
+## [1.2.2] - 2026-06-09
+
+### Fixed (Component TSX Files)
+- `datePicker.tsx` `current` scheme focus ring: `rgba(255,149,5,0.25)` → `rgba(0,91,166,0.25)` (v1.2.1 fixed the generator but not the existing file)
+- `stepper.tsx` `current` scheme `activeBg`: `#FFF8EC` → `#DCEAED` (same — generator was patched, TSX file now aligned)
+
 ## [1.2.1] - 2026-06-09
 
 ### Fixed (Storybook Doc Strings)
