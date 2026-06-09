@@ -9,7 +9,7 @@ interface BadgeProps {
   type?: BadgeType;
   filled?: boolean;
   style?: React.CSSProperties;
-}
+
 
 const FONT_FAMILY = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
@@ -49,9 +49,9 @@ const Badge: React.FC<BadgeProps> = ({
           borderRadius: '4px',
           borderWidth: '2px',
           borderStyle: 'solid',
-          borderColor: '#FF9505',
-          backgroundColor: filled ? '#FF9505' : '#FFFFFF',
-          color: filled ? '#FFFFFF' : '#FF9505',
+          borderColor: '#005BA6',
+          backgroundColor: filled ? '#005BA6' : '#FFFFFF',
+          color: filled ? '#FFFFFF' : '#005BA6',
           fontSize: '12px',
           fontWeight: 700,
           fontFamily: FONT_FAMILY,
