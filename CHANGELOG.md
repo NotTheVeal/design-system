@@ -1,3 +1,35 @@
+## [1.2.0] - 2026-06-09
+
+### Breaking Changes
+- **Orange fully removed** — all `colorScheme='current'` variants now render PS Blue `#005BA6` instead of orange `#FF9505` (ADA non-compliant, 2.9:1). The `current` prop value is still accepted for API compatibility but now maps to blue.
+
+### Fixed (ADA Compliance — WCAG AA)
+- `cart.tsx` — `current` hover `#E88800` → `#004A84`
+- `productCard.tsx` — `current` primary hover `#E88800` → `#004A84` (2 instances)
+- `checkbox.tsx` — `current` fill `#FF9505` → `#005BA6`, focus ring updated
+- `toggle.tsx` — `current` on-color `#FF9505` → `#005BA6`, focus ring updated
+- `radio.tsx` — `current` fill `#FF9505` → `#005BA6`, focus ring updated
+- `modal.tsx` — `current` hover `#E88800` → `#004A84`
+- `badge.tsx` — orange variant `#FF9505` → `#005BA6`
+
+### Fixed (Token JSON)
+- `tokens/ps-tokens/component/checkbox.json` — 5 orange values replaced
+- `tokens/ps-tokens/component/radio.json` — 4 orange values replaced
+- `tokens/ps-tokens/component/button.json` — 6 orange values replaced
+- `tokens/ps-tokens/component/input.json` — 4 orange values replaced
+- `tokens/ps-tokens/component/cart.json` — 1 orange value replaced
+- `tokens/ps-tokens/component/search.json` — 1 orange value replaced
+
+### Fixed (Build Pipeline)
+- `build-tokens.yml` — added `--legacy-peer-deps` to unblock storybook ERESOLVE conflict (pipeline had been failing since run #69)
+- `badge.tsx` — restored missing closing `}` on `BadgeProps` interface (caused vite build parse error)
+
+### Updated
+- `scripts/gen_components.py` — component templates updated; newly generated components will use blue from creation
+- `CLAUDE.md` — corrected stale "keep orange as-is" guidance
+
+---
+
 ## [1.1.0] - 2026-06-03
 
 ### Added
