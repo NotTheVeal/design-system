@@ -28,7 +28,7 @@
         "$description": "Orange submit button — right-side, 48px wide",
         "width":            { "$value": "48px", "$type": "sizing" },
         "height":           { "$value": "40px", "$type": "sizing" },
-        "background":       { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "#FF9505" },
+        "background":       { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "#005BA6" },
         "backgroundHover":  { "$value": "{semantic.color.brand.primary}", "$type": "color", "$description": "#E88500" },
         "icon":             { "$value": "{semantic.color.surface.default}", "$type": "color" },
         "radius":           { "$value": "0 4px 4px 0", "$type": "borderRadius" }
