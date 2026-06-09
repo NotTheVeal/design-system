@@ -567,7 +567,7 @@
           "$type": "color"
         },
         "border": {
-          "$value": "#ff9505",
+          "$value": "#005BA6",
           "$type": "color"
         },
         "text": {
@@ -577,7 +577,7 @@
       },
       "selected": {
         "background": {
-          "$value": "#ff9505",
+          "$value": "#005BA6",
           "$type": "color"
         },
         "border": {
@@ -633,7 +633,7 @@
           "$type": "color"
         },
         "border": {
-          "$value": "#ff9505",
+          "$value": "#005BA6",
           "$type": "color"
         },
         "text": {
@@ -643,7 +643,7 @@
       },
       "selected": {
         "background": {
-          "$value": "#ff9505",
+          "$value": "#005BA6",
           "$type": "color"
         },
         "border": {
