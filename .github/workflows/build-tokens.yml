@@ -27,7 +27,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Validate token references
         run: npm run validate
