@@ -105,12 +105,18 @@ Tokens follow the `--ps-*` naming convention and are defined in `tokens/`. The f
 
 ## Publishing a New Version
 
-1. Bump the version in `package.json`
-2. Push a git tag: `git tag v1.0.1 && git push --tags`
-3. The [publish workflow](.github/workflows/publish.yml) automatically builds and publishes to npm
+1. Bump the version in `package.json` (e.g. `"version": "1.2.3"`)
+2. Update `CHANGELOG.md` with what changed
+3. Commit and push to main:
+   ```bash
+   git commit -am "chore: bump version 1.2.2 → 1.2.3"
+   git push
+   ```
+4. The `publish.yml` workflow detects the `package.json` change and publishes to npm automatically — **no git tags needed**
 
-> **Note:** You must add an `NPM_TOKEN` secret in GitHub → Settings → Secrets → Actions before the first publish.
+> **First-time setup:** Add an `NPM_TOKEN` secret in GitHub → Settings → Secrets → Actions before the first publish.
 
+> **Idempotency:** The workflow checks whether the version already exists on npm before publishing — it is safe to push multiple times.
 ## Development
 
 ```bash
