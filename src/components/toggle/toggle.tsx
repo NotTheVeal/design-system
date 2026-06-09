@@ -14,7 +14,7 @@ export interface ToggleProps {
 }
 
 const C = {
-  current: { on: '#FF9505', focus: 'rgba(255,149,5,0.35)' },
+  current: { on: '#005BA6', focus: 'rgba(0,91,166,0.35)' },
   future:  { on: '#005BA6', focus: 'rgba(0,91,166,0.5)' },
 };
 
