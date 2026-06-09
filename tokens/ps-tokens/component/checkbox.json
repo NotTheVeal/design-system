@@ -40,12 +40,12 @@
     },
     "selected": {
       "background": {
-        "$value": "#ff9505",
+        "$value": "#005BA6",
         "$type": "color",
         "$description": "Figma exact: orange selected fill"
       },
       "border": {
-        "$value": "#ec8000",
+        "$value": "#004A84",
         "$type": "color",
         "$description": "Figma exact: orange selected stroke"
       },
@@ -54,7 +54,7 @@
         "$type": "color"
       },
       "stroke": {
-        "$value": "#ec8000",
+        "$value": "#004A84",
         "$type": "color"
       },
       "strokeWidth": {
@@ -105,12 +105,12 @@
     },
     "indeterminate": {
       "background": {
-        "$value": "#ff9505",
+        "$value": "#005BA6",
         "$type": "color",
         "$description": "Legacy \u2014 partial selection"
       },
       "border": {
-        "$value": "#ec8000",
+        "$value": "#004A84",
         "$type": "color"
       },
       "dash": {
