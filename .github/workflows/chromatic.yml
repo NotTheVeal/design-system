@@ -3,8 +3,16 @@ name: Chromatic Visual Tests
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'tokens/**'
+      - '.storybook/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'tokens/**'
+      - '.storybook/**'
   workflow_dispatch:
 
 jobs:
