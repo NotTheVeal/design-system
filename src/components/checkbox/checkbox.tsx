@@ -3,7 +3,7 @@ import React from 'react';
 export type CheckboxColorScheme = 'current' | 'future';
 
 export interface CheckboxProps {
-  /** current=orange #FF9505 (legacy, ADA-fail) | future=blue #005BA6 (ADA-pass) @default 'future' */
+  /** current=orange #005BA6 (legacy, ADA-fail) | future=blue #005BA6 (ADA-pass) @default 'future' */
   colorScheme?: CheckboxColorScheme;
   checked?: boolean;
   indeterminate?: boolean;
@@ -15,7 +15,7 @@ export interface CheckboxProps {
 }
 
 const C = {
-  current: { fill: '#FF9505', focus: 'rgba(255,149,5,0.35)' },
+  current: { fill: '#005BA6', focus: 'rgba(0,91,166,0.35)' },
   future:  { fill: '#005BA6', focus: 'rgba(0,91,166,0.5)' },
 };
 
