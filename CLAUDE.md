@@ -216,7 +216,7 @@ export interface CheckboxProps {
 
 **Visual rules:**
 - Size: 24×24px, 1.5px stroke, 2px border radius
-- Selected/hover: legacy orange `#ff9505` (keep as-is — do NOT replace with blue)
+- Selected/hover: PS Blue `#005BA6` (orange `#ff9505` fully replaced — use blue only)
 - `checkmarkTextNumber` variant: brand primary (correct, not legacy)
 - Indeterminate: orange fill + white dash
 - Focus: `box-shadow: 0 0 10px 5px rgba(0,91,166,0.5)` blue glow
