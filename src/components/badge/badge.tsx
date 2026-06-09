@@ -9,6 +9,7 @@ interface BadgeProps {
   type?: BadgeType;
   filled?: boolean;
   style?: React.CSSProperties;
+}
 
 
 const FONT_FAMILY = "'Source Sans Pro', 'Source Sans 3', sans-serif";
