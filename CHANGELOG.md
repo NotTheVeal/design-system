@@ -1,3 +1,15 @@
+## [1.2.1] - 2026-06-09
+
+### Fixed (Storybook Doc Strings)
+- `gen_components.py` — all `current` scheme JSDoc comments now say `ADA-PASS(4.8:1)` instead of the incorrect `ADA-FAIL(2.9:1)`
+- Story meta description strings changed from ``current`=Orange#005BA6 ADA-FAIL` → ``current`=Blue#005BA6 ADA-PASS`
+- Storybook warning banners on `current` stories changed from `⚠️ LEGACY — Orange #005BA6` → `ℹ️ MIGRATED — PS Blue #005BA6 — Orange removed in v1.2.0`
+- Side-by-side story labels updated from `⚠️ CURRENT — Orange #005BA6 · 2.9:1` → `✅ CURRENT (migrated) — PS Blue #005BA6 · 4.8:1`
+
+### Fixed (Component Colors)
+- `DatePicker` `current` scheme focus ring: `rgba(255,149,5,0.25)` → `rgba(0,91,166,0.25)`
+- `Stepper` `current` scheme `activeBg`: `#FFF8EC` (warm orange tint) → `#DCEAED` (Airway blue tint)
+
 ## [1.2.0] - 2026-06-09
 
 ### Breaking Changes
