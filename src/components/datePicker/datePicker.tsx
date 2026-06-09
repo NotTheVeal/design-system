@@ -1,7 +1,7 @@
 import React,{useState}from'react';
 export type DatePickerColorScheme='current'|'future';
 export interface DatePickerProps{colorScheme?:DatePickerColorScheme;value?:Date|null;onChange?:(d:Date)=>void;label?:string;placeholder?:string;disabled?:boolean;id?:string;className?:string;}
-const C={current:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#FFF8EC',focus:'rgba(255,149,5,0.25)',label:'#005BA6',border:'#005BA6'},future:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#EFF9FE',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'}};
+const C={current:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#FFF8EC',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'},future:{icon:'#005BA6',sel:'#005BA6',selTxt:'#FFF',hover:'#EFF9FE',focus:'rgba(0,91,166,0.25)',label:'#005BA6',border:'#005BA6'}};
 const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const fmt=(d:Date)=>`${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}/${d.getFullYear()}`;
