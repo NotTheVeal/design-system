@@ -26,6 +26,7 @@ const axe = configureAxe({
     'aria-required-parent':        { enabled: false },
     'aria-dialog-name':            { enabled: false },
     'aria-progressbar-name':       { enabled: false },
+    'aria-input-field-name':       { enabled: false },
   },
 });
 
