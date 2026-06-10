@@ -19,7 +19,7 @@ export const Default: Story = {
         items={[
           {
             title: 'What is ProProcure?',
-            content: 'ProProcure is PartsSource's end-to-end procurement platform for healthcare equipment parts, service contracts, and supplier management.',
+            content: "ProProcure is PartsSource's end-to-end procurement platform for healthcare equipment parts, service contracts, and supplier management.",
           },
           {
             title: 'How do I submit a purchase order?',
@@ -51,7 +51,7 @@ export const WithDefaultOpen: Story = {
           },
           {
             title: 'Warranty Information',
-            content: 'All OEM parts carry the manufacturer's standard warranty. Aftermarket parts carry a 90-day PartsSource warranty.',
+            content: "All OEM parts carry the manufacturer's standard warranty. Aftermarket parts carry a 90-day PartsSource warranty.",
           },
         ]}
       />
@@ -93,7 +93,7 @@ export const FAQStyle: Story = {
         allowMultiple
         items={[
           { title: 'What payment methods are accepted?', content: 'Purchase cards (P-cards), purchase orders, and approved credit accounts. ACH and wire transfer available for invoices over $50,000.' },
-          { title: 'How are GPO discounts applied?', content: 'Your negotiated GPO discounts are applied automatically at checkout based on your facility's contract group membership.' },
+          { title: 'How are GPO discounts applied?', content: "Your negotiated GPO discounts are applied automatically at checkout based on your facility's contract group membership." },
           { title: 'Can I set up recurring orders?', content: 'Yes. Add items to a Requisition Template to quickly re-order consumables and frequently purchased parts on a schedule.' },
           { title: 'Who approves emergency purchases?', content: 'Emergency purchases bypass standard approval workflows and route directly to your Biomedical Director. A 24-hour post-purchase audit trail is generated automatically.' },
         ]}
