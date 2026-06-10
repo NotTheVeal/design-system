@@ -4,16 +4,8 @@ import AiDataCard from './aiDataCard';
 const meta: Meta<typeof AiDataCard> = {
   title: 'Components/AiDataCard',
   component: AiDataCard,
+  parameters: { layout: 'centered' },
   tags: ['autodocs'],
-  argTypes: {
-    title: { control: 'text' },
-    manufacturer: { control: 'text' },
-    tracking: { control: 'text' },
-    costLabel: { control: 'text' },
-    costAmount: { control: 'text' },
-    imageSrc: { control: 'text' },
-    className: { control: 'text' },
-  },
 };
 
 export default meta;
@@ -21,13 +13,50 @@ type Story = StoryObj<typeof AiDataCard>;
 
 export const Default: Story = {
   args: {
-    title: 'Sample Title',
-    manufacturer: 'manufacturer',
-    tracking: 'tracking',
-    costLabel: 'costLabel',
-    costAmount: 'costAmount',
-    imageSrc: 'imageSrc',
-    className: 'className',
+    title: 'Total Spend',
+    value: '$142,380',
+    description: 'Year-to-date medical equipment procurement spend',
+    trend: 'down',
+    trendValue: '8.4%',
+    insight: 'Spend is trending below forecast — consider re-allocating Q3 budget to critical equipment.',
+    confidence: 87,
   },
 };
 
+export const TrendUp: Story = {
+  args: {
+    title: 'Orders Fulfilled',
+    value: '1,284',
+    description: 'Parts orders fulfilled this quarter',
+    trend: 'up',
+    trendValue: '+12%',
+    insight: 'Fulfillment rate improved significantly compared to last quarter.',
+    confidence: 92,
+  },
+};
+
+export const Neutral: Story = {
+  args: {
+    title: 'Avg. Lead Time',
+    value: '2.4 days',
+    description: 'Average days from order to delivery',
+    trend: 'neutral',
+    insight: 'Lead time is stable and within SLA targets.',
+    confidence: 78,
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    title: 'Equipment Uptime',
+    value: '99.2%',
+    isLoading: true,
+  },
+};
+
+export const Minimal: Story = {
+  args: {
+    title: 'Open Requisitions',
+    value: '47',
+  },
+};
