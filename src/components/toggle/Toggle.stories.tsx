@@ -7,24 +7,35 @@ const meta: Meta<typeof Toggle> = {
   tags: ['autodocs'],
   argTypes: {
     checked: { control: 'boolean' },
-    onChange: { action: 'called' },
     disabled: { control: 'boolean' },
     label: { control: 'text' },
-    className: { control: 'text' },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Toggle>;
 
-export const Default: Story = {
+export const Off: Story = {
   args: {
-    checked: true,
+    checked: false,
+    label: 'Email notifications',
     onChange: () => {},
-    disabled: true,
-    label: 'Label',
-    className: 'className',
   },
 };
 
-export const Disabled: Story = { args: { ...Default.args, disabled: true } };
+export const On: Story = {
+  args: {
+    checked: true,
+    label: 'Email notifications',
+    onChange: () => {},
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    checked: false,
+    disabled: true,
+    label: 'SMS alerts (unavailable)',
+    onChange: () => {},
+  },
+};
