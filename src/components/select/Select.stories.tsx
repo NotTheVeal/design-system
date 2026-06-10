@@ -5,71 +5,60 @@ import Select from './select';
 const meta: Meta<typeof Select> = {
   title: 'Components/Select',
   component: Select,
+  parameters: { layout: 'padded' },
   tags: ['autodocs'],
-  argTypes: {
-    disabled: { control: 'boolean' },
-    label: { control: 'text' },
-    placeholder: { control: 'text' },
-    error: { control: 'text' },
-    helperText: { control: 'text' },
-  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Select>;
 
-const categoryOptions = [
-  { label: 'Patient Monitoring', value: 'patient-monitoring' },
-  { label: 'Infusion Therapy', value: 'infusion-therapy' },
-  { label: 'Respiratory Care', value: 'respiratory-care' },
-  { label: 'Surgical Instruments', value: 'surgical-instruments' },
-  { label: 'Imaging & Diagnostics', value: 'imaging-diagnostics' },
-];
-
 export const Default: Story = {
   render: () => {
-    const [value, setValue] = useState('');
+    const [val, setVal] = useState('');
     return (
-      <div style={{ width: 320 }}>
+      <div style={{ width: 360 }}>
         <Select
-          options={categoryOptions}
-          value={value}
-          onChange={setValue}
-          label="Product Category"
-          placeholder="Select a category"
+          label="Equipment Category"
+          options={['MRI Systems', 'CT Scanners', 'Ultrasound', 'X-Ray', 'Patient Monitoring', 'Lab Equipment']}
+          value={val}
+          onChange={setVal}
         />
       </div>
     );
   },
 };
 
-export const WithValue: Story = {
+export const WithSelected: Story = {
   render: () => {
-    const [value, setValue] = useState('patient-monitoring');
+    const [val, setVal] = useState('ct');
     return (
-      <div style={{ width: 320 }}>
+      <div style={{ width: 360 }}>
         <Select
-          options={categoryOptions}
-          value={value}
-          onChange={setValue}
-          label="Product Category"
+          label="Modality"
+          options={[
+            { label: 'MRI', value: 'mri' },
+            { label: 'CT Scanner', value: 'ct' },
+            { label: 'Ultrasound', value: 'us' },
+            { label: 'X-Ray', value: 'xr' },
+          ]}
+          value={val}
+          onChange={setVal}
         />
       </div>
     );
   },
 };
 
-export const WithHelperText: Story = {
+export const NoLabel: Story = {
   render: () => {
-    const [value, setValue] = useState('');
+    const [val, setVal] = useState('');
     return (
-      <div style={{ width: 320 }}>
+      <div style={{ width: 280 }}>
         <Select
-          options={categoryOptions}
-          value={value}
-          onChange={setValue}
-          label="Equipment Type"
-          helperText="Filter results by equipment category"
+          placeholder="Select supplier..."
+          options={['Siemens Healthineers', 'GE Healthcare', 'Philips Medical', 'Canon Medical']}
+          value={val}
+          onChange={setVal}
         />
       </div>
     );
@@ -78,15 +67,37 @@ export const WithHelperText: Story = {
 
 export const WithError: Story = {
   render: () => {
-    const [value, setValue] = useState('');
+    const [val, setVal] = useState('');
     return (
-      <div style={{ width: 320 }}>
+      <div style={{ width: 360 }}>
         <Select
-          options={categoryOptions}
-          value={value}
-          onChange={setValue}
-          label="Product Category"
-          error="Please select a category to continue"
+          label="Approval Level"
+          options={['Manager', 'Director', 'VP', 'CFO']}
+          value={val}
+          onChange={setVal}
+          error="Please select an approval level before submitting."
+        />
+      </div>
+    );
+  },
+};
+
+export const WithHelperText: Story = {
+  render: () => {
+    const [val, setVal] = useState('net30');
+    return (
+      <div style={{ width: 360 }}>
+        <Select
+          label="Payment Terms"
+          options={[
+            { label: 'Net 15', value: 'net15' },
+            { label: 'Net 30', value: 'net30' },
+            { label: 'Net 60', value: 'net60' },
+            { label: 'Due on Receipt', value: 'due' },
+          ]}
+          value={val}
+          onChange={setVal}
+          helperText="Payment terms must match your active vendor agreement."
         />
       </div>
     );
@@ -95,14 +106,35 @@ export const WithError: Story = {
 
 export const Disabled: Story = {
   render: () => (
-    <div style={{ width: 320 }}>
+    <div style={{ width: 360 }}>
       <Select
-        options={categoryOptions}
-        value="respiratory-care"
+        label="Contract Type"
+        options={['Full Coverage', 'Parts Only', 'Labor Only']}
+        value="Full Coverage"
         onChange={() => {}}
-        label="Product Category"
         disabled
       />
     </div>
   ),
+};
+
+export const WithDisabledOption: Story = {
+  render: () => {
+    const [val, setVal] = useState('');
+    return (
+      <div style={{ width: 360 }}>
+        <Select
+          label="Service Level"
+          options={[
+            { label: 'Bronze', value: 'bronze' },
+            { label: 'Silver', value: 'silver' },
+            { label: 'Gold', value: 'gold' },
+            { label: 'Platinum (Coming Soon)', value: 'platinum', disabled: true },
+          ]}
+          value={val}
+          onChange={setVal}
+        />
+      </div>
+    );
+  },
 };
