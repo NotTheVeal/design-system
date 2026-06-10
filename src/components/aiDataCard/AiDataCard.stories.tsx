@@ -35,17 +35,6 @@ export const TrendUp: Story = {
   },
 };
 
-export const Neutral: Story = {
-  args: {
-    title: 'Avg. Lead Time',
-    value: '2.4 days',
-    description: 'Average days from order to delivery',
-    trend: 'neutral',
-    insight: 'Lead time is stable and within SLA targets.',
-    confidence: 78,
-  },
-};
-
 export const Loading: Story = {
   args: {
     title: 'Equipment Uptime',
