@@ -74,8 +74,7 @@ jobs:
         continue-on-error: true
 
       - name: Test
-        run: npm test -- --passWithNoTests
-        continue-on-error: true
+        run: npm test
 
   # ─── JOB 3: Build Storybook ────────────────────────────────────────────────
   build-storybook:
