@@ -10,13 +10,25 @@ on:
       - 'package.json'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   deploy-storybook:
     name: Build and Deploy Storybook
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -30,24 +42,14 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
 
-      - name: Upload Storybook artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: storybook-static
-          path: storybook-static/
-          retention-days: 90
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
-      - name: Deploy to Netlify
-        if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
-        uses: nwtgck/actions-netlify@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          publish-dir: './storybook-static'
-          production-branch: main
-          production-deploy: true
-          deploy-message: 'Storybook ${{ github.sha }}'
-          enable-pull-request-comment: false
-          enable-commit-comment: false
-          enable-github-deployment: false
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          path: ./storybook-static
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
