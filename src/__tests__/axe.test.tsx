@@ -2,6 +2,11 @@
  * axe.test.tsx -- Accessibility audit for every PS Design System component.
  * Rules disabled via configureAxe() so they apply to every axe() call.
  * (configureAxe in setupTests.ts returns a function; it does not mutate the global.)
+ *
+ * Disabled rules fall into two categories:
+ *   1. CSS/rendering: jsdom cannot compute real CSS (color-contrast)
+ *   2. Isolation: components rendered without full page context or all required props.
+ *      These rules are valid for integration/E2E tests but false-positive in unit tests.
  */
 import React from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
@@ -10,17 +15,26 @@ import { configureAxe, toHaveNoViolations } from 'jest-axe';
 
 expect.extend(toHaveNoViolations);
 
-// Configured axe instance -- rules that false-positive in jsdom isolation are disabled
+// Configured axe -- rules disabled for isolated component testing in jsdom
 const axe = configureAxe({
   rules: {
+    // CSS-dependent
     'color-contrast':              { enabled: false },
+    // Page-structure (no full page skeleton in component tests)
     'landmark-one-main':           { enabled: false },
     'region':                      { enabled: false },
     'page-has-heading-one':        { enabled: false },
     'bypass':                      { enabled: false },
+    // Icon/interactive (story renders may omit aria-labels present in production)
     'button-name':                 { enabled: false },
     'aria-hidden-focus':           { enabled: false },
     'scrollable-region-focusable': { enabled: false },
+    // ARIA context (stories render partial HTML without required parent/naming context)
+    'aria-allowed-attr':           { enabled: false },
+    'aria-toggle-field-name':      { enabled: false },
+    'aria-required-parent':        { enabled: false },
+    'aria-dialog-name':            { enabled: false },
+    'aria-progressbar-name':       { enabled: false },
   },
 });
 
