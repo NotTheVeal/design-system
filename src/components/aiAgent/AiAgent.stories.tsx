@@ -4,13 +4,8 @@ import AiAgent from './aiAgent';
 const meta: Meta<typeof AiAgent> = {
   title: 'Components/AiAgent',
   component: AiAgent,
-  parameters: { layout: 'centered', docs: { description: { component: 'AiAgent component from the PartsSource design system.' } } },
+  parameters: { layout: 'centered' },
   tags: ['autodocs'],
-  argTypes: {
-    messages: { control: 'object' },
-    onSendMessage: { action: 'called' },
-    className: { control: 'text' },
-  },
 };
 
 export default meta;
@@ -18,21 +13,34 @@ type Story = StoryObj<typeof AiAgent>;
 
 export const Default: Story = {
   args: {
+    agentName: 'PartsSource AI',
     messages: [
-      { text: 'Hello! How can I help you today?', type: 'agent' },
-      { text: 'What is the delivery status of my order?', type: 'user' },
-      { text: 'I can look that up. Could you share your order number?', type: 'agent' },
+      { role: 'assistant', content: 'Hello! How can I help you today?' },
+      { role: 'user', content: 'What is the delivery status of my order?' },
+      { role: 'assistant', content: 'I can look that up for you. Could you share your order number?' },
     ],
-    onSendMessage: () => {},
+    onSend: () => {},
   },
 };
 
-export const WithError: Story = {
+export const Empty: Story = {
   args: {
+    agentName: 'PartsSource AI',
+    messages: [],
+    onSend: () => {},
+  },
+};
+
+export const LongConversation: Story = {
+  args: {
+    agentName: 'PartsSource AI',
     messages: [
-      { text: 'Check my order status', type: 'user' },
-      { text: 'Sorry, I encountered an error retrieving your data.', type: 'error' },
+      { role: 'assistant', content: 'Hello! How can I help you today?' },
+      { role: 'user', content: 'I need a replacement cable for a GE patient monitor.' },
+      { role: 'assistant', content: 'I can help with that. Which GE monitor model do you have?' },
+      { role: 'user', content: 'It is a GE Dash 4000.' },
+      { role: 'assistant', content: 'Great — I found 3 compatible SpO2 cables for the GE Dash 4000. Would you like OEM or aftermarket options?' },
     ],
-    onSendMessage: () => {},
+    onSend: () => {},
   },
 };
