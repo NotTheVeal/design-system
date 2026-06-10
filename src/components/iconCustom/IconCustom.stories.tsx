@@ -6,31 +6,51 @@ const meta: Meta<typeof IconCustom> = {
   component: IconCustom,
   tags: ['autodocs'],
   argTypes: {
-    size: { control: 'select', options: ["sm","md","lg","xl"] },
-    variant: { control: 'select', options: ["squarefilled","squareoutline","circlefilled","circleoutline"] },
+    size: { control: 'select', options: ['sm', 'md', 'lg', 'xl'] },
+    variant: { control: 'select', options: ['squareFilled', 'squareOutline', 'circleFilled', 'circleOutline'] },
     ariaLabel: { control: 'text' },
-    className: { control: 'text' },
-    onClick: { action: 'called' },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof IconCustom>;
 
-export const Default: Story = {
+export const SquareFilled: Story = {
   args: {
-    size: 'sm',
-    variant: 'squarefilled',
-    ariaLabel: 'ariaLabel',
-    className: 'className',
-    onClick: () => {},
+    size: 'md',
+    variant: 'squareFilled',
+    ariaLabel: 'Square filled icon',
   },
 };
 
-export const SquareFilled: Story = { args: { ...Default.args, variant: 'squareFilled' } };
+export const SquareOutline: Story = {
+  args: {
+    size: 'md',
+    variant: 'squareOutline',
+    ariaLabel: 'Square outline icon',
+  },
+};
 
-export const SquareOutline: Story = { args: { ...Default.args, variant: 'squareOutline' } };
+export const CircleFilled: Story = {
+  args: {
+    size: 'md',
+    variant: 'circleFilled',
+    ariaLabel: 'Circle filled icon',
+  },
+};
 
-export const CircleFilled: Story = { args: { ...Default.args, variant: 'circleFilled' } };
+export const CircleOutline: Story = {
+  args: {
+    size: 'md',
+    variant: 'circleOutline',
+    ariaLabel: 'Circle outline icon',
+  },
+};
 
-export const CircleOutline: Story = { args: { ...Default.args, variant: 'circleOutline' } };
+export const Large: Story = {
+  args: {
+    size: 'xl',
+    variant: 'circleFilled',
+    ariaLabel: 'Large circle filled icon',
+  },
+};
