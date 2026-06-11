@@ -20,6 +20,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:6007',
     trace: 'on-first-retry',
+    // Prevent locator.evaluate() from hanging 30s when element is not in DOM
+    actionTimeout: 10_000,
   },
   webServer: {
     command: 'npx serve storybook-static -l 6007',
