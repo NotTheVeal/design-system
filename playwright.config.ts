@@ -17,6 +17,8 @@ export default defineConfig({
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
+  // Increase expect() assertion timeout for CI — toBeAttached() default is 5 s
+  expect: { timeout: 10_000 },
   use: {
     baseURL: 'http://localhost:6007',
     trace: 'on-first-retry',
