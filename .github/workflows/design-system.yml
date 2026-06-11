@@ -6,6 +6,8 @@ on:
     paths:
       - 'tokens/**'
       - 'src/**'
+      - 'e2e/**'
+      - 'playwright.config.ts'
       - '.github/workflows/design-system.yml'
   pull_request:
     branches: [main]
@@ -97,3 +99,49 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
         continue-on-error: true
+
+      - name: Upload Storybook artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+          retention-days: 1
+
+  # ─── JOB 4: E2E UX Workflow Tests ──────────────────────────────────────────
+  e2e-tests:
+    name: E2E UX Workflow Tests
+    runs-on: ubuntu-latest
+    needs: build-storybook
+    if: ${{ !inputs.skip_tests }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Download Storybook artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
