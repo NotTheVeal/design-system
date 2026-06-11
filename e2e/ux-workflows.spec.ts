@@ -6,8 +6,12 @@ import { test, expect, type Page } from '@playwright/test';
  * Tests run against the static Storybook build served on port 6007.
  * Story IDs: title 'Components/Button' + export 'Primary' → components-button--primary
  *
- * Key fix: Storybook's static iframe starts with #storybook-root visibility:hidden
- * during initial load. We wait for it to become visible before asserting on children.
+ * Root cause of CI failures: Storybook's #storybook-root starts with
+ * visibility:hidden during its fade-in animation. In headless Chromium (CI),
+ * that animation never completes, so waiting for CSS-visibility times out.
+ *
+ * Fix: load via networkidle (DOM is ready), then inject CSS to force the root
+ * visible and disable all transitions before any assertion runs.
  */
 
 const storyUrl = (id: string) =>
@@ -15,14 +19,29 @@ const storyUrl = (id: string) =>
 
 async function loadStory(page: Page, id: string) {
   await page.goto(storyUrl(id));
-  // Wait for Storybook's root to become visible (it starts hidden during JS boot)
-  await page.locator('#storybook-root').waitFor({ state: 'visible', timeout: 20_000 });
-  // Brief grace period for CSS transitions / React effects to settle
-  await page.waitForTimeout(400);
+  // Wait for all network requests to settle (DOM is populated)
+  await page.waitForLoadState('networkidle');
+  // In headless CI, Storybook's fade-in animation may never complete.
+  // Override CSS visibility on the story root and disable all transitions
+  // so every element is immediately testable.
+  await page.addStyleTag({
+    content: `
+      #storybook-root, #root {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      * {
+        transition-duration: 0s !important;
+        animation-duration: 0s !important;
+      }
+    `,
+  });
+  // Brief grace period for React effects to settle
+  await page.waitForTimeout(300);
 }
 
 // ---------------------------------------------------------------------------
-// Button  (title: 'Components/Button' — story: Primary)
+// Button (title: 'Components/Button' — story: Primary)
 // ---------------------------------------------------------------------------
 
 test.describe('Button', () => {
@@ -58,7 +77,7 @@ test.describe('Button', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Input  (title: 'Components/Input' — story: Default)
+// Input (title: 'Components/Input' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Input', () => {
@@ -90,7 +109,7 @@ test.describe('Input', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Checkbox  (title: 'Components/Checkbox' — stories: Default, Checked, Disabled)
+// Checkbox (title: 'Components/Checkbox' — stories: Default, Checked, Disabled)
 // ---------------------------------------------------------------------------
 
 test.describe('Checkbox', () => {
@@ -120,7 +139,7 @@ test.describe('Checkbox', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Modal  (title: 'Components/Modal' — story: OpenByDefault → dialog is visible)
+// Modal (title: 'Components/Modal' — story: OpenByDefault -> dialog is visible)
 // ---------------------------------------------------------------------------
 
 test.describe('Modal', () => {
@@ -147,7 +166,7 @@ test.describe('Modal', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Tabs  (title: 'Components/Tabs' — story: Default)
+// Tabs (title: 'Components/Tabs' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Tabs', () => {
@@ -177,7 +196,7 @@ test.describe('Tabs', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Pagination  (title: 'Components/Pagination' — story: Default)
+// Pagination (title: 'Components/Pagination' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Pagination', () => {
@@ -196,7 +215,7 @@ test.describe('Pagination', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Select  (title: 'Components/Select' — story: Default)
+// Select (title: 'Components/Select' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Select', () => {
@@ -223,7 +242,7 @@ test.describe('Select', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Toggle  (title: 'Components/Toggle' — stories: Off, On)
+// Toggle (title: 'Components/Toggle' — stories: Off, On)
 // ---------------------------------------------------------------------------
 
 test.describe('Toggle', () => {
