@@ -13,11 +13,11 @@ export default meta;
 type Story = StoryObj<typeof Input>;
 
 export const Default: Story = {
-  args: {
-    label: 'Part Number',
-    placeholder: 'e.g. MRI-7842',
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="Part Number" placeholder="e.g. MRI-7842" />
+    </div>
+  ),
 };
 
 export const WithValue: Story = {
@@ -32,57 +32,51 @@ export const WithValue: Story = {
 };
 
 export const Required: Story = {
-  args: {
-    label: 'PO Number',
-    required: true,
-    placeholder: 'PO-XXXXX',
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="PO Number" required placeholder="PO-XXXXX" />
+    </div>
+  ),
 };
 
 export const WithHelperText: Story = {
-  args: {
-    label: 'Budget Code',
-    helperText: 'Enter the 6-digit cost center code from your finance team.',
-    placeholder: '123456',
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="Budget Code" helperText="Enter the 6-digit cost center code from your finance team." placeholder="123456" />
+    </div>
+  ),
 };
 
 export const WithError: Story = {
-  args: {
-    label: 'Shipping Address',
-    error: 'Shipping address is required before submitting the order.',
-    defaultValue: '',
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="Shipping Address" error="Shipping address is required before submitting the order." defaultValue="" />
+    </div>
+  ),
 };
 
 export const Disabled: Story = {
-  args: {
-    label: 'Contract Number',
-    defaultValue: 'SC-2024-0193',
-    disabled: true,
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="Contract Number" defaultValue="SC-2024-0193" disabled />
+    </div>
+  ),
 };
 
 export const LargeSize: Story = {
-  args: {
-    label: 'Purchase Description',
-    size: 'large',
-    placeholder: 'Describe the equipment or part...',
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="Purchase Description" size="large" placeholder="Describe the equipment or part..." />
+    </div>
+  ),
 };
 
 export const PasswordType: Story = {
-  args: {
-    label: 'Password',
-    type: 'password',
-    required: true,
-  },
-  decorators: [(Story) => <div style={{ width: 360 }}><Story /></div>],
+  render: () => (
+    <div style={{ width: 360 }}>
+      <Input label="Password" type="password" required />
+    </div>
+  ),
 };
 
 export const CheckoutForm: Story = {
