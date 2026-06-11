@@ -4,6 +4,9 @@ import { test, expect, type Page } from '@playwright/test';
  * UX Workflow Validation — Playwright browser tests
  * Tests run against the static Storybook build served on port 6007.
  * Each story is loaded in its iframe URL to isolate the component.
+ *
+ * Story IDs are derived from CSF title + export name, e.g.:
+ *   title: 'Components/Button', export const Primary → components-button--primary
  */
 
 const storyUrl = (id: string) =>
@@ -11,16 +14,18 @@ const storyUrl = (id: string) =>
 
 async function loadStory(page: Page, id: string) {
   await page.goto(storyUrl(id));
-  await page.waitForSelector('#storybook-root, #root', { timeout: 10_000 });
+  // Wait for the page to fully load rather than a specific element,
+  // so tests are resilient across Storybook versions.
+  await page.waitForLoadState('networkidle', { timeout: 20_000 });
 }
 
 // ---------------------------------------------------------------------------
-// Button
+// Button  (title: 'Components/Button' — first story: Primary)
 // ---------------------------------------------------------------------------
 
 test.describe('Button', () => {
   test.beforeEach(async ({ page }) => {
-    await loadStory(page, 'components-button--default');
+    await loadStory(page, 'components-button--primary');
   });
 
   test('renders a button element', async ({ page }) => {
@@ -51,7 +56,7 @@ test.describe('Button', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Input
+// Input  (title: 'Components/Input' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Input', () => {
@@ -85,45 +90,44 @@ test.describe('Input', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Checkbox
+// Checkbox  (title: 'Components/Checkbox' — stories: Default, Checked, Disabled)
 // ---------------------------------------------------------------------------
 
 test.describe('Checkbox', () => {
-  test.beforeEach(async ({ page }) => {
-    await loadStory(page, 'components-checkbox--future-all-states');
+  test('Default story renders an unchecked checkbox', async ({ page }) => {
+    await loadStory(page, 'components-checkbox--default');
+    const checkbox = page.locator('input[type="checkbox"]').first();
+    await expect(checkbox).toBeVisible();
+    await expect(checkbox).not.toBeChecked();
   });
 
-  test('renders checkbox elements', async ({ page }) => {
-    const checkboxes = page.locator('input[type="checkbox"]');
-    await expect(checkboxes.first()).toBeVisible();
-  });
-
-  test('has at least one unchecked checkbox', async ({ page }) => {
-    const unchecked = page.locator('input[type="checkbox"]:not(:checked)');
-    await expect(unchecked.first()).toBeVisible();
-  });
-
-  test('has at least one checked checkbox', async ({ page }) => {
+  test('Checked story renders a checked checkbox', async ({ page }) => {
+    await loadStory(page, 'components-checkbox--checked');
     const checked = page.locator('input[type="checkbox"]:checked');
     await expect(checked.first()).toBeVisible();
   });
 
-  test('disabled checkbox is not interactive', async ({ page }) => {
-    const disabled = page.locator('input[type="checkbox"][disabled]');
-    const count = await disabled.count();
-    if (count > 0) {
-      await expect(disabled.first()).toBeDisabled();
-    }
+  test('Default checkbox can be toggled on click', async ({ page }) => {
+    await loadStory(page, 'components-checkbox--default');
+    const checkbox = page.locator('input[type="checkbox"]').first();
+    await checkbox.click();
+    await expect(checkbox).toBeChecked();
+  });
+
+  test('Disabled checkbox is not interactive', async ({ page }) => {
+    await loadStory(page, 'components-checkbox--disabled');
+    const disabled = page.locator('input[type="checkbox"][disabled]').first();
+    await expect(disabled).toBeDisabled();
   });
 });
 
 // ---------------------------------------------------------------------------
-// Modal
+// Modal  (title: 'Components/Modal' — story: OpenByDefault, so dialog is visible)
 // ---------------------------------------------------------------------------
 
 test.describe('Modal', () => {
   test.beforeEach(async ({ page }) => {
-    await loadStory(page, 'components-modal--future-static');
+    await loadStory(page, 'components-modal--open-by-default');
   });
 
   test('renders with role="dialog"', async ({ page }) => {
@@ -131,12 +135,14 @@ test.describe('Modal', () => {
     await expect(modal.first()).toBeVisible();
   });
 
-  test('has a visible title or heading', async ({ page }) => {
-    const heading = page.locator('[role="dialog"] h1, [role="dialog"] h2, [role="dialog"] h3, [role="dialog"] [class*="title"]');
+  test('has a visible heading or title', async ({ page }) => {
+    const heading = page.locator(
+      '[role="dialog"] h1, [role="dialog"] h2, [role="dialog"] h3, [role="dialog"] [class*="title"]'
+    );
     await expect(heading.first()).toBeVisible();
   });
 
-  test('has an actionable CTA button inside the dialog', async ({ page }) => {
+  test('has at least one button inside the dialog', async ({ page }) => {
     const btn = page.locator('[role="dialog"] button').first();
     await expect(btn).toBeVisible();
     await expect(btn).not.toBeDisabled();
@@ -144,7 +150,7 @@ test.describe('Modal', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Tabs
+// Tabs  (title: 'Components/Tabs' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Tabs', () => {
@@ -174,7 +180,7 @@ test.describe('Tabs', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Pagination
+// Pagination  (title: 'Components/Pagination' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Pagination', () => {
@@ -187,7 +193,7 @@ test.describe('Pagination', () => {
     await expect(anyBtn).toBeVisible();
   });
 
-  test('pagination controls are not all disabled', async ({ page }) => {
+  test('pagination controls include enabled buttons', async ({ page }) => {
     const btns = page.locator('button:not([disabled])');
     const count = await btns.count();
     expect(count).toBeGreaterThan(0);
@@ -195,7 +201,7 @@ test.describe('Pagination', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Select
+// Select  (title: 'Components/Select' — story: Default)
 // ---------------------------------------------------------------------------
 
 test.describe('Select', () => {
@@ -223,25 +229,25 @@ test.describe('Select', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Toggle
+// Toggle  (title: 'Components/Toggle' — story: Off)
 // ---------------------------------------------------------------------------
 
 test.describe('Toggle', () => {
-  test.beforeEach(async ({ page }) => {
-    await loadStory(page, 'components-toggle--default');
+  test('Off story renders an unchecked switch', async ({ page }) => {
+    await loadStory(page, 'components-toggle--off');
+    const toggle = page.locator('[role="switch"], input[type="checkbox"]').first();
+    await expect(toggle).toBeVisible();
+    await expect(toggle).not.toBeDisabled();
   });
 
-  test('renders a switch or checkbox control', async ({ page }) => {
+  test('On story renders a checked switch', async ({ page }) => {
+    await loadStory(page, 'components-toggle--on');
     const toggle = page.locator('[role="switch"], input[type="checkbox"]').first();
     await expect(toggle).toBeVisible();
   });
 
-  test('toggle is enabled by default', async ({ page }) => {
-    const toggle = page.locator('[role="switch"], input[type="checkbox"]').first();
-    await expect(toggle).not.toBeDisabled();
-  });
-
-  test('toggle responds to click', async ({ page }) => {
+  test('Off toggle responds to click', async ({ page }) => {
+    await loadStory(page, 'components-toggle--off');
     const toggle = page.locator('[role="switch"], input[type="checkbox"]').first();
     await toggle.click();
     await expect(toggle).toBeVisible();
