@@ -5,17 +5,17 @@ import { test, expect, type Page } from '@playwright/test';
  *
  * Tests run against the static Storybook build served on port 6007.
  *
- * loadStory() waits for React to mount before running assertions:
- *   1. goto + networkidle
- *   2. waitForFunction — polls until #storybook-root has children (React rendered)
- *   3. evaluate — force-visible any CSS-hidden elements
- *   4. waitForTimeout(100) — brief CSS-animation settle
+ * loadStory() strategy:
+ *   1. goto + networkidle — page JS has run, Storybook is initialised
+ *   2. evaluate — force-visible any CSS-hidden elements
+ *   No explicit React-render wait is needed because every assertion uses
+ *   expect.timeout (set to 10 s in playwright.config.ts) which retries
+ *   automatically until the element appears or the timeout expires.
  *
- * Interaction strategy: DOM methods (el.click(), el.focus()) via evaluate()
- * bypass Playwright actionability checks that fail on hidden elements.
- *
- * document.activeElement checks are intentionally omitted — el.focus() via
- * evaluate() does not reliably update document.activeElement in headless CI.
+ * Interaction: DOM methods (el.click(), el.focus()) via evaluate() bypass
+ * Playwright actionability checks that fail on hidden/detached elements.
+ * document.activeElement checks are omitted — el.focus() via evaluate()
+ * does not reliably update document.activeElement in headless CI.
  */
 
 const storyUrl = (id: string) =>
@@ -24,18 +24,9 @@ const storyUrl = (id: string) =>
 async function loadStory(page: Page, id: string) {
   await page.goto(storyUrl(id));
   await page.waitForLoadState('networkidle');
-  // Wait until the story root has children — proves React has mounted the story
-  await page.waitForFunction(
-    () => {
-      const root =
-        (document.querySelector('#storybook-root') as HTMLElement | null) ??
-        (document.querySelector('#root') as HTMLElement | null);
-      return root != null && root.children.length > 0;
-    },
-    undefined,
-    { timeout: 15_000 },
-  );
-  // Force all computed-hidden elements visible via inline !important styles
+  // Force all computed-hidden elements visible via inline !important styles.
+  // Runs immediately after networkidle; expect.timeout handles stories that
+  // render after this point.
   await page.evaluate(() => {
     for (const sel of ['#storybook-root', '#root']) {
       const el = document.querySelector(sel) as HTMLElement | null;
@@ -54,8 +45,6 @@ async function loadStory(page: Page, id: string) {
       if (cs.opacity === '0') el.style.setProperty('opacity', '1', 'important');
     });
   });
-  // Brief CSS-animation settle
-  await page.waitForTimeout(100);
 }
 
 // ---------------------------------------------------------------------------
@@ -81,8 +70,8 @@ test.describe('Button', () => {
   test('is keyboard-focusable and activatable with Enter', async ({ page }) => {
     const btn = page.locator('button').first();
     await expect(btn).toBeAttached();
-    // Focus via evaluate to bypass actionability checks; skip document.activeElement
-    // check — unreliable in headless CI (compositor focus not guaranteed).
+    // Focus via evaluate to bypass actionability checks in headless CI;
+    // skip document.activeElement check — unreliable in headless.
     await btn.evaluate((el: HTMLElement) => el.focus());
     await page.keyboard.press('Enter');
     await expect(btn).toBeAttached();
@@ -90,6 +79,7 @@ test.describe('Button', () => {
 
   test('is activatable with Space', async ({ page }) => {
     const btn = page.locator('button').first();
+    await expect(btn).toBeAttached();
     await btn.evaluate((el: HTMLElement) => el.focus());
     await page.keyboard.press('Space');
     await expect(btn).toBeAttached();
@@ -144,7 +134,7 @@ test.describe('Input', () => {
 test.describe('Checkbox', () => {
   test('Default story renders an unchecked checkbox', async ({ page }) => {
     await loadStory(page, 'components-checkbox--default');
-    // Checkbox renders <div role="checkbox" aria-checked="..."> — no <input> element
+    // Checkbox renders <div role="checkbox" aria-checked="..."> — no <input>
     const cb = page.locator('[role="checkbox"]').first();
     await expect(cb).toBeAttached();
     await expect(cb).toHaveAttribute('aria-checked', 'false');
@@ -161,8 +151,7 @@ test.describe('Checkbox', () => {
     await loadStory(page, 'components-checkbox--default');
     const cb = page.locator('[role="checkbox"]').first();
     await expect(cb).toBeAttached();
-    // Checkbox is fully controlled — clicking fires onChange but visual state
-    // depends on the story's state management. Confirm element survives click.
+    // Fully controlled — clicking fires onChange; confirm element survives.
     await cb.evaluate((el: HTMLElement) => el.click());
     await expect(cb).toBeAttached();
   });
@@ -287,7 +276,7 @@ test.describe('Select', () => {
 test.describe('Toggle', () => {
   test('Off story renders an unchecked switch', async ({ page }) => {
     await loadStory(page, 'components-toggle--off');
-    // Toggle renders <div role="switch" aria-checked="..."> — no <input> element
+    // Toggle renders <div role="switch" aria-checked="..."> — no <input>
     const toggle = page.locator('[role="switch"]').first();
     await expect(toggle).toBeAttached();
     await expect(toggle).toHaveAttribute('aria-checked', 'false');
