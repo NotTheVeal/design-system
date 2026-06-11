@@ -11,6 +11,13 @@ import { test, expect, type Page } from '@playwright/test';
  * even with force:true. We bypass Playwright entirely and call DOM methods
  * directly via locator.evaluate(): el.click(), el.focus(), el.value = '...'.
  * This makes every interaction test immune to CSS visibility state.
+ *
+ * Focus verification: Instead of toBeFocused() (which can fail when elements
+ * are CSS-hidden even after forced visibility), we verify focus inline via
+ * evaluate() checking el === document.activeElement atomically.
+ *
+ * Input values: Instead of toHaveValue() (has actionability preconditions),
+ * we read el.value directly via evaluate() after keyboard interactions.
  */
 
 const storyUrl = (id: string) =>
@@ -65,9 +72,13 @@ test.describe('Button', () => {
 
   test('is keyboard-focusable and activatable with Enter', async ({ page }) => {
     const btn = page.locator('button').first();
-    // Use DOM .focus() to bypass Playwright actionability on hidden elements
-    await btn.evaluate((el: HTMLElement) => el.focus());
-    await expect(btn).toBeFocused();
+    await expect(btn).toBeAttached();
+    // Focus and verify atomically via evaluate to avoid toBeFocused() visibility preconditions
+    const focused = await btn.evaluate((el: HTMLElement) => {
+      el.focus();
+      return el === document.activeElement;
+    });
+    expect(focused).toBe(true);
     await page.keyboard.press('Enter');
     await expect(btn).toBeAttached();
   });
@@ -95,31 +106,35 @@ test.describe('Input', () => {
 
   test('accepts text input', async ({ page }) => {
     const input = page.locator('input').first();
-    await input.evaluate((el: HTMLInputElement, val) => {
-      el.value = val;
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-    }, 'Hello, PartsSource');
-    await expect(input).toHaveValue('Hello, PartsSource');
+    await expect(input).toBeAttached();
+    // Focus then type via keyboard — fires real key events that React's onChange handles
+    await input.evaluate((el: HTMLElement) => el.focus());
+    await page.keyboard.type('Hello, PartsSource');
+    // Read value directly via evaluate to skip toHaveValue() actionability checks
+    const val = await input.evaluate((el: HTMLInputElement) => el.value);
+    expect(val).toBe('Hello, PartsSource');
   });
 
   test('can be cleared', async ({ page }) => {
     const input = page.locator('input').first();
-    await input.evaluate((el: HTMLInputElement) => {
-      el.value = 'temp';
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    await input.evaluate((el: HTMLInputElement) => {
-      el.value = '';
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    await expect(input).toHaveValue('');
+    await expect(input).toBeAttached();
+    await input.evaluate((el: HTMLElement) => el.focus());
+    await page.keyboard.type('temp');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Backspace');
+    const val = await input.evaluate((el: HTMLInputElement) => el.value);
+    expect(val).toBe('');
   });
 
   test('is focusable', async ({ page }) => {
     const input = page.locator('input').first();
-    await input.evaluate((el: HTMLElement) => el.focus());
-    await expect(input).toBeFocused();
+    await expect(input).toBeAttached();
+    // Focus and verify atomically to avoid toBeFocused() visibility preconditions
+    const focused = await input.evaluate((el: HTMLElement) => {
+      el.focus();
+      return el === document.activeElement;
+    });
+    expect(focused).toBe(true);
   });
 });
 
@@ -245,8 +260,12 @@ test.describe('Select', () => {
 
   test('trigger is focusable', async ({ page }) => {
     const trigger = page.locator('[role="combobox"], select, button[aria-haspopup]').first();
-    await trigger.evaluate((el: HTMLElement) => el.focus());
-    await expect(trigger).toBeFocused();
+    // Focus and verify atomically to avoid toBeFocused() visibility preconditions
+    const focused = await trigger.evaluate((el: HTMLElement) => {
+      el.focus();
+      return el === document.activeElement;
+    });
+    expect(focused).toBe(true);
   });
 
   test('trigger can be activated with Enter', async ({ page }) => {
