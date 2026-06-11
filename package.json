@@ -20,8 +20,14 @@
     },
     "./styles": "./dist/style.css"
   },
-  "files": ["dist", "src/components", "tokens"],
-  "sideEffects": ["*.css"],
+  "files": [
+    "dist",
+    "src/components",
+    "tokens"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "build": "vite build --config vite.lib.config.ts",
     "build:tokens": "node style-dictionary.config.js",
@@ -31,13 +37,16 @@
     "lint": "eslint src --ext .ts,.tsx --max-warnings 0",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "serve-storybook": "serve storybook-static -l 6007"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.44.0",
     "@storybook/addon-essentials": "^8.0.0",
     "@storybook/react": "^8.0.0",
     "@storybook/react-vite": "^8.0.0",
@@ -50,12 +59,13 @@
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "eslint": "^8.0.0",
-    "eslint-plugin-react": "^7.0.0",
     "eslint-plugin-jsx-a11y": "^6.0.0",
+    "eslint-plugin-react": "^7.0.0",
     "eslint-plugin-react-hooks": "^4.0.0",
     "jest-axe": "^8.0.0",
     "jsdom": "^24.0.0",
     "lucide-react": "^0.400.0",
+    "serve": "^14.0.0",
     "storybook": "^8.0.0",
     "style-dictionary": "^4.0.0",
     "typescript": "^5.0.0",
