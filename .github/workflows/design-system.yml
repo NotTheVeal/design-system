@@ -31,7 +31,6 @@ permissions:
 
 env:
   NODE_VERSION: '24'
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
@@ -101,7 +100,7 @@ jobs:
         run: npm run build-storybook
 
       - name: Upload Storybook artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: storybook-static
           path: storybook-static/
@@ -144,7 +143,7 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
