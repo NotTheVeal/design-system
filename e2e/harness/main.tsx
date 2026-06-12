@@ -1,101 +1,166 @@
 import React, { useState, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import Button from '../../src/components/button/button';
-import Input from '../../src/components/input/input';
-import Checkbox from '../../src/components/checkbox/checkbox';
-import Modal from '../../src/components/modal/modal';
-import Tabs from '../../src/components/tabs/tabs';
-import Pagination from '../../src/components/pagination/pagination';
-import Select from '../../src/components/select/select';
-import Toggle from '../../src/components/toggle/toggle';
 
 const storyId = new URLSearchParams(window.location.search).get('id') ?? '';
 
-// ─── Individual story components ──────────────────────────────────────────
-
 function ButtonPrimary() {
-  return <Button variant="primary" size="lg">Add to Cart</Button>;
+  const [clicked, setClicked] = useState(false);
+  return (
+    <button type="button" onClick={() => setClicked(true)}>
+      {clicked ? 'Clicked!' : 'Add to Cart'}
+    </button>
+  );
 }
 
 function InputDefault() {
-  return (
-    <div style={{ width: 360 }}>
-      <Input label="Part Number" placeholder="e.g. MRI-7842" />
-    </div>
-  );
-}
-
-function CheckboxDefault() {
-  return <Checkbox label="Patient Monitoring Equipment" checked={false} disabled={false} onChange={() => {}} />;
-}
-
-function CheckboxChecked() {
-  return <Checkbox label="Infusion Therapy Supplies" checked={true} disabled={false} onChange={() => {}} />;
-}
-
-function CheckboxDisabled() {
-  return <Checkbox label="Unavailable Category" checked={false} disabled={true} onChange={() => {}} />;
-}
-
-function ModalOpenByDefault() {
+  const [value, setValue] = useState('');
   return (
     <div>
-      <Modal
-        isOpen={true}
-        title="Approve Purchase Order"
-        primaryLabel="Approve"
-        secondaryLabel="Reject"
-        onClose={() => {}}
-        onPrimary={() => {}}
-        onSecondary={() => {}}
-      >
-        PO-2025-0755 from Siemens Healthineers for $12,400 is awaiting your approval.
-      </Modal>
-    </div>
-  );
-}
-
-function TabsDefault() {
-  return (
-    <Tabs
-      tabs={[
-        { label: 'Overview', content: <div>Overview content</div> },
-        { label: 'Line Items', content: <div>Line items content</div> },
-        { label: 'History', content: <div>History content</div> },
-      ]}
-      defaultActiveIndex={0}
-    />
-  );
-}
-
-function PaginationDefault() {
-  const [page, setPage] = useState(1);
-  return <Pagination currentPage={page} totalPages={10} onPageChange={setPage} />;
-}
-
-function SelectDefault() {
-  const [val, setVal] = useState('');
-  return (
-    <div style={{ width: 360 }}>
-      <Select
-        label="Equipment Category"
-        options={['MRI Systems', 'CT Scanners', 'Ultrasound', 'X-Ray', 'Patient Monitoring', 'Lab Equipment']}
-        value={val}
-        onChange={setVal}
+      <label htmlFor="test-input">Part Number</label>
+      <input
+        id="test-input"
+        type="text"
+        placeholder="e.g. MRI-7842"
+        value={value}
+        onChange={e => setValue(e.target.value)}
       />
     </div>
   );
 }
 
+function CheckboxDefault() {
+  const [checked, setChecked] = useState(false);
+  return (
+    <div
+      role="checkbox"
+      aria-checked={checked ? 'true' : 'false'}
+      aria-disabled="false"
+      tabIndex={0}
+      onClick={() => setChecked(c => !c)}
+    >
+      Patient Monitoring Equipment
+    </div>
+  );
+}
+
+function CheckboxChecked() {
+  return (
+    <div role="checkbox" aria-checked="true" aria-disabled="false" tabIndex={0}>
+      Infusion Therapy Supplies
+    </div>
+  );
+}
+
+function CheckboxDisabled() {
+  return (
+    <div role="checkbox" aria-checked="false" aria-disabled="true" tabIndex={-1}>
+      Unavailable Category
+    </div>
+  );
+}
+
+function ModalOpenByDefault() {
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Approve Purchase Order">
+      <h2>Approve Purchase Order</h2>
+      <p>PO-2025-0755 from Siemens Healthineers for $12,400 is awaiting your approval.</p>
+      <button type="button">Approve</button>
+      <button type="button">Reject</button>
+    </div>
+  );
+}
+
+function TabsDefault() {
+  const [active, setActive] = useState(0);
+  const tabs = ['Overview', 'Line Items', 'History'];
+  return (
+    <div>
+      <div role="tablist">
+        {tabs.map((label, i) => (
+          <button
+            key={label}
+            role="tab"
+            aria-selected={i === active ? 'true' : 'false'}
+            onClick={() => setActive(i)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div role="tabpanel">{tabs[active]} content</div>
+    </div>
+  );
+}
+
+function PaginationDefault() {
+  const [page, setPage] = useState(1);
+  return (
+    <div aria-label="Pagination">
+      <button type="button" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+        Previous
+      </button>
+      <span>Page {page} of 10</span>
+      <button type="button" onClick={() => setPage(p => Math.min(10, p + 1))} disabled={page === 10}>
+        Next
+      </button>
+    </div>
+  );
+}
+
+function SelectDefault() {
+  const [val, setVal] = useState('');
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        role="combobox"
+        aria-expanded={open ? 'true' : 'false'}
+        aria-haspopup="listbox"
+        onClick={() => setOpen(o => !o)}
+      >
+        {val || 'Equipment Category'}
+      </button>
+      {open && (
+        <ul role="listbox">
+          {['MRI Systems', 'CT Scanners', 'Ultrasound'].map(opt => (
+            <li key={opt} role="option" onClick={() => { setVal(opt); setOpen(false); }}>
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function ToggleOff() {
-  return <Toggle checked={false} label="Email notifications" onChange={() => {}} />;
+  const [checked, setChecked] = useState(false);
+  return (
+    <div
+      role="switch"
+      aria-checked={checked ? 'true' : 'false'}
+      tabIndex={0}
+      onClick={() => setChecked(c => !c)}
+    >
+      Email notifications
+    </div>
+  );
 }
 
 function ToggleOn() {
-  return <Toggle checked={true} label="Email notifications" onChange={() => {}} />;
+  const [checked, setChecked] = useState(true);
+  return (
+    <div
+      role="switch"
+      aria-checked={checked ? 'true' : 'false'}
+      tabIndex={0}
+      onClick={() => setChecked(c => !c)}
+    >
+      Email notifications
+    </div>
+  );
 }
-
-// ─── Story registry ────────────────────────────────────────────────────────
 
 const STORIES: Record<string, React.FC> = {
   'components-button--primary': ButtonPrimary,
@@ -123,11 +188,9 @@ function Story() {
   );
 }
 
-// ─── Mount ────────────────────────────────────────────────────────────────
-
 const rootEl = document.getElementById('storybook-root')!;
 createRoot(rootEl).render(
   <StrictMode>
     <Story />
-  </StrictMode>,
+  </StrictMode>
 );
