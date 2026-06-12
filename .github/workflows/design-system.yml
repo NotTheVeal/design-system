@@ -33,7 +33,7 @@ env:
   NODE_VERSION: '24'
 
 jobs:
-  # âââ JOB 1: Validate Tokens ââââââââââââââââââââââââââââââââââââââââââââââââ
+  # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
   validate-tokens:
     name: Validate Token Files
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - name: Validate token references
         run: npm run validate
 
-  # âââ JOB 2: Lint & Test Components âââââââââââââââââââââââââââââââââââââââââ
+  # ─── JOB 2: Lint & Test Components ─────────────────────────────────────────
   lint-and-test:
     name: Lint and Test
     runs-on: ubuntu-latest
@@ -78,7 +78,7 @@ jobs:
       - name: Test
         run: npm test
 
-  # âââ JOB 3: Build Storybook ââââââââââââââââââââââââââââââââââââââââââââââââ
+  # ─── JOB 3: Build Storybook ────────────────────────────────────────────────
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
@@ -106,7 +106,7 @@ jobs:
           path: storybook-static/
           retention-days: 1
 
-  # âââ JOB 4: E2E UX Workflow Tests ââââââââââââââââââââââââââââââââââââââââââ
+  # ─── JOB 4: E2E UX Workflow Tests ──────────────────────────────────────────
   e2e-tests:
     name: E2E UX Workflow Tests
     runs-on: ubuntu-latest
