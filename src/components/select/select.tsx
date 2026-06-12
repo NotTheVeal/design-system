@@ -39,6 +39,8 @@ const ChevronDown = () => (
   </svg>
 );
 
+let _selectIdCounter = 0;
+
 const Select: React.FC<SelectProps> = ({
   options,
   value,
@@ -54,6 +56,7 @@ const Select: React.FC<SelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const listboxId = useRef(`ps-select-listbox-${++_selectIdCounter}`).current;
 
   // Normalise options
   const normalised: SelectOption[] = options.map(o =>
@@ -92,6 +95,7 @@ const Select: React.FC<SelectProps> = ({
         role="combobox"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-controls={listboxId}
         aria-disabled={disabled}
         tabIndex={disabled ? -1 : 0}
         onClick={() => { if (!disabled) { setIsOpen(!isOpen); setFocused(true); } }}
@@ -167,6 +171,7 @@ const Select: React.FC<SelectProps> = ({
       {/* Dropdown */}
       {isOpen && (
         <div
+          id={listboxId}
           role="listbox"
           style={{
             position: 'absolute',
