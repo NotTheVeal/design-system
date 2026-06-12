@@ -14,6 +14,8 @@ on:
       - 'tokens/**'
 
 
+env:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,7 +38,7 @@ jobs:
         run: npm run build
 
       - name: Upload built tokens
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: built-tokens
           path: src/tokens/
