@@ -21,4 +21,20 @@ module.exports = {
     'jsx-a11y/no-noninteractive-tabindex': 'warn',
     'jsx-a11y/interactive-supports-focus': 'warn',
   },
+  overrides: [
+    {
+      // Storybook story files: relax rules that conflict with Storybook patterns
+      files: ['**/*.stories.tsx', '**/*.stories.ts', '**/*.stories.jsx', '**/*.stories.js'],
+      rules: {
+        'react-hooks/rules-of-hooks': 'off',
+        'react-refresh/only-export-components': 'off',
+        'jsx-a11y/label-has-associated-control': 'off',
+        'jsx-a11y/click-events-have-key-events': 'off',
+        'jsx-a11y/no-static-element-interactions': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+        'no-unused-vars': 'off',
+      },
+    },
+  ],
 };
