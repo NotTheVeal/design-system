@@ -22,7 +22,7 @@ const storyUrl = (id: string) =>
   `/iframe.html?id=${id}&viewMode=story`;
 
 async function loadStory(page: Page, id: string) {
-  await page.goto(storyUrl(id), { waitUntil: 'commit', timeout: 30_000 });
+  await page.goto(storyUrl(id), { waitUntil: 'load', timeout: 30_000 });
   // Wait for Storybook to have mounted the story into the DOM.
   // 'networkidle' is unreliable in CI: lazy JS chunk fetches keep the
   // network active and exceed the 10 s actionTimeout. waitForFunction
