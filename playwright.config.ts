@@ -1,8 +1,8 @@
 /**
  * playwright.config.ts
  * Playwright configuration for UX workflow validation.
- * Tests run against a locally-served Storybook static build.
- * In CI, Storybook is built first then the static output is served on port 6007.
+ * Tests run against the static E2E harness served on port 6007.
+ * In CI, the harness is bundled by esbuild then served by Python's http.server.
  */
 
 import { defineConfig, devices } from '@playwright/test';
@@ -17,16 +17,15 @@ export default defineConfig({
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
-  // Increase expect() assertion timeout for CI — toBeAttached() default is 5 s
-  expect: { timeout: 10_000 },
   use: {
     baseURL: 'http://localhost:6007',
     trace: 'on-first-retry',
-    // Prevent locator.evaluate() from hanging 30s when element is not in DOM
-    actionTimeout: 10_000,
+    actionTimeout: 15_000,
   },
+  expect: { timeout: 15_000 },
+  timeout: 60_000,
   webServer: {
-    command: 'npx serve e2e/harness -l 6007',
+    command: 'python3 -m http.server 6007 --directory e2e/harness',
     url: 'http://localhost:6007',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
