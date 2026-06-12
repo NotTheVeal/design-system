@@ -127,6 +127,9 @@ jobs:
         run: npm install --legacy-peer-deps
 
 
+      - name: Bundle E2E harness
+        run: npx esbuild e2e/harness/main.tsx --bundle --outfile=e2e/harness/bundle.js --format=iife --loader:.css=empty --loader:.svg=text --define:process.env.NODE_ENV='"production"'
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
