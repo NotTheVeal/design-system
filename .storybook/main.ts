@@ -17,19 +17,20 @@ const config: StorybookConfig = {
     reactDocgen: false,
   },
   viteFinal: async (config) => {
-    // Stub storybook/test and @storybook/test so they never appear as
-    // unresolvable bare-specifier externals in the browser bundle.
-    // rollupOptions.external with bare module specifiers causes a
-    // TypeError: Failed to resolve module specifier at runtime,
-    // which silently prevents #storybook-root from rendering stories.
+    // Stub storybook/test and @storybook/test.
+    // Must use enforce:'pre' so this resolveId runs BEFORE the
+    // commonjs--resolver plugin, which otherwise throws
+    // "Missing './test' specifier in 'storybook' package".
     const stubStorybookTest = {
       name: 'stub-storybook-test',
-      resolveId(id) {
+      enforce: 'pre' as const,
+      resolveId(id: string) {
         if (id === 'storybook/test' || id === '@storybook/test') {
           return '\0storybook-test-stub';
         }
+        return undefined;
       },
-      load(id) {
+      load(id: string) {
         if (id === '\0storybook-test-stub') {
           return [
             'export default {};',
@@ -39,14 +40,15 @@ const config: StorybookConfig = {
             'export const within = () => ({});',
           ].join('\n');
         }
+        return undefined;
       },
     };
 
     return {
       ...config,
       plugins: [
-        ...(config.plugins ?? []),
         stubStorybookTest,
+        ...(config.plugins ?? []),
       ],
       optimizeDeps: {
         ...config.optimizeDeps,
