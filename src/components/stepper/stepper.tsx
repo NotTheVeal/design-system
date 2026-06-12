@@ -1,9 +1,11 @@
-import React from 'react';
+import React,{useState}from'react';
 export type StepperColorScheme='current'|'future';
 export type StepStatus='not-started'|'in-progress'|'completed';
 export interface Step{label:string;description?:string;}
+
+// Step Indicator (progress wizard: Step 1 -> 2 -> 3)
 export interface StepperProps{colorScheme?:StepperColorScheme;steps:Step[];currentStep?:number;orientation?:'horizontal'|'vertical';className?:string;}
-const C={current:{active:'#005BA6',activeBg:'#DCEAED'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
+const C={current:{active:'#FF9505',activeBg:'#FFF8EC'},future:{active:'#005BA6',activeBg:'#DCEAED'}};
 export const Stepper:React.FC<StepperProps>=({colorScheme='future',steps,currentStep=0,orientation='horizontal',className=''})=>{
   const c=C[colorScheme];
   const getStatus=(i:number):StepStatus=>i<currentStep?'completed':i===currentStep?'in-progress':'not-started';
@@ -25,4 +27,31 @@ export const Stepper:React.FC<StepperProps>=({colorScheme='future',steps,current
       </div>);})}
   </div>);
 };
+
+// Quantity Stepper (PDP +/- input matching Figma PDP Equivalents)
+export interface QuantityStepperProps{colorScheme?:StepperColorScheme;value?:number;min?:number;max?:number;disabled?:boolean;label?:string;onChange?:(v:number)=>void;className?:string;}
+export const QuantityStepper:React.FC<QuantityStepperProps>=({colorScheme='future',value:valueProp,min=1,max=99,disabled=false,label='Qty',onChange,className=''})=>{
+  const[internal,setInternal]=useState(valueProp??1);
+  const value=valueProp!==undefined?valueProp:internal;
+  const set=(v:number)=>{const clamped=Math.max(min,Math.min(max,v));setInternal(clamped);onChange?.(clamped);};
+  return(<div className={className} style={{display:'inline-flex',flexDirection:'column',gap:4,fontFamily:"'Source Sans Pro',sans-serif"}}>
+    {label&&<span style={{fontSize:12,fontWeight:600,color:disabled?'#949494':'#4A4A4A',textTransform:'uppercase',letterSpacing:'0.04em'}}>{label}</span>}
+    <div style={{display:'flex',alignItems:'center',border:'1px solid #DCDCDC',borderRadius:4,overflow:'hidden',width:'fit-content',opacity:disabled?.6:1}}>
+      <button aria-label="Decrease quantity" disabled={disabled||value<=min} onClick={()=>set(value-1)}
+        style={{width:36,height:36,borderRadius:0,border:'none',borderRight:'1px solid #DCDCDC',background:'#FFF',color:disabled||value<=min?'#DCDCDC':'#4A4A4A',cursor:disabled||value<=min?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'background 150ms ease'}}
+        onMouseEnter={e=>{if(!disabled&&value>min)(e.currentTarget as HTMLButtonElement).style.background='#F1F1F1';}}
+        onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background='#FFF';}}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <span style={{minWidth:44,textAlign:'center',fontSize:14,fontWeight:700,color:disabled?'#949494':'#002F48',padding:'0 8px',userSelect:'none'}}>{value}</span>
+      <button aria-label="Increase quantity" disabled={disabled||value>=max} onClick={()=>set(value+1)}
+        style={{width:36,height:36,borderRadius:0,border:'none',borderLeft:'1px solid #DCDCDC',background:'#FFF',color:disabled||value>=max?'#DCDCDC':'#4A4A4A',cursor:disabled||value>=max?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'background 150ms ease'}}
+        onMouseEnter={e=>{if(!disabled&&value<max)(e.currentTarget as HTMLButtonElement).style.background='#F1F1F1';}}
+        onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background='#FFF';}}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+  </div>);
+};
+
 export default Stepper;
