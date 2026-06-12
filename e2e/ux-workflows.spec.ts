@@ -6,11 +6,11 @@ import { test, expect, type Page } from '@playwright/test';
  * Tests run against the static Storybook build served on port 6007.
  *
  * loadStory() strategy:
- *   1. goto + networkidle — page JS has run, Storybook is initialised
- *   2. evaluate — force-visible any CSS-hidden elements
- *   No explicit React-render wait is needed because every assertion uses
- *   expect.timeout (set to 10 s in playwright.config.ts) which retries
- *   automatically until the element appears or the timeout expires.
+ *   1. goto (waitUntil:'load') — HTML + scripts parsed
+ *   2. waitForFunction — Storybook has mounted the story into #storybook-root
+ *   3. evaluate — force-visible any CSS-hidden elements
+ *   'networkidle' is avoided: Storybook lazy chunk fetches keep the network
+ *   active in CI and exceed the 10 s actionTimeout.
  *
  * Interaction: DOM methods (el.click(), el.focus()) via evaluate() bypass
  * Playwright actionability checks that fail on hidden/detached elements.
@@ -22,11 +22,21 @@ const storyUrl = (id: string) =>
   `/iframe.html?id=${id}&viewMode=story`;
 
 async function loadStory(page: Page, id: string) {
-  await page.goto(storyUrl(id));
-  await page.waitForLoadState('networkidle');
+  await page.goto(storyUrl(id), { waitUntil: 'load' });
+  // Wait for Storybook to have mounted the story into the DOM.
+  // 'networkidle' is unreliable in CI: lazy JS chunk fetches keep the
+  // network active and exceed the 10 s actionTimeout. waitForFunction
+  // uses an explicit timeout so it is not subject to actionTimeout.
+  await page.waitForFunction(
+    () => {
+      const root =
+        (document.querySelector('#storybook-root') as HTMLElement | null) ||
+        (document.querySelector('#root') as HTMLElement | null);
+      return root !== null && root.childElementCount > 0;
+    },
+    { timeout: 20_000 },
+  );
   // Force all computed-hidden elements visible via inline !important styles.
-  // Runs immediately after networkidle; expect.timeout handles stories that
-  // render after this point.
   await page.evaluate(() => {
     for (const sel of ['#storybook-root', '#root']) {
       const el = document.querySelector(sel) as HTMLElement | null;
