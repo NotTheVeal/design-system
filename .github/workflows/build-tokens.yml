@@ -14,9 +14,6 @@ on:
       - 'tokens/**'
 
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,7 +36,7 @@ jobs:
         run: npm run build
 
       - name: Upload built tokens
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: built-tokens
           path: src/tokens/
