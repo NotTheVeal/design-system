@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Preview } from '@storybook/react';
 import '../src/tokens/tokens.css';
 
@@ -31,7 +32,7 @@ const preview: Preview = {
       document.body.style.fontFamily =
         "'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif";
       document.body.style.color = '#4A4A4A';
-      return Story();
+      return React.createElement(Story as any);
     },
   ],
 };
