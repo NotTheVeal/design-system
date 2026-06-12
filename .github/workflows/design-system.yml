@@ -33,7 +33,7 @@ env:
   NODE_VERSION: '24'
 
 jobs:
-  # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
+  # âââ JOB 1: Validate Tokens ââââââââââââââââââââââââââââââââââââââââââââââââ
   validate-tokens:
     name: Validate Token Files
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - name: Validate token references
         run: npm run validate
 
-  # ─── JOB 2: Lint & Test Components ─────────────────────────────────────────
+  # âââ JOB 2: Lint & Test Components âââââââââââââââââââââââââââââââââââââââââ
   lint-and-test:
     name: Lint and Test
     runs-on: ubuntu-latest
@@ -73,13 +73,12 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Lint
-        run: npm run lint
-        continue-on-error: true
+        run: npm run lint || true
 
       - name: Test
         run: npm test
 
-  # ─── JOB 3: Build Storybook ────────────────────────────────────────────────
+  # âââ JOB 3: Build Storybook ââââââââââââââââââââââââââââââââââââââââââââââââ
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
@@ -107,7 +106,7 @@ jobs:
           path: storybook-static/
           retention-days: 1
 
-  # ─── JOB 4: E2E UX Workflow Tests ──────────────────────────────────────────
+  # âââ JOB 4: E2E UX Workflow Tests ââââââââââââââââââââââââââââââââââââââââââ
   e2e-tests:
     name: E2E UX Workflow Tests
     runs-on: ubuntu-latest
