@@ -33,7 +33,7 @@ env:
   NODE_VERSION: '24'
 
 jobs:
-  # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
+  # âââ JOB 1: Validate Tokens ââââââââââââââââââââââââââââââââââââââââââââââââ
   validate-tokens:
     name: Validate Token Files
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - name: Validate token references
         run: npm run validate
 
-  # ─── JOB 2: Lint & Test Components ─────────────────────────────────────────
+  # âââ JOB 2: Lint & Test Components âââââââââââââââââââââââââââââââââââââââââ
   lint-and-test:
     name: Lint and Test
     runs-on: ubuntu-latest
@@ -79,7 +79,7 @@ jobs:
       - name: Test
         run: npm test
 
-  # ─── JOB 3: Build Storybook ────────────────────────────────────────────────
+  # âââ JOB 3: Build Storybook ââââââââââââââââââââââââââââââââââââââââââââââââ
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
@@ -99,7 +99,6 @@ jobs:
 
       - name: Build Storybook
         run: npm run build-storybook
-        continue-on-error: true
 
       - name: Upload Storybook artifact
         uses: actions/upload-artifact@v4
@@ -108,11 +107,11 @@ jobs:
           path: storybook-static/
           retention-days: 1
 
-  # ─── JOB 4: E2E UX Workflow Tests ──────────────────────────────────────────
+  # âââ JOB 4: E2E UX Workflow Tests ââââââââââââââââââââââââââââââââââââââââââ
   e2e-tests:
     name: E2E UX Workflow Tests
     runs-on: ubuntu-latest
-    needs: build-storybook
+    needs: validate-tokens
     if: ${{ !inputs.skip_tests }}
     steps:
       - name: Checkout
@@ -127,11 +126,8 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Download Storybook artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: storybook-static
-          path: storybook-static/
+      - name: Build Storybook for E2E
+        run: npm run build-storybook
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
