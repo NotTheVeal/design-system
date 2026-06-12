@@ -26,7 +26,7 @@ export default defineConfig({
     actionTimeout: 10_000,
   },
   webServer: {
-    command: 'npx serve storybook-static -l 6007',
+    command: 'npx vite dev --port 6007 --config e2e/harness/vite.config.ts',
     url: 'http://localhost:6007',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
