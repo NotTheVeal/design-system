@@ -130,6 +130,13 @@ jobs:
       - name: Bundle E2E harness
         run: npx esbuild e2e/harness/main.tsx --bundle --outfile=e2e/harness/bundle.js --format=iife --loader:.css=empty --loader:.svg=text --define:process.env.NODE_ENV='"production"'
 
+      - name: Verify harness files
+        run: |
+          echo "=== e2e/harness contents ==="
+          ls -la e2e/harness/
+          echo "=== bundle.js first 300 chars ==="
+          head -c 300 e2e/harness/bundle.js || echo "bundle.js NOT FOUND"
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
