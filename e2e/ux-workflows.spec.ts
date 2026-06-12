@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  * Tests run against the static Storybook build served on port 6007.
  *
  * loadStory() strategy:
- *   1. goto (waitUntil:'load') — HTML + scripts parsed
+ *   1. goto (waitUntil:'commit') — navigation committed; don't wait for load event
  *   2. waitForFunction — Storybook has mounted the story into #storybook-root
  *   3. evaluate — force-visible any CSS-hidden elements
  *   'networkidle' is avoided: Storybook lazy chunk fetches keep the network
@@ -22,7 +22,7 @@ const storyUrl = (id: string) =>
   `/iframe.html?id=${id}&viewMode=story`;
 
 async function loadStory(page: Page, id: string) {
-  await page.goto(storyUrl(id), { waitUntil: 'load' });
+  await page.goto(storyUrl(id), { waitUntil: 'commit', timeout: 30_000 });
   // Wait for Storybook to have mounted the story into the DOM.
   // 'networkidle' is unreliable in CI: lazy JS chunk fetches keep the
   // network active and exceed the 10 s actionTimeout. waitForFunction
@@ -34,7 +34,8 @@ async function loadStory(page: Page, id: string) {
         (document.querySelector('#root') as HTMLElement | null);
       return root !== null && root.childElementCount > 0;
     },
-    { timeout: 20_000 },
+    null,           // ← function arg (none needed)
+  { timeout: 30_000 } // ← actual options
   );
   // Force all computed-hidden elements visible via inline !important styles.
   await page.evaluate(() => {
