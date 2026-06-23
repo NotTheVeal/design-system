@@ -1,0 +1,98 @@
+name: Monthly Health Report
+
+on:
+  schedule:
+    # 9 AM UTC on the 1st of every month
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual health report run'
+
+permissions:
+  contents: read
+
+jobs:
+  health-report:
+    name: Run Design System Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -----------------------------------------------------------------------
+      # 2. Node setup
+      # -----------------------------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # -----------------------------------------------------------------------
+      # 3. Install dependencies
+      # -----------------------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+
+      # -----------------------------------------------------------------------
+      # 4. Run health check — pass/fail stdout (captured for summary)
+      # -----------------------------------------------------------------------
+      - name: Run health check
+        id: health_check
+        run: |
+          node scripts/health-check.js 2>&1 | tee /tmp/health-output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      # -----------------------------------------------------------------------
+      # 5. Generate Markdown report
+      # -----------------------------------------------------------------------
+      - name: Generate Markdown report
+        run: |
+          {
+            echo "# Monthly Design System Health Report"
+            echo ""
+            echo "**Generated:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo "**Repo:**      ${{ github.repository }}"
+            echo "**Branch:**    ${{ github.ref_name }}"
+            echo "**Trigger:**   ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.reason || 'Scheduled (1st of month)' }}"
+            echo ""
+            echo "---"
+            echo ""
+            node scripts/health-check.js --report
+          } > HEALTH_REPORT.md
+
+      # -----------------------------------------------------------------------
+      # 6. Post report as GitHub Actions job summary
+      # -----------------------------------------------------------------------
+      - name: Post to GitHub step summary
+        run: cat HEALTH_REPORT.md >> "$GITHUB_STEP_SUMMARY"
+
+      # -----------------------------------------------------------------------
+      # 7. Upload report as workflow artifact (retained 90 days)
+      # -----------------------------------------------------------------------
+      - name: Upload health report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report-${{ github.run_id }}
+          path: HEALTH_REPORT.md
+          retention-days: 90
+
+      # -----------------------------------------------------------------------
+      # 8. Fail the job if health check failed (after report is uploaded)
+      # -----------------------------------------------------------------------
+      - name: Assert health check passed
+        if: steps.health_check.outputs.exit_code != '0'
+        run: |
+          echo "::error::Design system health check failed. See the Health Report summary for details."
+          cat /tmp/health-output.txt
+          exit 1
