@@ -1,99 +1,31 @@
-import React, { useState, useRef, useEffect } from 'react';
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-// One-time global style injection
-const STYLE_ID = 'ps-tooltip-styles';
-const injectTooltipStyles = () => {
-  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    .ps-tooltip-wrapper { position: relative; display: inline-flex; }
-    .ps-tooltip-bubble {
-      position: absolute;
-      z-index: 500;
-      background: #323232;
-      color: #FFFFFF;
-      border-radius: 4px;
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 16px;
-      max-width: 240px;
-      white-space: normal;
-      word-break: break-word;
-      box-shadow: 0 2px 10px rgba(0,47,72,0.15);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 150ms ease;
-    }
-    .ps-tooltip-bubble.visible { opacity: 1; }
-
-    /* Placement: top (default) */
-    .ps-tooltip-bubble.top    { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
-    .ps-tooltip-bubble.bottom { top: calc(100% + 8px);    left: 50%; transform: translateX(-50%); }
-    .ps-tooltip-bubble.left   { right: calc(100% + 8px);  top: 50%;  transform: translateY(-50%); }
-    .ps-tooltip-bubble.right  { left: calc(100% + 8px);   top: 50%;  transform: translateY(-50%); }
-
-    /* Arrow */
-    .ps-tooltip-bubble::after {
-      content: '';
-      position: absolute;
-      border: 5px solid transparent;
-    }
-    .ps-tooltip-bubble.top::after    { top: 100%;  left: 50%; transform: translateX(-50%); border-top-color: #323232; }
-    .ps-tooltip-bubble.bottom::after { bottom: 100%; left: 50%; transform: translateX(-50%); border-bottom-color: #323232; }
-    .ps-tooltip-bubble.left::after   { left: 100%; top: 50%;  transform: translateY(-50%); border-left-color: #323232; }
-    .ps-tooltip-bubble.right::after  { right: 100%; top: 50%; transform: translateY(-50%); border-right-color: #323232; }
-  `;
-  document.head.appendChild(style);
-};
-
-type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
-
-interface TooltipProps {
-  content: React.ReactNode;
-  placement?: TooltipPlacement;
-  children: React.ReactNode;
-  className?: string;
-}
-
-const Tooltip: React.FC<TooltipProps> = ({
-  content,
-  placement = 'top',
-  children,
-  className = '',
-}) => {
-  if (typeof document !== 'undefined') injectTooltipStyles();
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
+export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
+export interface TooltipProps { content: React.ReactNode; placement?: TooltipPlacement; children: React.ReactElement; showDelay?: number; hideDelay?: number; maxWidth?: number; disabled?: boolean; }
+export const Tooltip: React.FC<TooltipProps> = ({ content, placement = 'top', children, showDelay = 300, hideDelay = 100, maxWidth = 240, disabled = false }) => {
   const [visible, setVisible] = useState(false);
-  const id = useRef(`tt-${Math.random().toString(36).slice(2, 8)}`).current;
-
-  return (
-    <span
-      className={`ps-tooltip-wrapper ${className}`}
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-      onFocus={() => setVisible(true)}
-      onBlur={() => setVisible(false)}
-      style={{ fontFamily }}
-    >
-      <span
-        aria-describedby={id}
-        style={{ display: 'inline-flex' }}
-      >
-        {children}
-      </span>
-      <span
-        id={id}
-        role="tooltip"
-        className={`ps-tooltip-bubble ${placement}${visible ? ' visible' : ''}`}
-        style={{ fontFamily }}
-      >
-        {content}
-      </span>
-    </span>
-  );
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef(null);
+  const tooltipRef = useRef(null);
+  const showTimer = useRef(null); const hideTimer = useRef(null);
+  const tooltipId = useRef('tt-' + Math.random().toString(36).slice(2, 9));
+  const clearTimers = () => { if (showTimer.current) clearTimeout(showTimer.current); if (hideTimer.current) clearTimeout(hideTimer.current); };
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current || !tooltipRef.current) return;
+    const t = triggerRef.current.getBoundingClientRect();
+    const tt = tooltipRef.current.getBoundingClientRect();
+    const sy = window.scrollY, sx = window.scrollX;
+    const positions = { top: { top: t.top+sy-tt.height-14, left: t.left+sx+t.width/2-tt.width/2 }, bottom: { top: t.top+sy+t.height+14, left: t.left+sx+t.width/2-tt.width/2 }, left: { top: t.top+sy+t.height/2-tt.height/2, left: t.left+sx-tt.width-14 }, right: { top: t.top+sy+t.height/2-tt.height/2, left: t.left+sx+t.width+14 } };
+    setCoords(positions[placement]);
+  }, [placement]);
+  const show = useCallback(() => { if (disabled) return; clearTimers(); showTimer.current = setTimeout(() => setVisible(true), showDelay); }, [disabled, showDelay]);
+  const hide = useCallback(() => { clearTimers(); hideTimer.current = setTimeout(() => setVisible(false), hideDelay); }, [hideDelay]);
+  useEffect(() => { if (visible) requestAnimationFrame(() => updatePosition()); }, [visible, updatePosition]);
+  useEffect(() => () => clearTimers(), []);
+  const child = React.Children.only(children);
+  return (<>
+    {React.cloneElement(child, { ref: (el) => { triggerRef.current = el; }, 'aria-describedby': visible ? tooltipId.current : '', onMouseEnter: (e) => { show(); child.props.onMouseEnter?.(e); }, onMouseLeave: (e) => { hide(); child.props.onMouseLeave?.(e); }, onFocus: (e) => { show(); child.props.onFocus?.(e); }, onBlur: (e) => { hide(); child.props.onBlur?.(e); } })}
+    {visible && <div ref={tooltipRef} id={tooltipId.current} role="tooltip" style={{ position: 'absolute', top: coords.top, left: coords.left, zIndex: 10000, backgroundColor: '#002F48', color: '#FFFFFF', maxWidth, padding: '6px 10px', fontFamily: FONT, fontSize: 13, fontWeight: 400, lineHeight: '18px', borderRadius: 4, pointerEvents: 'none' }}>{content}</div>}
+  </>);
 };
-
 export default Tooltip;
