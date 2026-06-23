@@ -1,103 +1,69 @@
 import React from 'react';
+import { Check, Minus } from 'lucide-react';
 
 export type CheckboxColorScheme = 'current' | 'future';
+export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate' | 'disabled';
 
 export interface CheckboxProps {
-  /** current=orange #005BA6 (legacy, ADA-fail) | future=blue #005BA6 (ADA-pass) @default 'future' */
+  /**
+   * current = ORANGE #FF9505 (Figma spec, live product) — DEFAULT
+   * future = PS Blue #005BA6 (planned direction)
+   */
   colorScheme?: CheckboxColorScheme;
   checked?: boolean;
   indeterminate?: boolean;
   disabled?: boolean;
   label?: string;
+  helperText?: string;
+  error?: string;
   id?: string;
-  onChange?: (v: boolean) => void;
+  onChange?: (checked: boolean) => void;
   className?: string;
 }
 
-const C = {
-  current: { fill: '#005BA6', focus: 'rgba(0,91,166,0.35)' },
-  future:  { fill: '#005BA6', focus: 'rgba(0,91,166,0.5)' },
+const COLORS = {
+  current: {
+    checked: '#FF9505',      // Orange — Figma spec
+    checkedBorder: '#FF9505',
+    hoverBorder: '#EC8000',
+    focus: 'rgba(255,149,5,0.35)',
+  },
+  future: {
+    checked: '#005BA6',       // PS Blue — future
+    checkedBorder: '#005BA6',
+    hoverBorder: '#004A84',
+    focus: 'rgba(0,147,244,0.3)',
+  },
 };
 
 export const Checkbox: React.FC<CheckboxProps> = ({
-  colorScheme = 'future',
+  colorScheme = 'current',
   checked = false,
   indeterminate = false,
   disabled = false,
   label,
+  helperText,
+  error,
   id,
   onChange,
   className = '',
 }) => {
-  const c = C[colorScheme];
-  const bg = disabled ? '#DCEAED' : checked || indeterminate ? c.fill : '#FFF';
-  const border = disabled
-    ? '1.5px solid #DCDCDC'
-    : checked || indeterminate
-    ? `1.5px solid ${c.fill}`
-    : '1.5px solid #949494';
-
-  const onKD = (e: React.KeyboardEvent) => {
-    if ((e.key === ' ' || e.key === 'Enter') && !disabled) {
-      e.preventDefault();
-      onChange?.(!checked);
-    }
-  };
-
+  const c = COLORS[colorScheme];
+  const isActive = checked || indeterminate;
+  const bg = disabled ? '#F1F1F1' : isActive ? c.checked : '#FFFFFF';
+  const border = disabled ? '1.5px solid #DCDCDC' : error ? '1.5px solid #FF0000' : isActive ? `1.5px solid ${c.checkedBorder}` : '1.5px solid #CCCCCC';
   return (
-    <div
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-        fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif",
-      }}
-      className={className}
-    >
-      <div
-        role="checkbox"
-        aria-checked={indeterminate ? 'mixed' : checked}
-        aria-disabled={disabled}
-        tabIndex={disabled ? -1 : 0}
-        id={id}
-        style={{
-          width: 24,
-          height: 24,
-          borderRadius: 2,
-          border,
-          background: bg,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          transition: 'all 150ms ease',
-          outline: 'none',
-        }}
-        onClick={() => !disabled && onChange?.(!checked)}
-        onKeyDown={onKD}
-        onFocus={e => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 3px ${c.focus}`; }}
-        onBlur={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
-      >
-        {indeterminate && !checked && (
-          <svg width="12" height="2" viewBox="0 0 12 2">
-            <rect width="12" height="2" rx="1" fill="white" />
-          </svg>
-        )}
-        {checked && !indeterminate && (
-          <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
-            <path d="M1 5L5.5 9.5L13 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
+    <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 4, fontFamily: "'Source Sans 3', -apple-system, sans-serif" }} className={className}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1 }} onClick={() => !disabled && onChange?.(!checked)}>
+        <div role="checkbox" aria-checked={indeterminate ? 'mixed' : checked} tabIndex={disabled ? -1 : 0} id={id} style={{ width: 24, height: 24, borderRadius: 2, border, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 150ms ease', outline: 'none' }}>
+          {checked && !indeterminate && <Check size={14} strokeWidth={1.75} color="white" aria-hidden="true" />}
+          {indeterminate && !checked && <Minus size={14} strokeWidth={1.75} color="white" aria-hidden="true" />}
+        </div>
+        {label && <span style={{ fontSize: 14, color: disabled ? '#949494' : error ? '#FF0000' : '#4A4A4A' }}>{label}</span>}
       </div>
-      {label && (
-        <span style={{ fontSize: 14, color: disabled ? '#949494' : '#4A4A4A', userSelect: 'none' }}>
-          {label}
-        </span>
-      )}
+      {helperText && !error && <span style={{ fontSize: 12, color: '#777777', paddingLeft: 32 }}>{helperText}</span>}
+      {error && <span style={{ fontSize: 12, color: '#FF0000', paddingLeft: 32 }}>{error}</span>}
     </div>
   );
 };
-
 export default Checkbox;
