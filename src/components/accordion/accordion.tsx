@@ -1,110 +1,28 @@
-import React, { useState } from 'react';
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-interface AccordionItem {
-  title: string;
-  content: React.ReactNode;
-  defaultOpen?: boolean;
-}
-
-interface AccordionProps {
-  items: AccordionItem[];
-  allowMultiple?: boolean;
-  className?: string;
-}
-
-const ChevronIcon: React.FC<{ open: boolean }> = ({ open }) => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.75"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{
-      transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-      transition: 'transform 200ms ease',
-      flexShrink: 0,
-    }}
-  >
-    <polyline points="5 8 10 13 15 8" />
-  </svg>
-);
-
-const Accordion: React.FC<AccordionProps> = ({
-  items,
-  allowMultiple = false,
-  className = '',
-}) => {
-  const [openIndexes, setOpenIndexes] = useState<Set<number>>(
-    () => new Set(items.map((item, i) => (item.defaultOpen ? i : -1)).filter(i => i >= 0))
-  );
-
-  const toggle = (index: number) => {
-    setOpenIndexes(prev => {
-      const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        if (!allowMultiple) next.clear();
-        next.add(index);
-      }
-      return next;
-    });
+import React,{useState}from'react';
+const FONT="'Source Sans 3',-apple-system,sans-serif";
+export interface AccordionItem{id:string;title:string;content:React.ReactNode;disabled?:boolean;defaultOpen?:boolean;}
+export interface AccordionProps{items:AccordionItem[];multiple?:boolean;className?:string;style?:React.CSSProperties;}
+export const Accordion:React.FC<AccordionProps>=({items,multiple=false,className='',style})=>{
+  const[openIds,setOpenIds]=useState<string[]>(items.filter(i=>i.defaultOpen).map(i=>i.id));
+  const toggle=(id:string)=>{
+    if(multiple)setOpenIds(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+    else setOpenIds(p=>p.includes(id)?[]:[id]);
   };
-
-  return (
-    <div className={className} style={{ fontFamily, width: '100%' }}>
-      {items.map((item, i) => {
-        const isOpen = openIndexes.has(i);
-        return (
-          <div
-            key={i}
-            style={{
-              border: '1px solid #DCDCDC',
-              borderRadius: 4,
-              marginBottom: i < items.length - 1 ? 8 : 0,
-              overflow: 'hidden',
-              background: '#FFFFFF',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => toggle(i)}
+  return(
+    <div className={className}style={{fontFamily:FONT,width:'100%',...style}}>
+      {items.map((item,idx)=>{
+        const isOpen=openIds.includes(item.id);
+        const isLast=idx===items.length-1;
+        return(
+          <div key={item.id}style={{borderTop:'1px solid #DCDCDC',...(isLast?{borderBottom:'1px solid #DCDCDC'}:{})}}>
+            <button onClick={()=>!item.disabled&&toggle(item.id)} disabled={item.disabled}
               aria-expanded={isOpen}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '16px 20px',
-                background: isOpen ? '#F1F1F1' : '#FFFFFF',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 16,
-                fontWeight: 600,
-                color: '#2B2B2B',
-                fontFamily,
-                textAlign: 'left',
-                transition: 'background 150ms ease',
-              }}
-            >
-              <span>{item.title}</span>
-              <ChevronIcon open={isOpen} />
+              style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',padding:'16px 0',fontFamily:FONT,fontSize:16,fontWeight:400,color:item.disabled?'#AAAAAA':'#4A4A4A',background:'transparent',border:'none',cursor:item.disabled?'not-allowed':'pointer',textAlign:'left',outline:'none',gap:12,lineHeight:1.4}}>
+              <span style={{flex:1}}>{item.title}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isOpen?'#005BA6':'#777777'} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,transform:isOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 200ms ease'}}><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            {isOpen && (
-              <div
-                style={{
-                  padding: '16px 20px',
-                  background: '#FFFFFF',
-                  fontSize: 14,
-                  color: '#4A4A4A',
-                  fontFamily,
-                }}
-              >
+            {isOpen&&(
+              <div style={{padding:'0 0 16px 0',fontFamily:FONT,fontSize:14,lineHeight:1.6,color:'#4A4A4A'}}>
                 {item.content}
               </div>
             )}
@@ -114,5 +32,4 @@ const Accordion: React.FC<AccordionProps> = ({
     </div>
   );
 };
-
 export default Accordion;
