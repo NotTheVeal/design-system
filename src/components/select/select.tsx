@@ -1,227 +1,44 @@
-import React, { useState, useRef, useEffect } from 'react';
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-// One-time style injection for focus-within outline
-const STYLE_ID = 'ps-select-styles';
-const injectSelectStyles = () => {
-  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    .ps-select-option:hover { background: #F1F1F1; }
-    .ps-select-option[aria-selected="true"] { background: #DCEAED; color: #005BA6; font-weight: 600; }
-  `;
-  document.head.appendChild(style);
-};
-
-interface SelectOption {
-  label: string;
-  value: string;
-  disabled?: boolean;
-}
-
-interface SelectProps {
-  options: (SelectOption | string)[];
-  value?: string;
-  onChange: (value: string) => void;
-  label?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  error?: string;
-  helperText?: string;
-  className?: string;
-}
-
-const ChevronDown = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-);
-
-let _selectIdCounter = 0;
-
-const Select: React.FC<SelectProps> = ({
-  options,
-  value,
-  onChange,
-  label,
-  placeholder = 'Select an option',
-  disabled = false,
-  error,
-  helperText,
-  className = '',
-}) => {
-  if (typeof document !== 'undefined') injectSelectStyles();
-  const [isOpen, setIsOpen] = useState(false);
+import React, { useState, useRef, useEffect, useId } from 'react';
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
+export interface SelectOption { value: string; label: string; disabled?: boolean; }
+export interface SelectProps { options: SelectOption[]; value?: string | string[]; onChange?: (v: string | string[]) => void; multiple?: boolean; searchable?: boolean; label?: string; placeholder?: string; disabled?: boolean; error?: string; helperText?: string; className?: string; }
+export const Select: React.FC<SelectProps> = ({ options, value, onChange, multiple = false, searchable = false, label, placeholder = 'Select...', disabled = false, error, helperText, className = '' }) => {
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [focused, setFocused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const listboxId = useRef(`ps-select-listbox-${++_selectIdCounter}`).current;
-
-  // Normalise options
-  const normalised: SelectOption[] = options.map(o =>
-    typeof o === 'string' ? { label: o, value: o } : o
-  );
-
-  const selectedOption = normalised.find(o => o.value === value);
-  const hasValue = !!selectedOption;
-  const isFloating = focused || isOpen || hasValue;
-
-  // Close on outside click
+  const containerRef = useRef(null);
+  const selected = Array.isArray(value) ? value : value ? [value] : [];
+  const getLabel = (v) => options.find(o => o.value === v)?.label ?? v;
+  const filtered = searchable ? options.filter(o => o.label.toLowerCase().includes(search.toLowerCase())) : options;
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-        setFocused(false);
-      }
-    };
+    const handler = (e) => { if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
-
-  const borderColor = error ? '#D32F2F' : focused || isOpen ? '#005BA6' : '#DCDCDC';
-
-  const handleSelect = (opt: SelectOption) => {
-    if (opt.disabled) return;
-    onChange(opt.value);
-    setIsOpen(false);
-    setFocused(false);
+  const toggle = (v) => {
+    if (multiple) {
+      const next = selected.includes(v) ? selected.filter(x => x !== v) : [...selected, v];
+      onChange?.(next);
+    } else {
+      onChange?.(v);
+      setOpen(false);
+    }
   };
-
+  const getBorder = () => { if (disabled) return '1px solid #DCDCDC'; if (error) return '1px solid #FF0000'; if (focused || open) return '1px solid #005BA6'; return '1px solid #949494'; };
+  const displayValue = selected.length === 0 ? '' : multiple ? selected.map(getLabel).join(', ') : getLabel(selected[0]);
   return (
-    <div ref={containerRef} className={className} style={{ width: '100%', fontFamily }}>
-      {/* Trigger */}
-      <div
-        role="combobox"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-controls={listboxId}
-        aria-disabled={disabled}
-        tabIndex={disabled ? -1 : 0}
-        onClick={() => { if (!disabled) { setIsOpen(!isOpen); setFocused(true); } }}
-        onFocus={() => setFocused(true)}
-        onBlur={() => { if (!isOpen) setFocused(false); }}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!disabled) setIsOpen(!isOpen); }
-          if (e.key === 'Escape') { setIsOpen(false); setFocused(false); }
-        }}
-        style={{
-          position: 'relative',
-          height: 48,
-          border: `1px solid ${borderColor}`,
-          borderRadius: 4,
-          background: disabled ? '#FAFAFA' : '#FFFFFF',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 36px 0 12px',
-          outline: 'none',
-          transition: 'border-color 150ms ease',
-          boxShadow: focused || isOpen ? '0 0 0 3px rgba(0,147,244,0.3)' : 'none',
-          fontFamily,
-        }}
-      >
-        {/* Floating label */}
-        {label && (
-          <span style={{
-            position: 'absolute',
-            left: 12,
-            top: isFloating ? 6 : '50%',
-            transform: isFloating ? 'none' : 'translateY(-50%)',
-            fontSize: isFloating ? 11 : 16,
-            fontWeight: isFloating ? 600 : 400,
-            color: error ? '#D32F2F' : focused || isOpen ? '#005BA6' : '#777777',
-            transition: 'all 150ms ease',
-            pointerEvents: 'none',
-            fontFamily,
-          }}>
-            {label}
-          </span>
-        )}
-
-        {/* Selected value */}
-        <span style={{
-          fontSize: 16,
-          color: hasValue ? '#2B2B2B' : '#949494',
-          marginTop: label && isFloating ? 10 : 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          fontFamily,
-          opacity: disabled ? 0.5 : 1,
-        }}>
-          {hasValue ? selectedOption!.label : (!label ? placeholder : '')}
-        </span>
-
-        {/* Chevron */}
-        <span style={{
-          position: 'absolute',
-          right: 10,
-          top: '50%',
-          transform: `translateY(-50%) rotate(${isOpen ? 180 : 0}deg)`,
-          transition: 'transform 150ms ease',
-          color: disabled ? '#BBBBBB' : '#4A4A4A',
-          display: 'flex',
-          pointerEvents: 'none',
-        }}>
-          <ChevronDown />
-        </span>
+    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 4, fontFamily: FONT, width: '100%', position: 'relative' }} className={className}>
+      {label && <label htmlFor={id} style={{ fontSize: 13, fontWeight: 600, color: disabled ? '#DCDCDC' : '#4A4A4A', fontFamily: FONT }}>{label}</label>}
+      <div id={id} role="combobox" aria-expanded={open} aria-haspopup="listbox" tabIndex={disabled ? -1 : 0} onClick={() => !disabled && setOpen(!open)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} style={{ display: 'flex', alignItems: 'center', height: 48, padding: '0 12px', borderRadius: 4, border: getBorder(), boxShadow: (focused || open) && !error && !disabled ? '0 0 0 3px rgba(0,147,244,0.3)' : 'none', background: disabled ? '#FAFAFA' : '#FFFFFF', cursor: disabled ? 'not-allowed' : 'pointer', transition: 'border 150ms ease, box-shadow 150ms ease', opacity: disabled ? 0.65 : 1 }}>
+        {searchable && open ? <input autoFocus value={search} onChange={e => setSearch(e.target.value)} onClick={e => e.stopPropagation()} style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontFamily: FONT, fontSize: 15, color: '#4A4A4A' }} placeholder="Search..." /> : <span style={{ flex: 1, fontSize: 15, color: displayValue ? '#4A4A4A' : '#777777', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue || placeholder}</span>}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: '#777777', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease' }}><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-
-      {/* Dropdown */}
-      {isOpen && (
-        <div
-          id={listboxId}
-          role="listbox"
-          style={{
-            position: 'absolute',
-            zIndex: 200,
-            width: containerRef.current?.offsetWidth ?? 'auto',
-            marginTop: 4,
-            background: '#FFFFFF',
-            border: '1px solid #DCDCDC',
-            borderRadius: 4,
-            boxShadow: '0 6px 20px rgba(0,47,72,0.15)',
-            maxHeight: 240,
-            overflowY: 'auto',
-            fontFamily,
-          }}
-        >
-          {normalised.map(opt => (
-            <div
-              key={opt.value}
-              role="option"
-              aria-selected={opt.value === value}
-              className="ps-select-option"
-              onClick={() => handleSelect(opt)}
-              style={{
-                padding: '10px 12px',
-                fontSize: 14,
-                color: opt.disabled ? '#BBBBBB' : '#2B2B2B',
-                cursor: opt.disabled ? 'not-allowed' : 'pointer',
-                fontFamily,
-                transition: 'background 100ms ease',
-              }}
-            >
-              {opt.label}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Helper / Error text */}
-      {(error || helperText) && (
-        <p style={{
-          margin: '4px 0 0',
-          fontSize: 12,
-          color: error ? '#D32F2F' : '#777777',
-          fontFamily,
-        }}>
-          {error || helperText}
-        </p>
-      )}
+      {open && <ul role="listbox" style={{ position: 'absolute', top: label ? 70 : 52, left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1px solid #DCDCDC', borderRadius: 4, boxShadow: '0 4px 16px rgba(0,47,72,0.12)', maxHeight: 240, overflowY: 'auto', margin: 0, padding: '4px 0', listStyle: 'none' }}>
+        {filtered.length === 0 ? <li style={{ padding: '10px 12px', fontSize: 14, color: '#777777', fontFamily: FONT }}>No options</li> : filtered.map(o => <li key={o.value} role="option" aria-selected={selected.includes(o.value)} onClick={() => !o.disabled && toggle(o.value)} style={{ padding: '10px 12px', fontSize: 15, fontFamily: FONT, cursor: o.disabled ? 'not-allowed' : 'pointer', color: o.disabled ? '#DCDCDC' : selected.includes(o.value) ? '#005BA6' : '#4A4A4A', background: selected.includes(o.value) ? '#EFF9FE' : 'transparent', fontWeight: selected.includes(o.value) ? 600 : 400 }}>{o.label}</li>)}
+      </ul>}
+      {(helperText || error) && <span style={{ fontSize: 12, color: error ? '#FF0000' : '#777777', fontFamily: FONT }}>{error ?? helperText}</span>}
     </div>
   );
 };
-
 export default Select;
