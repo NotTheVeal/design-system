@@ -1,138 +1,40 @@
 import React, { useEffect, useRef } from 'react';
-
-export type ModalColorScheme = 'current' | 'future';
-export type ModalSize = 'sm' | 'md' | 'lg';
-
-export interface ModalProps {
-  colorScheme?: ModalColorScheme;
-  isOpen?: boolean;
-  onClose?: () => void;
-  title?: string;
-  children?: React.ReactNode;
-  primaryLabel?: string;
-  secondaryLabel?: string;
-  onPrimary?: () => void;
-  onSecondary?: () => void;
-  size?: ModalSize;
-}
-
-const C = {
-  current: { btn: '#005BA6', hover: '#004A84', text: '#FFF', border: '#005BA6' },
-  future:  { btn: '#005BA6', hover: '#004A84', text: '#FFF', border: '#005BA6' },
-};
-
-const W = { sm: 400, md: 520, lg: 680 };
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-export const Modal: React.FC<ModalProps> = ({
-  colorScheme = 'future',
-  isOpen = false,
-  onClose,
-  title = 'Dialog Title',
-  children,
-  primaryLabel = 'Confirm',
-  secondaryLabel = 'Cancel',
-  onPrimary,
-  onSecondary,
-  size = 'md',
-}) => {
-  const c = C[colorScheme];
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
+const SIZE_WIDTH = { sm: 480, md: 640, lg: 880, xl: 1200 };
+export interface ModalProps { open: boolean; onClose: () => void; size?: ModalSize; title?: string; children: React.ReactNode; footer?: React.ReactNode; closeOnBackdrop?: boolean; className?: string; }
+export const Modal: React.FC<ModalProps> = ({ open, onClose, size = 'md', title, children, footer, closeOnBackdrop = true, className = '' }) => {
+  const dialogRef = useRef(null);
   useEffect(() => {
-    if (!isOpen) return;
-    closeRef.current?.focus();
-    const h = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose?.();
-      if (e.key === 'Tab') {
-        const f = dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button,[href],input,[tabindex]:not([tabindex="-1"])'
-        );
-        if (!f || !f.length) return;
-        if (e.shiftKey && document.activeElement === f[0]) {
-          e.preventDefault();
-          f[f.length - 1].focus();
-        } else if (!e.shiftKey && document.activeElement === f[f.length - 1]) {
-          e.preventDefault();
-          f[0].focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', h);
-    return () => document.removeEventListener('keydown', h);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
+    if (!open) return;
+    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleKey);
+    if (dialogRef.current) dialogRef.current.focus();
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', handleKey); document.body.style.overflow = prev; };
+  }, [open, onClose]);
+  if (!open) return null;
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      aria-modal="true"
-      role="dialog"
-      aria-labelledby="modal-title"
-    >
-      <div
-        style={{ position: 'absolute', inset: 0, background: 'rgba(0,47,72,0.5)' }}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div
-        ref={dialogRef}
-        style={{
-          position: 'relative',
-          width: W[size],
-          maxWidth: 'calc(100vw - 32px)',
-          background: '#FFF',
-          borderRadius: 8,
-          boxShadow: '0 6px 20px rgba(0,47,72,0.18)',
-          fontFamily,
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 16px', borderBottom: '1px solid #DCDCDC' }}>
-          <h2 id="modal-title" style={{ fontSize: 18, fontWeight: 700, color: '#002F48', margin: 0, fontFamily }}>
-            {title}
-          </h2>
-          <button
-            ref={closeRef}
-            onClick={onClose}
-            aria-label="Close dialog"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#777', padding: 4, display: 'flex', alignItems: 'center', borderRadius: 4 }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+    <div role="presentation" style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={(e) => { if (closeOnBackdrop && e.target === e.currentTarget) onClose(); }}>
+      {/* Backdrop */}
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,47,72,0.5)', backdropFilter: 'blur(2px)' }} aria-hidden="true" />
+      {/* Panel */}
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={title ? 'modal-title' : undefined} tabIndex={-1} style={{ position: 'relative', width: '100%', maxWidth: SIZE_WIDTH[size], maxHeight: 'calc(100vh - 96px)', backgroundColor: '#FFFFFF', borderRadius: 8, boxShadow: '0 8px 32px rgba(0,47,72,0.22)', display: 'flex', flexDirection: 'column', fontFamily: FONT, outline: 'none' }} className={className}>
+        {/* Header */}
+        {title && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #DCDCDC', flexShrink: 0 }}>
+          <h2 id="modal-title" style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#002F48', fontFamily: FONT }}>{title}</h2>
+          <button onClick={onClose} aria-label="Close" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: '#777777', borderRadius: 4 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
-        </div>
-        <div style={{ padding: '20px 24px', color: '#4A4A4A', fontSize: 14, lineHeight: 1.6, fontFamily }}>
-          {children ?? <p>Your session has timed out. Please contact your representative or return to the home page.</p>}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, padding: '16px 24px', borderTop: '1px solid #DCDCDC', background: '#FAFAFA' }}>
-          {secondaryLabel && (
-            <button
-              onClick={onSecondary ?? onClose}
-              style={{ background: 'none', border: '2px solid #005BA6', borderRadius: 4, padding: '10px 20px', fontSize: 14, fontWeight: 600, color: '#005BA6', cursor: 'pointer', fontFamily }}
-            >
-              {secondaryLabel}
-            </button>
-          )}
-          {primaryLabel && (
-            <button
-              onClick={onPrimary}
-              style={{ background: c.btn, border: `2px solid ${c.border}`, borderRadius: 4, padding: '10px 20px', fontSize: 14, fontWeight: 600, color: c.text, cursor: 'pointer', fontFamily, transition: 'background 200ms ease' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = c.hover; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = c.btn; }}
-            >
-              {primaryLabel}
-            </button>
-          )}
-        </div>
+        </div>}
+        {/* Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>{children}</div>
+        {/* Footer */}
+        {footer && <div style={{ borderTop: '1px solid #DCDCDC', padding: '16px 24px', flexShrink: 0, display: 'flex', justifyContent: 'flex-end', gap: 12 }}>{footer}</div>}
       </div>
     </div>
   );
 };
-
+Modal.displayName = 'Modal';
 export default Modal;
