@@ -1,94 +1,18 @@
 import React from 'react';
-
-interface AvatarProps {
-  src?: string;
-  alt?: string;
-  name?: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  style?: React.CSSProperties;
-  status?: 'online' | 'offline' | 'away' | 'busy';
-}
-
-const Avatar: React.FC<AvatarProps> = ({
-  src,
-  alt,
-  name,
-  size = 'md',
-  style,
-  status,
-}) => {
-  const sizeDims: Record<string, { width: string; height: string; fontSize: string }> = {
-    xs: { width: '24px', height: '24px', fontSize: '10px' },
-    sm: { width: '32px', height: '32px', fontSize: '12px' },
-    md: { width: '40px', height: '40px', fontSize: '14px' },
-    lg: { width: '48px', height: '48px', fontSize: '18px' },
-    xl: { width: '64px', height: '64px', fontSize: '24px' },
-  };
-
-  const statusSizeDims: Record<string, { width: string; height: string; borderWidth: string }> = {
-    xs: { width: '8px',  height: '8px',  borderWidth: '1px' },
-    sm: { width: '10px', height: '10px', borderWidth: '1px' },
-    md: { width: '12px', height: '12px', borderWidth: '2px' },
-    lg: { width: '14px', height: '14px', borderWidth: '2px' },
-    xl: { width: '18px', height: '18px', borderWidth: '2px' },
-  };
-
-  const statusColors: Record<string, string> = {
-    online:  '#17AB78',
-    offline: '#CCCCCC',
-    away:    '#E3A92D',
-    busy:    '#E00000',
-  };
-
-  const initials = name
-    ? name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
-    : '?';
-
-  const dims = sizeDims[size];
-  const sDims = statusSizeDims[size];
-
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away';
+export interface AvatarProps { src?: string; alt?: string; initials?: string; size?: AvatarSize; status?: AvatarStatus; className?: string; style?: React.CSSProperties; }
+const SIZE_MAP = { xs: { px: 24, fontSize: 10, statusPx: 6 }, sm: { px: 32, fontSize: 12, statusPx: 8 }, md: { px: 40, fontSize: 15, statusPx: 10 }, lg: { px: 48, fontSize: 18, statusPx: 12 }, xl: { px: 64, fontSize: 24, statusPx: 14 } };
+const STATUS_COLORS = { online: '#17AB78', busy: '#FF0000', away: '#E3A92D', offline: '#DCDCDC' };
+export const Avatar: React.FC<AvatarProps> = ({ src, alt = '', initials, size = 'md', status, className = '', style }) => {
+  const { px, fontSize, statusPx } = SIZE_MAP[size];
   return (
-    <div style={{ position: 'relative', display: 'inline-flex', flexShrink: 0, ...style }}>
-      <div
-        style={{
-          width: dims.width,
-          height: dims.height,
-          borderRadius: '50%',
-          overflow: 'hidden',
-          backgroundColor: '#005BA6',
-          color: '#FFFFFF',
-          fontWeight: 600,
-          fontSize: dims.fontSize,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          userSelect: 'none',
-          fontFamily: "'Source Sans Pro', 'Source Sans 3', sans-serif",
-        }}
-      >
-        {src
-          ? (<img src={src} alt={alt || initials} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />)
-          : (<span>{initials}</span>)}
-      </div>
-      {status && (
-        <span
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            borderRadius: '50%',
-            borderStyle: 'solid',
-            borderColor: '#FFFFFF',
-            width: sDims.width,
-            height: sDims.height,
-            borderWidth: sDims.borderWidth,
-            backgroundColor: statusColors[status],
-          }}
-          aria-label={status}
-        />
-      )}
+    <div className={className} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: px, height: px, borderRadius: '50%', overflow: status ? 'visible' : 'hidden', flexShrink: 0, ...style }}>
+      {src ? <img src={src} alt={alt} style={{ width: px, height: px, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+      : <div aria-label={alt || initials} style={{ width: px, height: px, borderRadius: '50%', background: '#005BA6', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONT, fontSize, fontWeight: 600, lineHeight: 1, userSelect: 'none' }}>{initials?.slice(0, 2).toUpperCase() ?? '??'}</div>}
+      {status && <span aria-label={`Status: ${status}`} style={{ position: 'absolute', bottom: 0, right: 0, width: statusPx, height: statusPx, borderRadius: '50%', background: STATUS_COLORS[status], border: '2px solid #FFFFFF' }} />}
     </div>
   );
 };
-
 export default Avatar;
