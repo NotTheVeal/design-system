@@ -1,269 +1,198 @@
-import React, { useState } from 'react';
+/**
+ * AiAgent — PS Design System 2.0
+ * Figma node: 1911-46 (AI Agent Master Component Kit)
+ *
+ * Colors:
+ *   Agent avatar:     #005BA6
+ *   User avatar:      #004A84
+ *   User bubble (full chat): #005BA6 fill, white text
+ *   User bubble (standalone): #DCEAED fill, #4A4A4A text
+ *   Agent bubble:     #F5F7FA
+ *   Send button:      #005BA6, 4px radius (NOT circle)
+ *   Error bg:         #FEF0F0, icon + text #E00000
+ *   Online dot:       #17AB78
+ */
+import React, { useState, useRef, useEffect } from 'react';
 
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+const FONT = "'Source Sans 3', 'Source Sans Pro', -apple-system, sans-serif";
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
+const C = {
+  blue: '#005BA6', blueDark: '#004A84', blueLight: '#DCEAED', blueSubtle: '#EBF3FA',
+  white: '#FFFFFF', bgMsg: '#F5F7FA', border: '#DCDCDC', borderLight: '#F1F1F1',
+  textPrimary: '#4A4A4A', textSecondary: '#777777', textMuted: '#AAAAAA',
+  green: '#17AB78', red: '#E00000', redBg: '#FEF0F0', midnight: '#002F48',
+} as const;
 
-interface AiAgentProps {
-  agentName?: string;
-  messages?: Message[];
-  onSend?: (message: string) => void;
-  placeholder?: string;
-  className?: string;
-}
-
-const SendIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="14" y1="2" x2="6" y2="10" />
-    <polyline points="14 2 9 14 6 10 2 7 14 2" />
-  </svg>
+export const AgentAvatar: React.FC<{ initials?: string; size?: number }> = ({ initials = 'PA', size = 40 }) => (
+  <div style={{ width: size, height: size, borderRadius: '50%', background: C.blue, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: FONT, fontWeight: 700, fontSize: size * 0.35, color: C.white, letterSpacing: '0.02em' }}>{initials}</div>
 );
 
-const AiAgent: React.FC<AiAgentProps> = ({
-  agentName = 'AI',
-  messages = [],
-  onSend,
-  placeholder = 'Type a messageâ¦',
-  className = '',
+export const UserAvatar: React.FC<{ initials?: string; size?: number }> = ({ initials = 'DM', size = 40 }) => (
+  <div style={{ width: size, height: size, borderRadius: '50%', background: C.blueDark, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: FONT, fontWeight: 700, fontSize: size * 0.35, color: C.white, letterSpacing: '0.02em' }}>{initials}</div>
+);
+
+export const LoadingBubble: React.FC<{ text?: string; estimatedTime?: string }> = ({ text = 'Analyzing prompt…', estimatedTime }) => (
+  <div>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 100, border: '1px solid ' + C.border, background: C.white, fontFamily: FONT, fontSize: 14, color: C.textSecondary }}>
+      <span style={{ display: 'flex', gap: 3 }}>
+        {[0, 1, 2].map(i => <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: C.textMuted, animation: 'ps-ai-pulse 1.2s ease-in-out ' + (i * 0.2) + 's infinite' }} />)}
+      </span>
+      <span style={{ fontWeight: 600 }}>{text}</span>
+    </div>
+    {estimatedTime && (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, fontFamily: FONT, fontSize: 12, color: C.textMuted }}>
+        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={C.textMuted} strokeWidth={1.75} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        {estimatedTime}
+      </div>
+    )}
+    <style>{`@keyframes ps-ai-pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }`}</style>
+  </div>
+);
+
+export const AiErrorMessage: React.FC<{ message?: string }> = ({ message = 'There was an error in processing this request. Please try again or try later.' }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderRadius: 8, backgroundColor: C.redBg, fontFamily: FONT }}>
+    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={C.red} strokeWidth={1.75} strokeLinecap="round" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <span style={{ fontSize: 15, color: C.red, lineHeight: 1.5 }}>{message}</span>
+  </div>
+);
+
+export const ActionBar: React.FC<{ actions: Array<{ label: string; onClick?: () => void }> }> = ({ actions }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+    {actions.map(a => (
+      <button key={a.label} onClick={a.onClick} style={{ padding: '8px 20px', borderRadius: 100, border: '1.5px solid ' + C.border, background: C.white, color: C.blue, fontFamily: FONT, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.blue; (e.currentTarget as HTMLButtonElement).style.background = C.blueSubtle; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.border; (e.currentTarget as HTMLButtonElement).style.background = C.white; }}>
+        {a.label}
+      </button>
+    ))}
+  </div>
+);
+
+export interface DataCardProps {
+  title: string; subtitle?: string; trackingLabel?: string; trackingNumber?: string;
+  delivery?: string; statusBadge?: string; cost?: string;
+  badge?: { label: string; color: 'urgent' | 'info' | 'neutral' }; highlighted?: boolean;
+}
+
+export const DataCard: React.FC<DataCardProps> = ({ title, subtitle, trackingLabel, trackingNumber, delivery, statusBadge, cost, badge, highlighted }) => (
+  <div style={{ borderRadius: 8, border: '1px solid ' + C.border, backgroundColor: highlighted ? C.blueSubtle : C.white, fontFamily: FONT, overflow: 'hidden' }}>
+    <div style={{ padding: '14px 16px' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: C.textPrimary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 2 }}>{title}</div>
+      {subtitle && <div style={{ fontSize: 13, color: C.textSecondary, marginBottom: 10, whiteSpace: 'pre-wrap' }}>{subtitle}</div>}
+      {(trackingLabel || trackingNumber) && (
+        <div style={{ fontSize: 13, color: C.textSecondary, marginBottom: 2 }}>
+          {trackingLabel && <span>{trackingLabel} · </span>}
+          {trackingNumber && <a href="#" style={{ color: C.blue, textDecoration: 'none', fontWeight: 600 }}>{trackingNumber}</a>}
+        </div>
+      )}
+      {delivery && <div style={{ fontSize: 13, color: C.textSecondary }}>{delivery}</div>}
+    </div>
+    <div style={{ padding: '10px 16px', borderTop: '1px solid ' + C.borderLight, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {statusBadge && <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 4, background: '#F1F1F1', color: C.textPrimary, border: '1px solid ' + C.border }}>{statusBadge}</span>}
+        {badge && (() => {
+          const colors = { urgent: { bg: '#FFF4D0', c: '#B45309' }, info: { bg: C.blueSubtle, c: C.blue }, neutral: { bg: '#F1F1F1', c: C.textPrimary } };
+          const { bg, c } = colors[badge.color];
+          return <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 4, background: bg, color: c }}>{badge.label}</span>;
+        })()}
+      </div>
+      {cost && <div style={{ fontSize: 14, color: C.textPrimary }}>Cost: <strong style={{ color: C.midnight }}>{cost}</strong></div>}
+    </div>
+  </div>
+);
+
+export type ChatMessage =
+  | { id: string; role: 'user' | 'agent'; content: React.ReactNode; timestamp?: string }
+  | { id: string; role: 'error'; content?: string }
+  | { id: string; role: 'loading'; estimatedTime?: string }
+  | { id: string; role: 'data'; card: DataCardProps; actions?: Array<{ label: string; onClick?: () => void }> };
+
+export interface ChatWindowProps {
+  agentName?: string; agentInitials?: string; userInitials?: string;
+  messages?: ChatMessage[]; onSend?: (text: string) => void;
+  inputPlaceholder?: string; isLoading?: boolean; style?: React.CSSProperties;
+}
+
+export const ChatWindow: React.FC<ChatWindowProps> = ({
+  agentName = 'PartsSource AI', agentInitials = 'PA', userInitials = 'DM',
+  messages = [], onSend, inputPlaceholder = 'Type a message…', isLoading = false, style,
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [focused, setFocused] = useState(false);
-  const [sendHovered, setSendHovered] = useState(false);
+  const [input, setInput] = useState('');
+  const endRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const handleSend = () => {
-    const trimmed = inputValue.trim();
-    if (!trimmed) return;
-    onSend?.(trimmed);
-    setInputValue('');
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  const initials = agentName.slice(0, 2).toUpperCase();
+  const handleSend = () => { if (!input.trim()) return; onSend?.(input); setInput(''); };
 
   return (
-    <div
-      className={className}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#FFFFFF',
-        border: '1px solid #DCDCDC',
-        borderRadius: 8,
-        boxShadow: '0 1px 4px rgba(0,47,72,0.08)',
-        overflow: 'hidden',
-        fontFamily,
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '12px 16px',
-          borderBottom: '1px solid #DCDCDC',
-          background: '#FAFAFA',
-        }}
-      >
-        <div
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            background: '#005BA6',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FFFFFF',
-            fontSize: 14,
-            fontWeight: 700,
-            userSelect: 'none',
-            flexShrink: 0,
-            fontFamily,
-          }}
-        >
-          {initials}
+    <div style={{ fontFamily: FONT, border: '1px solid ' + C.border, borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: C.white, ...style }}>
+      {/* Header — white bg, PA avatar, Online status right */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderBottom: '1px solid ' + C.border, background: C.white }}>
+        <AgentAvatar initials={agentInitials} size={40} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.textPrimary }}>{agentName}</div>
         </div>
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: '#4A4A4A',
-            fontFamily,
-          }}
-        >
-          {agentName}
-        </span>
-        <div
-          style={{
-            marginLeft: 'auto',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 12,
-            color: '#0E7C55',
-            fontFamily,
-          }}
-        >
-          <span
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: '50%',
-              background: '#17AB78',
-              display: 'inline-block',
-            }}
-          />
-          Online
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.green }} />
+          <span style={{ fontSize: 13, color: C.green, fontWeight: 600 }}>Online</span>
         </div>
       </div>
-
       {/* Messages */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          minHeight: 200,
-        }}
-      >
-        {messages.length === 0 ? (
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 14,
-              color: '#949494',
-              fontFamily,
-            }}
-          >
-            Start a conversationâ¦
-          </div>
-        ) : (
-          messages.map((msg, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                gap: 8,
-                justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-              }}
-            >
-              {msg.role === 'assistant' && (
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    background: '#005BA6',
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#FFFFFF',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    fontFamily,
-                  }}
-                >
-                  {initials}
-                </div>
-              )}
-              <div
-                style={{
-                  maxWidth: '80%',
-                  padding: '8px 12px',
-                  borderRadius: 8,
-                  borderTopLeftRadius: msg.role === 'assistant' ? 2 : 8,
-                  borderTopRightRadius: msg.role === 'user' ? 2 : 8,
-                  fontSize: 14,
-                  background: msg.role === 'user' ? '#005BA6' : '#F1F1F1',
-                  color: msg.role === 'user' ? '#FFFFFF' : '#4A4A4A',
-                  fontFamily,
-                  lineHeight: 1.5,
-                }}
-              >
-                {msg.content}
-              </div>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 14, minHeight: 200 }}>
+        {messages.map(msg => {
+          if (msg.role === 'user') return (
+            <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: 8 }}>
+              <div style={{ maxWidth: '72%', padding: '11px 16px', borderRadius: '18px 18px 4px 18px', background: C.blue, color: C.white, fontSize: 15, lineHeight: 1.5 }}>{msg.content}</div>
+              <UserAvatar initials={userInitials} size={36} />
             </div>
-          ))
+          );
+          if (msg.role === 'agent') return (
+            <div key={msg.id} style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+              <AgentAvatar initials={agentInitials} size={36} />
+              <div style={{ maxWidth: '72%', padding: '11px 16px', borderRadius: '18px 18px 18px 4px', background: C.bgMsg, color: C.textPrimary, fontSize: 15, lineHeight: 1.5 }}>{msg.content}</div>
+            </div>
+          );
+          if (msg.role === 'error') return <AiErrorMessage key={msg.id} message={msg.content} />;
+          if (msg.role === 'loading') return (
+            <div key={msg.id} style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+              <AgentAvatar initials={agentInitials} size={36} />
+              <LoadingBubble estimatedTime={msg.estimatedTime} />
+            </div>
+          );
+          if (msg.role === 'data') return (
+            <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <DataCard {...msg.card} />
+              {msg.actions && <ActionBar actions={msg.actions} />}
+            </div>
+          );
+          return null;
+        })}
+        {isLoading && (
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+            <AgentAvatar initials={agentInitials} size={36} />
+            <LoadingBubble />
+          </div>
         )}
+        <div ref={endRef} />
       </div>
-
-      {/* Input */}
-      <div
-        style={{
-          padding: '12px 16px',
-          borderTop: '1px solid #DCDCDC',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-          <textarea
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            placeholder={placeholder}
-            rows={1}
-            style={{
-              flex: 1,
-              resize: 'none',
-              border: `1px solid ${focused ? '#005BA6' : '#DCDCDC'}`,
-              borderRadius: 4,
-              padding: '8px 12px',
-              fontSize: 14,
-              color: '#4A4A4A',
-              fontFamily,
-              outline: 'none',
-              boxShadow: focused ? '0 0 0 3px rgba(0,147,244,0.3)' : 'none',
-              transition: 'border-color 150ms ease, box-shadow 150ms ease',
-            }}
-          />
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={!inputValue.trim()}
-            onMouseEnter={() => setSendHovered(true)}
-            onMouseLeave={() => setSendHovered(false)}
-            style={{
-              flexShrink: 0,
-              height: 36,
-              padding: '0 16px',
-              background: !inputValue.trim() ? '#DCDCDC' : sendHovered ? '#004A84' : '#005BA6',
-              color: '#FFFFFF',
-              fontSize: 14,
-              fontWeight: 600,
-              borderRadius: 4,
-              border: 'none',
-              cursor: !inputValue.trim() ? 'not-allowed' : 'pointer',
-              fontFamily,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              transition: 'background 150ms ease',
-            }}
-          >
-            <SendIcon />
+      {/* Input — rectangular Send button, NOT circle */}
+      <div style={{ borderTop: '1px solid ' + C.border, padding: '12px 16px' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder={inputPlaceholder}
+            style={{ flex: 1, height: 44, border: '1px solid ' + C.border, borderRadius: 6, padding: '0 14px', fontSize: 14, fontFamily: FONT, outline: 'none', color: C.textPrimary }} />
+          <button onClick={handleSend} style={{ height: 44, padding: '0 20px', borderRadius: 6, border: 'none', background: C.blue, color: C.white, fontFamily: FONT, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = C.blueDark; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = C.blue; }}>
+            Send
           </button>
         </div>
+        <p style={{ fontSize: 11, color: C.textMuted, margin: '6px 0 0', textAlign: 'center' }}>
+          This AI can make mistakes, including about people. Always verify information yourself.
+        </p>
       </div>
     </div>
   );
 };
 
-export default AiAgent;
+export default ChatWindow;
