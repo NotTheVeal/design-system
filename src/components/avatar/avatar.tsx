@@ -3,7 +3,7 @@ const FONT = "'Source Sans 3', -apple-system, sans-serif";
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away';
 export interface AvatarProps { src?: string; alt?: string; initials?: string; size?: AvatarSize; status?: AvatarStatus; className?: string; style?: React.CSSProperties; }
-const SIZE_MAP = { xs: { px: 24, fontSize: 10, statusPx: 6 }, sm: { px: 32, fontSize: 12, statusPx: 8 }, md: { px: 40, fontSize: 15, statusPx: 10 }, lg: { px: 48, fontSize: 18, statusPx: 12 }, xl: { px: 64, fontSize: 24, statusPx: 14 } };
+const SIZE_MAP = { xs: { px: 20, fontSize: 10, statusPx: 6 }, sm: { px: 24, fontSize: 12, statusPx: 8 }, md: { px: 32, fontSize: 15, statusPx: 10 }, lg: { px: 40, fontSize: 18, statusPx: 12 }, xl: { px: 56, fontSize: 24, statusPx: 14 } };
 const STATUS_COLORS = { online: '#17AB78', busy: '#FF0000', away: '#E3A92D', offline: '#DCDCDC' };
 export const Avatar: React.FC<AvatarProps> = ({ src, alt = '', initials, size = 'md', status, className = '', style }) => {
   const { px, fontSize, statusPx } = SIZE_MAP[size];
