@@ -1,0 +1,60 @@
+:root {
+  /* Blues */
+  --ps-blue-50: #B0C6D3;
+  --ps-blue-100: #DCEAED;
+  --ps-blue-200: #009CF4;
+  --ps-blue-500: #005BA6;
+  --ps-blue-700: #004A84;
+  --ps-blue-900: #002F48;
+  --ps-brand-primary: #005BA6;
+  --ps-brand-secondary: #002F48;
+  --ps-brand-light: #009CF4;
+  /* Semantic feedback */
+  --ps-success-subtle: #E2F5EE;
+  --ps-success: #17AB78;
+  --ps-danger-subtle: #FEF0F0;
+  --ps-danger: #FF0000;
+  --ps-warning-subtle: #FFF4E5;
+  --ps-warning: #E3A92D;
+  --ps-info-subtle: #EFF9FE;
+  --ps-info: #009CF4;
+  /* Neutrals */
+  --ps-neutral-0: #FFFFFF;
+  --ps-neutral-50: #FAFAFA;
+  --ps-neutral-100: #F1F1F1;
+  --ps-neutral-200: #DCDCDC;
+  --ps-neutral-300: #CCCCCC;
+  --ps-neutral-400: #949494;
+  --ps-neutral-500: #777777;
+  --ps-neutral-700: #4A4A4A;
+  --ps-neutral-1000: #000000;
+  /* Foreground */
+  --ps-fg-primary: #4A4A4A;
+  --ps-fg-secondary: #777777;
+  --ps-fg-tertiary: #949494;
+  --ps-fg-link: #005BA6;
+  /* Borders */
+  --ps-border-default: #DCDCDC;
+  --ps-border-strong: #949494;
+  --ps-border-focus: #005BA6;
+  --ps-border-error: #FF0000;
+  /* Typography */
+  --ps-font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ps-font-mono: 'Source Code Pro', 'SF Mono', Consolas, monospace;
+  --ps-weight-regular: 400;
+  --ps-weight-semibold: 600;
+  --ps-weight-bold: 700;
+  /* Shadows */
+  --ps-shadow-sm: 0 1px 4px rgba(0,47,72,0.08);
+  --ps-shadow-md: 0 2px 10px rgba(0,47,72,0.10);
+  --ps-shadow-lg: 0 6px 20px rgba(0,47,72,0.18);
+  /* Spacing */
+  --ps-space-1: 4px; --ps-space-2: 8px; --ps-space-3: 12px;
+  --ps-space-4: 16px; --ps-space-5: 20px; --ps-space-6: 24px;
+  --ps-space-8: 32px; --ps-space-10: 40px; --ps-space-12: 48px;
+  /* Border radius */
+  --ps-radius-sm: 2px; --ps-radius-md: 4px;
+  --ps-radius-xl: 8px; --ps-radius-pill: 100px;
+  /* Orange legacy — colorScheme=current only */
+  --ps-orange-legacy: #FF9505;
+}
