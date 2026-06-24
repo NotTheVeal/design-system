@@ -1,16 +1,9 @@
 import type { Preview } from '@storybook/react';
-import '../src/tokens/tokens.css';
-
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/,
-      },
-    },
+    backgrounds: { default: 'light', values: [{ name: 'light', value: '#FFFFFF' }, { name: 'gray', value: '#F1F1F1' }] },
+    layout: 'centered',
+    docs: { toc: true },
   },
 };
-
 export default preview;
