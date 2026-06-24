@@ -18,7 +18,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, size = 'md', title,
   return (
     <div role="presentation" style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={(e) => { if (closeOnBackdrop && e.target === e.currentTarget) onClose(); }}>
       {/* Backdrop */}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,47,72,0.5)', backdropFilter: 'blur(2px)' }} aria-hidden="true" />
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,47,72,0.4)', backdropFilter: 'blur(2px)' }} aria-hidden="true" />
       {/* Panel */}
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={title ? 'modal-title' : undefined} tabIndex={-1} style={{ position: 'relative', width: '100%', maxWidth: SIZE_WIDTH[size], maxHeight: 'calc(100vh - 96px)', backgroundColor: '#FFFFFF', borderRadius: 8, boxShadow: '0 8px 32px rgba(0,47,72,0.22)', display: 'flex', flexDirection: 'column', fontFamily: FONT, outline: 'none' }} className={className}>
         {/* Header */}

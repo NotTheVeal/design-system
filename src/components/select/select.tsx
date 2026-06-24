@@ -37,7 +37,7 @@ export const Select: React.FC<SelectProps> = ({ options, value, onChange, multip
       {open && <ul role="listbox" style={{ position: 'absolute', top: label ? 70 : 52, left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1px solid #DCDCDC', borderRadius: 4, boxShadow: '0 4px 16px rgba(0,47,72,0.12)', maxHeight: 240, overflowY: 'auto', margin: 0, padding: '4px 0', listStyle: 'none' }}>
         {filtered.length === 0 ? <li style={{ padding: '10px 12px', fontSize: 14, color: '#777777', fontFamily: FONT }}>No options</li> : filtered.map(o => <li key={o.value} role="option" aria-selected={selected.includes(o.value)} onClick={() => !o.disabled && toggle(o.value)} style={{ padding: '10px 12px', fontSize: 15, fontFamily: FONT, cursor: o.disabled ? 'not-allowed' : 'pointer', color: o.disabled ? '#DCDCDC' : selected.includes(o.value) ? '#005BA6' : '#4A4A4A', background: selected.includes(o.value) ? '#EFF9FE' : 'transparent', fontWeight: selected.includes(o.value) ? 600 : 400 }}>{o.label}</li>)}
       </ul>}
-      {(helperText || error) && <span style={{ fontSize: 12, color: error ? '#FF0000' : '#777777', fontFamily: FONT }}>{error ?? helperText}</span>}
+      {(helperText || error) && <span style={{ fontSize: 12, color: error ? '#D32F2F' : '#777777', fontFamily: FONT }}>{error ?? helperText}</span>}
     </div>
   );
 };

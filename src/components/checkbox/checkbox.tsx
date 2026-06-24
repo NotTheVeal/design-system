@@ -59,10 +59,10 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           {checked && !indeterminate && <Check size={14} strokeWidth={1.75} color="white" aria-hidden="true" />}
           {indeterminate && !checked && <Minus size={14} strokeWidth={1.75} color="white" aria-hidden="true" />}
         </div>
-        {label && <span style={{ fontSize: 14, color: disabled ? '#949494' : error ? '#FF0000' : '#4A4A4A' }}>{label}</span>}
+        {label && <span style={{ fontSize: 14, color: disabled ? '#949494' : error ? '#E00000' : '#4A4A4A' }}>{label}</span>}
       </div>
       {helperText && !error && <span style={{ fontSize: 12, color: '#777777', paddingLeft: 32 }}>{helperText}</span>}
-      {error && <span style={{ fontSize: 12, color: '#FF0000', paddingLeft: 32 }}>{error}</span>}
+      {error && <span style={{ fontSize: 12, color: '#E00000', paddingLeft: 32 }}>{error}</span>}
     </div>
   );
 };

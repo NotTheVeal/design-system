@@ -53,7 +53,7 @@ const PageButton: React.FC<{
     );
   }
 
-  const bg = isActive ? '#005BA6' : hovered && !disabled ? '#F1F1F1' : 'transparent';
+  const bg = isActive ? '#005BA6' : hovered && !disabled ? '#EBF3FA' : 'transparent';
   const color = isActive ? '#FFFFFF' : disabled ? '#949494' : '#4A4A4A';
   const border = isActive ? '1px solid #005BA6' : '1px solid #DCDCDC';
 

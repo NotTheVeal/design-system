@@ -20,7 +20,7 @@ export const Drawer: React.FC<DrawerProps> = ({ open, onClose, placement = 'righ
   };
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 999, backgroundColor: 'rgba(0,47,72,0.5)', backdropFilter: 'blur(2px)' }} aria-hidden="true" />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 999, backgroundColor: 'rgba(0,47,72,0.4)', backdropFilter: 'blur(2px)' }} aria-hidden="true" />
       <div ref={drawerRef} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} style={panelStyle} className={className}>
         {title && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #DCDCDC', flexShrink: 0 }}>
           <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: '#002F48', fontFamily: FONT }}>{title}</h2>

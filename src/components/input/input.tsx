@@ -26,10 +26,10 @@ export const Input: React.FC<InputProps> = ({ label, helperText, error, size = '
   };
   const getBoxShadow = () => {
     if (disabled || !focused) return 'none';
-    if (error) return '0 0 0 3px rgba(255,0,0,0.2)';
+    if (error) return '0 0 0 3px rgba(211,47,47,0.15)';
     return '0 0 0 3px rgba(0,147,244,0.3)';
   };
-  const floatedLabelStyle = labelFloated ? { top: size === 'lg' ? 12 : 8, fontSize: labelFloat, fontWeight: 600, color: error ? '#FF0000' : '#005BA6' } : { top: '50%', transform: 'translateY(-50%)', fontSize, fontWeight: 400, color: disabled ? '#DCDCDC' : '#777777' };
+  const floatedLabelStyle = labelFloated ? { top: size === 'lg' ? 12 : 8, fontSize: labelFloat, fontWeight: 600, color: error ? '#D32F2F' : '#005BA6' } : { top: '50%', transform: 'translateY(-50%)', fontSize, fontWeight: 400, color: disabled ? '#DCDCDC' : '#777777' };
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontFamily: FONT, width: '100%' }} className={className}>
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', height, borderRadius: 4, border: getBorder(), boxShadow: getBoxShadow(), background: disabled ? '#FAFAFA' : '#FFFFFF', transition: 'border 150ms ease, box-shadow 150ms ease', cursor: disabled ? 'not-allowed' : 'text', opacity: disabled ? 0.65 : 1, boxSizing: 'border-box', ...style }} onMouseEnter={() => !disabled && setHovered(true)} onMouseLeave={() => !disabled && setHovered(false)}>
@@ -38,7 +38,7 @@ export const Input: React.FC<InputProps> = ({ label, helperText, error, size = '
         <input id={inputId} {...rest} disabled={disabled} value={isControlled ? value : internalValue} onFocus={(e) => { setFocused(true); onFocus?.(e); }} onBlur={(e) => { setFocused(false); onBlur?.(e); }} onChange={(e) => { if (!isControlled) setInternalValue(e.target.value); onChange?.(e); }} style={{ flex: 1, height: '100%', border: 'none', outline: 'none', background: 'transparent', fontFamily: FONT, fontSize, color: '#4A4A4A', paddingTop: label ? (size === 'lg' ? 28 : 18) : 0, paddingLeft: leadingIcon ? 8 : 12, paddingRight: trailingIcon ? 8 : 12, cursor: disabled ? 'not-allowed' : 'text' }} />
         {trailingIcon && <span style={{ paddingRight: 12, color: '#777777', display: 'flex', alignItems: 'center', flexShrink: 0 }}>{trailingIcon}</span>}
       </div>
-      {(helperText || error) && <span style={{ fontSize: 12, color: error ? '#FF0000' : '#777777', fontFamily: FONT }}>{error ?? helperText}</span>}
+      {(helperText || error) && <span style={{ fontSize: 12, color: error ? '#D32F2F' : '#777777', fontFamily: FONT }}>{error ?? helperText}</span>}
     </div>
   );
 };

@@ -59,7 +59,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
         <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <BreadcrumbLink item={item} />
           {i < items.length - 1 && (
-            <span aria-hidden="true" style={{ fontSize: 14, color: '#949494', userSelect: 'none', fontFamily }}>
+            <span aria-hidden="true" style={{ fontSize: 14, color: '#DCDCDC', userSelect: 'none', fontFamily }}>
               {separator}
             </span>
           )}

@@ -4,16 +4,16 @@ export type BadgeVariant = 'active' | 'approved' | 'pending' | 'warning' | 'dang
 export type BadgeType = 'status' | 'smartChip' | 'list';
 export interface BadgeProps { label: string; variant?: BadgeVariant; type?: BadgeType; icon?: React.ReactNode; className?: string; style?: React.CSSProperties; }
 const VARIANT_COLORS = {
-  active:    { bg: '#E2F5EE', text: '#17AB78', border: '#17AB78', dot: '#17AB78' },
-  approved:  { bg: '#E2F5EE', text: '#17AB78', border: '#17AB78', dot: '#17AB78' },
-  success:   { bg: '#E2F5EE', text: '#17AB78', border: '#17AB78', dot: '#17AB78' },
-  pending:   { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#009CF4' },
-  info:      { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#009CF4' },
-  default:   { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#009CF4' },
-  warning:   { bg: '#FFF4E5', text: '#E3A92D', border: '#FFCA82', dot: '#E3A92D' },
-  danger:    { bg: '#FEF0F0', text: '#FF0000', border: '#FFCFCF', dot: '#FF0000' },
-  error:     { bg: '#FEF0F0', text: '#FF0000', border: '#FFCFCF', dot: '#FF0000' },
-  neutral:   { bg: '#E6E6E6', text: '#4A4A4A', border: '#DCDCDC', dot: '#949494' },
+  active:    { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#0E7C55' },
+  approved:  { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#0E7C55' },
+  success:   { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#0E7C55' },
+  pending:   { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#005BA6' },
+  info:      { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#005BA6' },
+  default:   { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#005BA6' },
+  warning:   { bg: '#FFF4E5', text: '#B45309', border: '#FFCA82', dot: '#B45309' },
+  danger:    { bg: '#FEF0F0', text: '#E00000', border: '#FFCFCF', dot: '#E00000' },
+  error:     { bg: '#FEF0F0', text: '#E00000', border: '#FFCFCF', dot: '#E00000' },
+  neutral:   { bg: '#F1F1F1', text: '#4A4A4A', border: '#DCDCDC', dot: '#949494' },
 };
 const getColors = (v: BadgeVariant) => (VARIANT_COLORS as any)[v] ?? VARIANT_COLORS['neutral'];
 export const Badge: React.FC<BadgeProps> = ({ label, variant = 'neutral', type = 'status', icon, className = '', style }) => {

@@ -9,8 +9,8 @@ export const Stepper:React.FC<StepperProps>=({steps,orientation='horizontal',cla
       {steps.map((step,idx)=>{
         const isLast=idx===steps.length-1;
         const st=step.status||'pending';
-        const circleColor=st==='complete'?'#17AB78':st==='active'?'#005BA6':st==='error'?'#FF0000':'#DCDCDC';
-        const textColor=st==='active'?'#005BA6':st==='complete'?'#17AB78':st==='error'?'#FF0000':'#777777';
+        const circleColor=st==='complete'?'#005BA6':st==='active'?'#005BA6':st==='error'?'#FF0000':'#DCDCDC';
+        const textColor=st==='active'?'#005BA6':st==='complete'?'#005BA6':st==='error'?'#FF0000':'#777777';
         return(
           <div key={step.id}style={{display:'flex',flexDirection:isHorz?'column':'row',alignItems:isHorz?'center':'flex-start',flex:isHorz?1:undefined,gap:isHorz?8:12}}>
             <div style={{display:'flex',flexDirection:isHorz?'row':'column',alignItems:'center',width:isHorz?'100%':undefined}}>
@@ -22,7 +22,7 @@ export const Stepper:React.FC<StepperProps>=({steps,orientation='horizontal',cla
                 }
               </div>
               {/* Connector */}
-              {!isLast&&<div style={{flex:isHorz?1:undefined,height:isHorz?undefined:undefined,[isHorz?'height':'width']:isHorz?2:2,[isHorz?'minWidth':'minHeight']:isHorz?24:24,background:st==='complete'?'#17AB78':'#DCDCDC',margin:isHorz?'0 4px':'4px 15px'}}/>}
+              {!isLast&&<div style={{flex:isHorz?1:undefined,height:isHorz?undefined:undefined,[isHorz?'height':'width']:isHorz?2:2,[isHorz?'minWidth':'minHeight']:isHorz?24:24,background:st==='complete'?'#005BA6':'#DCDCDC',margin:isHorz?'0 4px':'4px 15px'}}/>}
             </div>
             {/* Label */}
             <div style={{textAlign:isHorz?'center':'left',paddingBottom:isHorz?0:isLast?0:24}}>
