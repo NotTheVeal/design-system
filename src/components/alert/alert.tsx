@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 export type AlertType = 'success' | 'danger' | 'warning' | 'info';
 export type AlertVariant = 'core' | 'dismissible' | 'multiline' | 'toast';
 export interface AlertProps { type: AlertType; variant?: AlertVariant; title: string; message?: string; onDismiss?: () => void; actions?: React.ReactNode; autoDismiss?: number; className?: string; }
+// PS Design System 2.0 exact token values
 const ALERT_CONFIG = {
-  success: { bg: '#E2F5EE', color: '#17AB78', Icon: CheckCircle2 },
-  danger:  { bg: '#FEF0F0', color: '#FF0000', Icon: XCircle },
-  warning: { bg: '#FFF4E5', color: '#E3A92D', Icon: AlertTriangle },
-  info:    { bg: '#EFF9FE', color: '#009CF4', Icon: Info },
+  success: { bg: '#E2F5EE', color: '#0E7C55', Icon: CheckCircle2 },
+  danger:  { bg: '#FEF0F0', color: '#E00000', Icon: AlertCircle  },
+  warning: { bg: '#FFF4E5', color: '#B45309', Icon: AlertTriangle },
+  info:    { bg: '#EFF9FE', color: '#005BA6', Icon: Info          },
 } as const;
 const fontFamily = "'Source Sans 3', -apple-system, sans-serif";
 const Alert: React.FC<AlertProps> = ({ type, variant = 'core', title, message, onDismiss, actions, autoDismiss, className = '' }) => {
