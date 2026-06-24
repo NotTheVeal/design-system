@@ -4,10 +4,10 @@ import { Accordion, AccordionCard } from './accordion';
 import type { AccordionItem, AccordionCardItem } from './accordion';
 
 const FAQ_ITEMS: AccordionItem[] = [
-  { id: 'q1', title: 'What is ProProcure?', content: 'ProProcure is PartsSourceâs cloud-based procurement platform for healthcare.' },
-  { id: 'q2', title: 'How do I submit a purchase order?', content: 'Navigate to Orders â New Order, select items from the catalog, and click Submit.' },
-  { id: 'q3', title: 'Can I track my order status?', defaultOpen: true, content: 'Yes. Go to Orders â My Orders to see real-time status for all submitted POs.' },
-  { id: 'q4', title: 'How do I add a new supplier?', content: 'Go to Suppliers â Add Supplier, complete the onboarding form, and submit for approval.' },
+  { id: 'q1', title: 'What is ProProcure?', content: 'ProProcure is the PartsSource cloud-based procurement platform for healthcare.' },
+  { id: 'q2', title: 'How do I submit a purchase order?', content: 'Navigate to Orders, then New Order, select items from the catalog, and click Submit.' },
+  { id: 'q3', title: 'Can I track my order status?', defaultOpen: true, content: 'Yes. Go to Orders and My Orders to see real-time status for all submitted POs.' },
+  { id: 'q4', title: 'How do I add a new supplier?', content: 'Go to Suppliers, Add Supplier, complete the onboarding form, and submit for approval.' },
 ];
 
 const OrderRow = ({ id, name, type, date }: { id: string; name: string; type: string; date: string }) => (
@@ -40,19 +40,21 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: `**PS Design System 2.0 â Accordion**
-
-Two variants:
-
-### Inline (flat)
-FAQ / Q&A / simple content toggles.
-- Dividers: \`1px solid #DCDCDC\` top + bottom
-- **Expanded background: \`#FFFFFF\` â NO grey, no tint**
-
-### Card (large)
-Figma: \`Accordion-Section\` node \`4390:39583\`
-- White card, 4px radius, 2px #F1F1F1 border
-- 60px header Â· Source Sans Pro 25px/300 (Light) Â· drag grip Â· 14px chevron`.trim(),
+        component: [
+          '**PS Design System 2.0 — Accordion**',
+          '',
+          'Two variants:',
+          '',
+          '### Inline (flat)',
+          'FAQ / Q&A / simple content toggles.',
+          '- Dividers: 1px solid #DCDCDC top + bottom',
+          '- Expanded background: #FFFFFF — NO grey, no tint',
+          '',
+          '### Card (large)',
+          'Figma: Accordion-Section node 4390:39583',
+          '- White card, 4px radius, 2px #F1F1F1 border',
+          '- 60px header, Source Sans Pro 25px/300 (Light), drag grip, 14px chevron',
+        ].join('\n'),
       },
     },
   },
@@ -62,22 +64,22 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Inline â FAQ (default)',
+  name: 'Inline FAQ (default)',
   args: { items: FAQ_ITEMS, multiple: false },
 };
 
 export const MultipleOpen: Story = {
-  name: 'Inline â Multiple open',
+  name: 'Inline Multiple open',
   args: { items: FAQ_ITEMS, multiple: true },
 };
 
 export const CardDefault: Story = {
-  name: 'Card â Figma Accordion-Section',
+  name: 'Card Figma Accordion-Section',
   render: () => <AccordionCard items={CARD_ITEMS} />,
 };
 
 export const CardWithSubtitle: Story = {
-  name: 'Card â With subtitle',
+  name: 'Card With subtitle',
   render: () => (
     <AccordionCard items={[
       { id: 'a', title: 'Active Service Orders', subtitle: '5 items', content: CARD_CONTENT },
