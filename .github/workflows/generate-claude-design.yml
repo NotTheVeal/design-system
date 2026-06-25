@@ -62,4 +62,4 @@ Trigger: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rea
         run: |
           echo "## Claude Design Reference" >> $GITHUB_STEP_SUMMARY
           echo "**Live Storybook:** https://nottheveal.github.io/design-system/" >> $GITHUB_STEP_SUMMARY
-          echo "**Reference file:** \`docs/claude-design-reference.md\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Reference file:** `docs/claude-design-reference.md`" >> $GITHUB_STEP_SUMMARY
