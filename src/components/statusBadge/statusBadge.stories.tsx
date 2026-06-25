@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { StatusBadge } from './StatusBadge';
-import type { StatusBadgeVariant, StatusBadgeShape } from './StatusBadge';
+import { StatusBadge } from './statusBadge';
+import type { StatusBadgeVariant, StatusBadgeShape } from './statusBadge';
 
 const meta: Meta<typeof StatusBadge> = {
   title: 'Components/StatusBadge',
