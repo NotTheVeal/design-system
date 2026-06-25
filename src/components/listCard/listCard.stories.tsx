@@ -1,100 +1,87 @@
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import ListCard from './listCard';
+import { ListCard } from './listCard';
 
 const meta: Meta<typeof ListCard> = {
   title: 'Components/ListCard',
   component: ListCard,
   parameters: { layout: 'padded' },
-  tags: ['autodocs'],
+  argTypes: {
+    status: { control: 'select', options: ['In Stock', 'Low Stock', 'Out of Stock', 'Active', 'Inactive'] },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof ListCard>;
 
-const PartIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3" /><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14" />
-  </svg>
-);
-
-const DocIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" />
-  </svg>
-);
-
-const SupplierIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-
 export const Default: Story = {
   args: {
-    title: 'Siemens MAGNETOM Aera â MRI Coil Assembly',
-    subtitle: 'Part #MRI-7842 Â· In Stock',
-    meta: '$1,240.00',
+    title: 'GE Healthcare Ultrasound Probe',
+    subtitle: 'Imaging & Diagnostics',
+    description: 'High-frequency transducer for detailed abdominal imaging.',
+    status: 'In Stock',
+    sku: '4542-0012',
+    manufacturer: 'GE Healthcare',
+    price: '\$1,249.00',
+    actionLabel: 'Add to Cart',
   },
-  decorators: [(Story) => <div style={{ width: 480 }}><Story /></div>],
 };
 
-export const WithIcon: Story = {
+export const LowStock: Story = {
   args: {
-    title: 'CT Scanner Detector Module',
-    subtitle: 'Part #CT-4421 Â· Ships in 3â5 days',
-    meta: '$4,800.00',
-    icon: <PartIcon />,
+    title: 'Siemens CT Scanner Filter',
+    subtitle: 'CT Components',
+    status: 'Low Stock',
+    sku: 'CT-7821',
+    manufacturer: 'Siemens Healthineers',
+    price: '\$89.50',
+    badge: 'Preferred',
+    actionLabel: 'View Details',
   },
-  decorators: [(Story) => <div style={{ width: 480 }}><Story /></div>],
 };
 
-export const WithAction: Story = {
+export const OutOfStock: Story = {
+  args: {
+    title: 'Philips Patient Monitor Lead',
+    subtitle: 'Monitoring',
+    status: 'Out of Stock',
+    sku: 'PM-4401-L',
+    manufacturer: 'Philips Healthcare',
+    actionLabel: 'Notify Me',
+  },
+};
+
+export const WithBadge: Story = {
+  args: {
+    title: 'Stryker Surgical Instrument Set',
+    subtitle: 'Surgical Equipment',
+    badge: 'OEM',
+    status: 'Active',
+    sku: 'STR-9900',
+    manufacturer: 'Stryker',
+    price: '\$3,450.00',
+    actionLabel: 'Request Quote',
+  },
+};
+
+export const Selected: Story = {
+  args: {
+    title: 'Medtronic Infusion Pump Tubing',
+    subtitle: 'Infusion',
+    status: 'In Stock',
+    sku: 'INF-2280',
+    manufacturer: 'Medtronic',
+    price: '\$24.99',
+    selected: true,
+    actionLabel: 'Add to Cart',
+  },
+};
+
+export const ListGroup: Story = {
   render: () => (
-    <div style={{ width: 480 }}>
-      <ListCard
-        title="Service Contract â Philips Brilliance CT"
-        subtitle="Contract #SC-2024-0193 Â· Expires Dec 31, 2025"
-        meta="Active"
-        icon={<DocIcon />}
-        action={
-          <button style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #005BA6', background: '#fff', color: '#005BA6', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Source Sans Pro, sans-serif' }}>
-            Renew
-          </button>
-        }
-      />
-    </div>
-  ),
-};
-
-export const Clickable: Story = {
-  args: {
-    title: 'GE Healthcare â Preferred Supplier',
-    subtitle: 'Biomedical Equipment Â· 47 active contracts',
-    icon: <SupplierIcon />,
-    onClick: () => alert('Opening supplier profile'),
-  },
-  decorators: [(Story) => <div style={{ width: 480 }}><Story /></div>],
-};
-
-export const TitleOnly: Story = {
-  args: {
-    title: 'Pending Approval: PO-28471',
-  },
-  decorators: [(Story) => <div style={{ width: 480 }}><Story /></div>],
-};
-
-export const EquipmentList: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 520 }}>
-      {[
-        { title: 'MRI Gradient Coil Assembly', subtitle: 'Part #MRI-7842 Â· Siemens', meta: '$12,400' },
-        { title: 'CT Detector Array Module', subtitle: 'Part #CT-4421 Â· GE Healthcare', meta: '$4,800' },
-        { title: 'Ultrasound Probe 3.5MHz', subtitle: 'Part #US-1190 Â· Philips', meta: '$2,200' },
-        { title: 'X-Ray Flat Panel Detector', subtitle: 'Part #XR-8834 Â· Canon Medical', meta: '$8,650' },
-      ].map((item, i) => (
-        <ListCard key={i} title={item.title} subtitle={item.subtitle} meta={item.meta} icon={<PartIcon />} />
-      ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 720 }}>
+      <ListCard title="GE Healthcare Probe" subtitle="Imaging" status="In Stock" sku="4542" manufacturer="GE" price="\$1,249.00" actionLabel="Add to Cart" />
+      <ListCard title="Siemens CT Filter" subtitle="CT Components" status="Low Stock" sku="CT-7821" manufacturer="Siemens" price="\$89.50" actionLabel="View Details" />
+      <ListCard title="Philips Monitor Lead" subtitle="Monitoring" status="Out of Stock" sku="PM-4401" manufacturer="Philips" actionLabel="Notify Me" />
     </div>
   ),
 };
