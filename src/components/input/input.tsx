@@ -1,11 +1,7 @@
 import React, { useState, useId } from 'react';
 
-const FF = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-type InputSize = 'small' | 'medium' | 'large';
-
-interface InputProps {
-  label: string;
+export interface InputProps {
+  label?: string;
   value?: string;
   defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,7 +10,7 @@ interface InputProps {
   error?: string;
   helperText?: string;
   type?: string;
-  size?: InputSize;
+  size?: 'small' | 'medium' | 'large';
   className?: string;
   required?: boolean;
   id?: string;
@@ -22,176 +18,186 @@ interface InputProps {
   readOnly?: boolean;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
+  // Legacy / alias props for stories compatibility
+  leadingIcon?: React.ReactNode;
+  trailingIcon?: React.ReactNode;
+  state?: 'default' | 'error' | 'success' | 'disabled';
+  fullWidth?: boolean;
 }
 
-const heightMap: Record<InputSize, number> = { small: 36, medium: 48, large: 56 };
+const heightMap = { small: '36px', medium: '48px', large: '56px' };
+const labelSizeMap = { small: '12px', medium: '13px', large: '14px' };
 
-const Input: React.FC<InputProps> = ({
+export const Input: React.FC<InputProps> = ({
   label,
   value,
   defaultValue,
   onChange,
-  placeholder = '',
-  disabled = false,
+  placeholder,
+  disabled,
   error,
   helperText,
   type = 'text',
   size = 'medium',
   className = '',
-  required = false,
+  required,
   id,
   name,
-  readOnly = false,
+  readOnly,
   prefix,
   suffix,
+  leadingIcon,
+  trailingIcon,
+  state = 'default',
+  fullWidth = false,
 }) => {
   const [focused, setFocused] = useState(false);
-  const [internalValue, setInternalValue] = useState(defaultValue ?? '');
-  const [hovered, setHovered] = useState(false);
-  const uid = useId();
+  const [internalValue, setInternalValue] = useState(defaultValue || '');
+  const generatedId = useId();
+  const inputId = id || generatedId;
 
-  const controlled = value !== undefined;
-  const currentValue = controlled ? value : internalValue;
-  const hasValue = currentValue !== '' && currentValue !== undefined && currentValue !== null;
+  const isDisabled = disabled || state === 'disabled';
+  const hasError = !!error || state === 'error';
+  const isSuccess = state === 'success';
+  const hasValue = value !== undefined ? value !== '' : internalValue !== '';
+  const isFloated = focused || hasValue || !!placeholder;
 
-  // Label floats when focused OR when there is a value
-  const isFloated = focused || hasValue;
+  const leadingContent = prefix || leadingIcon;
+  const trailingContent = suffix || trailingIcon;
 
-  const inputId = id ?? `input-${uid}`;
   const height = heightMap[size];
 
-  const borderColor = error
-    ? '#D32F2F'
-    : focused
-    ? '#005BA6'
-    : hovered && !disabled
-    ? '#949494'
-    : '#DCDCDC';
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!controlled) setInternalValue(e.target.value);
+    if (value === undefined) setInternalValue(e.target.value);
     onChange?.(e);
   };
 
-  // Vertical positions for the floating label
-  const labelTop = isFloated ? 6 : '50%';
-  const labelTransform = isFloated ? 'none' : 'translateY(-50%)';
-  const labelFontSize = isFloated ? 12 : 14;
-  const labelColor = error
+  const borderColor = hasError
     ? '#D32F2F'
-    : isFloated && focused
+    : isSuccess
+    ? '#17AB78'
+    : focused
     ? '#005BA6'
-    : isFloated
-    ? '#777777'
-    : '#AAAAAA';
+    : '#DCDCDC';
+
+  const labelColor = hasError
+    ? '#D32F2F'
+    : isSuccess
+    ? '#17AB78'
+    : focused || isFloated
+    ? '#005BA6'
+    : '#777777';
 
   return (
-    <div className={className} style={{ position: 'relative', width: '100%', fontFamily: FF }}>
+    <div
+      style={{
+        position: 'relative',
+        width: fullWidth ? '100%' : '320px',
+        fontFamily: "'Source Sans Pro', -apple-system, sans-serif",
+      }}
+      className={className}
+    >
       <div
         style={{
           position: 'relative',
           height,
           border: `1px solid ${borderColor}`,
-          borderRadius: 4,
-          background: disabled ? '#F1F1F1' : '#FFFFFF',
-          transition: 'border-color 150ms ease, box-shadow 150ms ease',
-          boxShadow: focused && !error ? '0 0 0 3px rgba(0,91,166,0.2)' : 'none',
-          cursor: disabled ? 'not-allowed' : undefined,
+          borderRadius: '4px',
+          background: isDisabled ? '#F1F1F1' : '#FFFFFF',
           display: 'flex',
-          alignItems: 'stretch',
+          alignItems: 'center',
+          padding: leadingContent ? '0 12px 0 40px' : '0 12px',
+          paddingRight: trailingContent ? '40px' : '12px',
+          boxSizing: 'border-box',
+          transition: 'border-color 150ms ease',
         }}
-        onMouseEnter={() => !disabled && setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
       >
-        {prefix && (
-          <div style={{
-            display: 'flex', alignItems: 'center', paddingLeft: 12,
-            color: '#777777', flexShrink: 0,
-          }}>
-            {prefix}
-          </div>
+        {leadingContent && (
+          <span
+            style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#777777',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {leadingContent}
+          </span>
         )}
 
-        <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
-          {/* Floating label */}
+        {label && (
           <label
             htmlFor={inputId}
             style={{
               position: 'absolute',
-              left: prefix ? 8 : 12,
-              top: labelTop,
-              transform: labelTransform,
-              fontSize: labelFontSize,
+              left: leadingContent ? '40px' : '12px',
+              top: isFloated ? '6px' : '50%',
+              transform: isFloated ? 'none' : 'translateY(-50%)',
+              fontSize: isFloated ? '11px' : '14px',
               fontWeight: isFloated ? 600 : 400,
               color: labelColor,
               transition: 'all 150ms ease',
               pointerEvents: 'none',
-              userSelect: 'none',
-              fontFamily: FF,
-              lineHeight: '16px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              maxWidth: 'calc(100% - 24px)',
-              textOverflow: 'ellipsis',
+              lineHeight: 1,
             }}
           >
             {label}{required && ' *'}
           </label>
+        )}
 
-          {/* Input field */}
-          <input
-            id={inputId}
-            name={name}
-            type={type}
-            value={currentValue}
-            onChange={handleChange}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            disabled={disabled}
-            readOnly={readOnly}
-            placeholder={isFloated ? placeholder : ''}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
+        <input
+          id={inputId}
+          name={name}
+          type={type}
+          value={value !== undefined ? value : internalValue}
+          onChange={handleChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={!label ? placeholder : undefined}
+          disabled={isDisabled}
+          readOnly={readOnly}
+          required={required}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            fontSize: '14px',
+            color: isDisabled ? '#949494' : '#4A4A4A',
+            paddingTop: label ? '14px' : '0',
+            fontFamily: 'inherit',
+            cursor: isDisabled ? 'not-allowed' : 'text',
+          }}
+        />
+
+        {trailingContent && (
+          <span
             style={{
               position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              top: 0,
-              paddingLeft: prefix ? 8 : 12,
-              paddingRight: suffix ? 8 : 12,
-              paddingTop: isFloated ? (size === 'small' ? 14 : 20) : 0,
-              paddingBottom: 0,
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              fontSize: size === 'small' ? 13 : 14,
-              color: disabled ? '#777777' : '#2B2B2B',
-              width: '100%',
-              boxSizing: 'border-box',
-              cursor: disabled ? 'not-allowed' : undefined,
-              fontFamily: FF,
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#777777',
+              display: 'flex',
+              alignItems: 'center',
             }}
-          />
-        </div>
-
-        {suffix && (
-          <div style={{
-            display: 'flex', alignItems: 'center', paddingRight: 12,
-            color: '#777777', flexShrink: 0,
-          }}>
-            {suffix}
-          </div>
+          >
+            {trailingContent}
+          </span>
         )}
       </div>
 
-      {error && (
-        <p id={`${inputId}-error`} style={{ margin: '4px 0 0', fontSize: 12, color: '#D32F2F', fontFamily: FF }}>
+      {hasError && error && (
+        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#D32F2F' }}>
           {error}
         </p>
       )}
-      {!error && helperText && (
-        <p id={`${inputId}-helper`} style={{ margin: '4px 0 0', fontSize: 12, color: '#777777', fontFamily: FF }}>
+      {!hasError && helperText && (
+        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#777777' }}>
           {helperText}
         </p>
       )}
@@ -199,6 +205,4 @@ const Input: React.FC<InputProps> = ({
   );
 };
 
-export { Input };
 export default Input;
-
