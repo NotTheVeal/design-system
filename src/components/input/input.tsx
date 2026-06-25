@@ -199,4 +199,6 @@ const Input: React.FC<InputProps> = ({
   );
 };
 
+export { Input };
 export default Input;
+
