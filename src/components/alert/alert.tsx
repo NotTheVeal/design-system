@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 export type AlertType = 'success' | 'danger' | 'warning' | 'info';
 export type AlertVariant = 'core' | 'dismissible' | 'multiline' | 'toast';
 export interface AlertProps { type: AlertType; variant?: AlertVariant; title: string; message?: string; onDismiss?: () => void; actions?: React.ReactNode; autoDismiss?: number; className?: string; }
 // PS Design System 2.0 exact token values
 const ALERT_CONFIG = {
   success: { bg: '#E2F5EE', color: '#0E7C55', Icon: CheckCircle2 },
-  danger:  { bg: '#FEF0F0', color: '#E00000', Icon: AlertCircle  },
+  danger:  { bg: '#FDEBEB', color: '#E00000', Icon: XCircle      },
   warning: { bg: '#FFF4E5', color: '#B45309', Icon: AlertTriangle },
   info:    { bg: '#EFF9FE', color: '#005BA6', Icon: Info          },
 } as const;
