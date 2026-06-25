@@ -121,7 +121,6 @@ export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
       flexShrink: 0,
     };
 
-    // Map variant to a human-readable accessible label
     const roleDescription: Record<StatusBadgeVariant, string> = {
       success: 'success status',
       danger: 'error status',
