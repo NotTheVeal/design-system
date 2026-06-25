@@ -1,196 +1,121 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 
-export type StatusBadgeVariant =
-  | 'success'
-  | 'danger'
-  | 'warning'
-  | 'info'
-  | 'neutral';
+// Three badge types per PS Design System 2.0:
+// 1. status  — solid fill pill (semantic color)
+// 2. outlined — border only, light bg
+// 3. dot      — 8px colored circle + label text
 
-export type StatusBadgeShape = 'status' | 'list' | 'dot';
+export type StatusBadgeVariant = 'status' | 'outlined' | 'dot';
+export type StatusBadgeColor = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'primary';
 
-export interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  /** Visual status variant */
-  variant?: StatusBadgeVariant;
-  /** Shape/style: status (rectangular), list (pill), dot (dot + text) */
-  shape?: StatusBadgeShape;
-  /** Label text rendered inside the badge */
+export interface StatusBadgeProps {
   label: string;
-  /** Optional leading dot indicator (for status/list shapes) */
-  withDot?: boolean;
+  color?: StatusBadgeColor;
+  variant?: StatusBadgeVariant;
+  size?: 'sm' | 'md';
+  className?: string;
 }
 
-// ─── Token map ────────────────────────────────────────────────────────────────
-
-const VARIANT_COLORS: Record<
-  StatusBadgeVariant,
-  { bg: string; text: string; dot: string; border: string }
-> = {
-  success: {
-    bg: '#EAF7F2',
-    text: '#17AB78',
-    dot: '#17AB78',
-    border: '#17AB78',
-  },
-  danger: {
-    bg: '#FFF0F0',
-    text: '#FF0000',
-    dot: '#FF0000',
-    border: '#FF0000',
-  },
-  warning: {
-    bg: '#FEF7E8',
-    text: '#E3A92D',
-    dot: '#E3A92D',
-    border: '#E3A92D',
-  },
-  info: {
-    bg: '#E5F1FB',
-    text: '#005BA6',
-    dot: '#005BA6',
-    border: '#005BA6',
-  },
-  neutral: {
-    bg: '#F1F1F1',
-    text: '#777777',
-    dot: '#777777',
-    border: '#949494',
-  },
+const colorMap: Record<StatusBadgeColor, { bg: string; text: string; border: string; dot: string }> = {
+  success: { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#17AB78' },
+  warning: { bg: '#FFF4D0', text: '#B45309', border: '#B45309', dot: '#E3A92D' },
+  danger:  { bg: '#FACBCB', text: '#D32F2F', border: '#D32F2F', dot: '#FF0000' },
+  info:    { bg: '#EFF9FE', text: '#005BA6', border: '#009CF4', dot: '#009CF4' },
+  neutral: { bg: '#F1F1F1', text: '#777777', border: '#949494', dot: '#949494' },
+  primary: { bg: '#DCEAED', text: '#002F48', border: '#005BA6', dot: '#005BA6' },
 };
 
-const SHAPE_STYLES: Record<Exclude<StatusBadgeShape, 'dot'>, React.CSSProperties> = {
-  status: {
-    borderRadius: '4px',
-    padding: '4px 8px',
-  },
-  list: {
-    borderRadius: '100px',
-    padding: '6px 16px',
-    background: 'transparent',
-  },
-};
+export const StatusBadge: React.FC<StatusBadgeProps> = ({
+  label,
+  color = 'neutral',
+  variant = 'status',
+  size = 'md',
+  className = '',
+}) => {
+  const c = colorMap[color];
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const fontSize = size === 'sm' ? 11 : 12;
+  const padding = size === 'sm' ? '1px 7px' : '2px 10px';
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
-  (
-    {
-      variant = 'neutral',
-      shape = 'status',
-      label,
-      withDot = false,
-      style,
-      className,
-      ...rest
-    },
-    ref
-  ) => {
-    const colors = VARIANT_COLORS[variant];
-
-    const roleDescription: Record<StatusBadgeVariant, string> = {
-      success: 'success status',
-      danger: 'error status',
-      warning: 'warning status',
-      info: 'informational status',
-      neutral: 'neutral status',
-    };
-
-    // ─── Dot variant ──────────────────────────────────────────────────────────
-    if (shape === 'dot') {
-      const dotVariantStyle: React.CSSProperties = {
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        fontFamily: "'Source Sans 3', -apple-system, sans-serif",
-        fontSize: '13px',
-        fontWeight: 400,
-        color: '#4A4A4A',
-        whiteSpace: 'nowrap',
-        verticalAlign: 'middle',
-        boxSizing: 'border-box',
-        ...style,
-      };
-
-      return (
-        <span
-          ref={ref}
-          role="status"
-          aria-label={`${roleDescription[variant]}: ${label}`}
-          className={className}
-          style={dotVariantStyle}
-          {...rest}
-        >
-          <span
-            aria-hidden="true"
-            style={{
-              display: 'inline-block',
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: colors.dot,
-              flexShrink: 0,
-            }}
-          />
-          {label}
-        </span>
-      );
-    }
-
-    // ─── Status / List variants ───────────────────────────────────────────────
-    const shapeStyle = SHAPE_STYLES[shape];
-
-    const isList = shape === 'list';
-
-    const badgeStyle: React.CSSProperties = {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      ...shapeStyle,
-      backgroundColor: isList ? 'transparent' : colors.bg,
-      color: colors.text,
-      border: `1px solid ${colors.border}`,
-      fontFamily: "'Source Sans 3', -apple-system, sans-serif",
-      fontSize: '12px',
-      fontWeight: 700,
-      lineHeight: 1,
-      letterSpacing: '0.04em',
-      textTransform: 'uppercase',
-      whiteSpace: 'nowrap',
-      verticalAlign: 'middle',
-      boxSizing: 'border-box',
-      ...style,
-    };
-
-    const dotStyle: React.CSSProperties = {
-      display: 'inline-block',
-      width: '6px',
-      height: '6px',
-      borderRadius: '50%',
-      backgroundColor: colors.dot,
-      flexShrink: 0,
-    };
-
+  if (variant === 'dot') {
     return (
       <span
-        ref={ref}
-        role="status"
-        aria-label={`${roleDescription[variant]}: ${label}`}
         className={className}
-        style={badgeStyle}
-        {...rest}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          fontFamily: font,
+          fontSize,
+          fontWeight: 600,
+          color: '#4A4A4A',
+          lineHeight: '20px',
+        }}
       >
-        {withDot && (
-          <span
-            aria-hidden="true"
-            style={dotStyle}
-          />
-        )}
+        <span
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: c.dot,
+            flexShrink: 0,
+            display: 'inline-block',
+          }}
+        />
         {label}
       </span>
     );
   }
-);
 
-StatusBadge.displayName = 'StatusBadge';
+  if (variant === 'outlined') {
+    return (
+      <span
+        className={className}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding,
+          borderRadius: '4px',
+          border: `1px solid ${c.border}`,
+          background: c.bg,
+          fontFamily: font,
+          fontSize,
+          fontWeight: 700,
+          color: c.text,
+          lineHeight: '16px',
+          letterSpacing: '0.2px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {label}
+      </span>
+    );
+  }
+
+  // default: solid status badge (pill)
+  return (
+    <span
+      className={className}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding,
+        borderRadius: '100px',
+        background: c.bg,
+        border: `1px solid ${c.border}`,
+        fontFamily: font,
+        fontSize,
+        fontWeight: 700,
+        color: c.text,
+        lineHeight: '16px',
+        letterSpacing: '0.5px',
+        textTransform: 'uppercase' as const,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {label}
+    </span>
+  );
+};
 
 export default StatusBadge;
