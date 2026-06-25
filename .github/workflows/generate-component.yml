@@ -2,7 +2,7 @@ name: Generate Component (On-Demand)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Trigger this workflow from GitHub UI:
-#   Repo → Actions → "Generate Component (On-Demand)" → Run workflow
+# Repo → Actions → "Generate Component (On-Demand)" → Run workflow
 #
 # As a UX designer you can trigger this any time you've finished designing
 # a new component in Figma and want it generated as code automatically.
@@ -25,7 +25,6 @@ on:
         required: false
         default: true
         type: boolean
-
 
 permissions:
   contents: write
@@ -78,6 +77,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "feat: generate ${{ inputs.component_name }} component [skip ci]"
-            git push origin ${{ inputs.branch }}
+            git commit -m "feat: generate ${{ github.event.inputs.component_name }} component [skip ci]" || echo "No changes to commit"
+            git pull --rebase origin main
+            git push
           fi
