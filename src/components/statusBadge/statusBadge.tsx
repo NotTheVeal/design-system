@@ -7,16 +7,16 @@ export type StatusBadgeVariant =
   | 'info'
   | 'neutral';
 
-export type StatusBadgeShape = 'status' | 'list';
+export type StatusBadgeShape = 'status' | 'list' | 'dot';
 
 export interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Visual status variant */
   variant?: StatusBadgeVariant;
-  /** Shape/style of the badge */
+  /** Shape/style: status (rectangular), list (pill), dot (dot + text) */
   shape?: StatusBadgeShape;
   /** Label text rendered inside the badge */
   label: string;
-  /** Optional leading dot indicator */
+  /** Optional leading dot indicator (for status/list shapes) */
   withDot?: boolean;
 }
 
@@ -58,7 +58,7 @@ const VARIANT_COLORS: Record<
   },
 };
 
-const SHAPE_STYLES: Record<StatusBadgeShape, React.CSSProperties> = {
+const SHAPE_STYLES: Record<Exclude<StatusBadgeShape, 'dot'>, React.CSSProperties> = {
   status: {
     borderRadius: '4px',
     padding: '4px 8px',
@@ -66,6 +66,7 @@ const SHAPE_STYLES: Record<StatusBadgeShape, React.CSSProperties> = {
   list: {
     borderRadius: '100px',
     padding: '6px 16px',
+    background: 'transparent',
   },
 };
 
@@ -85,20 +86,69 @@ export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
     ref
   ) => {
     const colors = VARIANT_COLORS[variant];
+
+    const roleDescription: Record<StatusBadgeVariant, string> = {
+      success: 'success status',
+      danger: 'error status',
+      warning: 'warning status',
+      info: 'informational status',
+      neutral: 'neutral status',
+    };
+
+    // ─── Dot variant ──────────────────────────────────────────────────────────
+    if (shape === 'dot') {
+      const dotVariantStyle: React.CSSProperties = {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        fontFamily: "'Source Sans 3', -apple-system, sans-serif",
+        fontSize: '13px',
+        fontWeight: 400,
+        color: '#4A4A4A',
+        whiteSpace: 'nowrap',
+        verticalAlign: 'middle',
+        boxSizing: 'border-box',
+        ...style,
+      };
+
+      return (
+        <span
+          ref={ref}
+          role="status"
+          aria-label={`${roleDescription[variant]}: ${label}`}
+          className={className}
+          style={dotVariantStyle}
+          {...rest}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              display: 'inline-block',
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: colors.dot,
+              flexShrink: 0,
+            }}
+          />
+          {label}
+        </span>
+      );
+    }
+
+    // ─── Status / List variants ───────────────────────────────────────────────
     const shapeStyle = SHAPE_STYLES[shape];
 
+    const isList = shape === 'list';
+
     const badgeStyle: React.CSSProperties = {
-      // Layout
       display: 'inline-flex',
       alignItems: 'center',
       gap: '6px',
-      // Shape
       ...shapeStyle,
-      // Colors
-      backgroundColor: colors.bg,
+      backgroundColor: isList ? 'transparent' : colors.bg,
       color: colors.text,
       border: `1px solid ${colors.border}`,
-      // Typography
       fontFamily: "'Source Sans 3', -apple-system, sans-serif",
       fontSize: '12px',
       fontWeight: 700,
@@ -106,7 +156,6 @@ export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
       letterSpacing: '0.04em',
       textTransform: 'uppercase',
       whiteSpace: 'nowrap',
-      // Misc
       verticalAlign: 'middle',
       boxSizing: 'border-box',
       ...style,
@@ -119,14 +168,6 @@ export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(
       borderRadius: '50%',
       backgroundColor: colors.dot,
       flexShrink: 0,
-    };
-
-    const roleDescription: Record<StatusBadgeVariant, string> = {
-      success: 'success status',
-      danger: 'error status',
-      warning: 'warning status',
-      info: 'informational status',
-      neutral: 'neutral status',
     };
 
     return (
