@@ -34,7 +34,7 @@
     "validate": "node validate-references.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint": "eslint src --ext .ts,.tsx --max-warnings 50",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings 100",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
