@@ -9,7 +9,6 @@ on:
       - 'tokens/**'
       - 'package.json'
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
@@ -17,7 +16,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy-storybook:
