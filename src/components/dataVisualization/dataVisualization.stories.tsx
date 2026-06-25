@@ -1,45 +1,80 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { DataVisualization } from './dataVisualization';
 
 const meta: Meta<typeof DataVisualization> = {
   title: 'Components/DataVisualization',
   component: DataVisualization,
-  parameters: { layout: 'centered' },
-  tags: ['autodocs'],
+  parameters: { layout: 'padded' },
+  argTypes: { type: { control: 'select', options: ['bar', 'line', 'area', 'pie', 'donut'] } },
 };
 export default meta;
 type Story = StoryObj<typeof DataVisualization>;
 
-const monthly = [
-  { label: 'Jan', value: 42 }, { label: 'Feb', value: 78 },
-  { label: 'Mar', value: 55 }, { label: 'Apr', value: 91 },
-  { label: 'May', value: 63 }, { label: 'Jun', value: 84 },
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+const quarterSeries = [
+  { name: 'Parts Ordered', data: [420, 580, 490, 720, 650, 810] },
+  { name: 'Parts Returned', data: [38, 52, 45, 63, 58, 71] },
 ];
-const category = [
-  { label: 'Parts', value: 340 }, { label: 'Service', value: 210 },
-  { label: 'Repair', value: 175 }, { label: 'Install', value: 95 },
+const revenueSeries = [
+  { name: 'Revenue', data: [180000, 245000, 210000, 320000, 290000, 380000] },
 ];
-
-const status = [
-  { label: 'Active', value: 58, color: '#005BA6' },
-  { label: 'Pending', value: 22, color: '#B45309' },
-  { label: 'Closed', value: 14, color: '#0E7C55' },
-  { label: 'Draft', value: 6, color: '#6B7280' },
+const vendorData = [
+  { label: 'GE Healthcare', value: 38 },
+  { label: 'Siemens', value: 27 },
+  { label: 'Philips', value: 19 },
+  { label: 'Stryker', value: 9 },
+  { label: 'Other', value: 7 },
 ];
 
 export const BarChart: Story = {
-  args: { type: 'bar', data: monthly, title: 'Monthly Orders', subtitle: 'Jan - Jun 2024', width: 520, height: 280 },
+  args: { type: 'bar', title: 'Parts Activity — H1 2025', labels: months, series: quarterSeries, height: 260, showLegend: true },
 };
+
 export const LineChart: Story = {
-  args: { type: 'line', data: monthly, title: 'Revenue Trend', width: 520, height: 280 },
+  args: { type: 'line', title: 'Revenue Trend', labels: months, series: revenueSeries, height: 240, showLegend: true },
 };
-export const DonutChart: Story = {
-  args: { type: 'donut', data: status, title: 'Order Status', width: 480, height: 240 },
+
+export const AreaChart: Story = {
+  args: { type: 'area', title: 'Parts Ordered (Area)', labels: months, series: quarterSeries, height: 240, showLegend: true },
 };
+
 export const PieChart: Story = {
-  args: { type: 'pie', data: category, title: 'Category Breakdown', width: 480, height: 240 },
+  args: { type: 'pie', title: 'Vendor Distribution', data: vendorData, height: 220 },
 };
-export const BarNoTitle: Story = {
-  name: 'Bar No Title',
-  args: { type: 'bar', data: category, width: 440, height: 260 },
+
+export const DonutChart: Story = {
+  args: { type: 'donut', title: 'Vendor Mix', data: vendorData, height: 220 },
+};
+
+export const MultiSeriesBar: Story = {
+  render: () => (
+    <DataVisualization
+      type="bar"
+      title="Q1–Q2 Performance by Category"
+      labels={['Imaging', 'Surgical', 'Monitoring', 'Infusion', 'Lab']}
+      series={[
+        { name: 'Q1 2025', data: [120, 85, 210, 65, 98] },
+        { name: 'Q2 2025', data: [145, 102, 248, 78, 115] },
+      ]}
+      height={280}
+      showValues
+    />
+  ),
+};
+
+export const Dashboard: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', gap: 24 }}>
+        <div style={{ flex: 2 }}>
+          <DataVisualization type="area" title="Monthly Revenue" labels={months} series={revenueSeries} height={200} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <DataVisualization type="donut" title="Top Vendors" data={vendorData} height={200} />
+        </div>
+      </div>
+      <DataVisualization type="bar" title="Parts Volume by Month" labels={months} series={quarterSeries} height={200} showLegend />
+    </div>
+  ),
 };
