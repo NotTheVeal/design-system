@@ -43,12 +43,12 @@ const PageButton: React.FC<{
   children?: React.ReactNode;
 }> = ({ page, isActive, disabled, onClick, children }) => {
   const [hovered, setHovered] = useState(false);
-  const isEllipsis = page === 'â¦';
+  const isEllipsis = page === '…';
 
   if (isEllipsis) {
     return (
       <span style={{ width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#949494', fontFamily }}>
-        â¦
+        …
       </span>
     );
   }
@@ -95,9 +95,9 @@ const getPageRange = (current: number, total: number, siblings: number): (number
   const right = Math.min(total - 1, current + siblings);
 
   range.push(1);
-  if (left > 2) range.push('â¦');
+  if (left > 2) range.push('…');
   for (let i = left; i <= right; i++) range.push(i);
-  if (right < total - 1) range.push('â¦');
+  if (right < total - 1) range.push('…');
   if (total > 1) range.push(total);
 
   return range;
