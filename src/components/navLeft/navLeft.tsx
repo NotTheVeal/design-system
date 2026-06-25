@@ -1,213 +1,310 @@
 import React, { useState } from 'react';
 
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+/**
+ * NavLeft — PS Design System 2.0
+ *
+ * Vertical left-side navigation rail. Supports light and dark (ProProcure) variants.
+ *
+ * Dark variant spec (ProProcure / B2B default):
+ *   - Background: #002F48 (Midnight)
+ *   - Active item bg: #004A84, border-left 3px solid #009CF4 (Azure)
+ *   - Active text: #009CF4
+ *   - Hover bg: #003A68
+ *   - Text: #FFFFFF
+ *   - Icon color: #FFFFFF (default), #009CF4 (active)
+ *   - Collapsed: 56px icon-only
+ *
+ * Light variant spec:
+ *   - Background: #FFFFFF
+ *   - Active item bg: #EBF3FA, border-left 3px solid #005BA6
+ *   - Active text: #005BA6
+ *   - Hover bg: #F1F1F1
+ *   - Text: #4A4A4A
+ *   - Collapsed: 56px icon-only
+ */
 
-const NAV_BG        = '#002F48';
-const NAV_TEXT      = '#FFFFFF';
-const NAV_TEXT_DIM  = 'rgba(255,255,255,0.55)';
-const NAV_ACTIVE_BG = 'rgba(255,255,255,0.15)';
-const NAV_HOVER_BG  = 'rgba(255,255,255,0.08)';
-const NAV_BORDER    = 'rgba(255,255,255,0.12)';
-
-interface NavItem {
+export interface NavItem {
+  id: string;
   label: string;
-  value: string;
   icon?: React.ReactNode;
-  children?: NavItem[];
-  disabled?: boolean;
-  badge?: string | number;
   href?: string;
+  badge?: number;
+  children?: NavItem[];
 }
 
-interface NavLeftProps {
+export interface NavLeftProps {
+  /** Navigation items */
   items: NavItem[];
-  activeValue?: string;
-  onItemClick?: (value: string) => void;
-  className?: string;
+  /** Collapse to icon-only (56px wide) */
   collapsed?: boolean;
-  onCollapseToggle?: () => void;
+  /** Initially active item id */
+  activeId?: string;
+  /** Show logo/brand header */
+  showLogo?: boolean;
+  /** Color variant */
+  colorVariant?: 'dark' | 'light';
+  /** Called when an item is clicked with its id */
+  onNavigate?: (id: string) => void;
+  className?: string;
 }
 
-const ChevronDown = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-);
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
 
-const ChevronLeft = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 18 9 12 15 6" />
-  </svg>
-);
+// ── Color token sets ──────────────────────────────────────────────────────────
+const DARK = {
+  bg: '#002F48',
+  activeBg: '#004A84',
+  activeAccent: '#009CF4',
+  hoverBg: '#003A68',
+  text: '#FFFFFF',
+  activeText: '#009CF4',
+  border: 'rgba(255,255,255,0.10)',
+  divider: 'rgba(255,255,255,0.08)',
+  logoText: '#FFFFFF',
+  badgeBg: '#009CF4',
+  badgeText: '#FFFFFF',
+  subGroupLine: 'rgba(255,255,255,0.15)',
+};
 
-const ChevronRight = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6" />
-  </svg>
-);
+const LIGHT = {
+  bg: '#FFFFFF',
+  activeBg: '#EBF3FA',
+  activeAccent: '#005BA6',
+  hoverBg: '#F1F1F1',
+  text: '#4A4A4A',
+  activeText: '#005BA6',
+  border: '#DCDCDC',
+  divider: '#DCDCDC',
+  logoText: '#4A4A4A',
+  badgeBg: '#005BA6',
+  badgeText: '#FFFFFF',
+  subGroupLine: '#DCDCDC',
+};
 
-const NavLeft: React.FC<NavLeftProps> = ({
-  items = [],
-  activeValue,
-  onItemClick,
-  className = '',
+export function NavLeft({
+  items,
   collapsed = false,
-  onCollapseToggle,
-}) => {
+  activeId: externalActiveId,
+  showLogo = true,
+  colorVariant = 'dark',
+  onNavigate,
+  className,
+}: NavLeftProps) {
+  const [activeId, setActiveId] = useState(externalActiveId || items[0]?.id || '');
   const [expanded, setExpanded] = useState<string[]>([]);
 
-  const toggleExpand = (value: string) => {
-    setExpanded(prev =>
-      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
-    );
+  const c = colorVariant === 'dark' ? DARK : LIGHT;
+  const width = collapsed ? 56 : 220;
+
+  const handleItemClick = (item: NavItem) => {
+    setActiveId(item.id);
+    onNavigate?.(item.id);
+    if (item.children?.length) {
+      setExpanded((prev) =>
+        prev.includes(item.id)
+          ? prev.filter((id) => id !== item.id)
+          : [...prev, item.id]
+      );
+    }
   };
 
-  const renderItem = (item: NavItem, depth = 0): React.ReactNode => {
-    const isActive   = activeValue === item.value;
-    const isExpanded = expanded.includes(item.value);
-    const hasChildren = (item.children?.length ?? 0) > 0;
+  const NavItemComponent = ({
+    item,
+    depth = 0,
+  }: {
+    item: NavItem;
+    depth?: number;
+  }) => {
+    const isActive = activeId === item.id;
+    const hasChildren = !!item.children?.length;
+    const isExpanded = expanded.includes(item.id);
 
     return (
-      <div key={item.value}>
-        <div
-          role="button"
-          tabIndex={item.disabled ? -1 : 0}
-          onClick={() => {
-            if (item.disabled) return;
-            if (hasChildren) toggleExpand(item.value);
-            else onItemClick?.(item.value);
-          }}
-          onKeyDown={e => {
-            if ((e.key === 'Enter' || e.key === ' ') && !item.disabled) {
-              if (hasChildren) toggleExpand(item.value);
-              else onItemClick?.(item.value);
-            }
-          }}
+      <>
+        <button
+          onClick={() => handleItemClick(item)}
+          title={collapsed ? item.label : undefined}
+          aria-current={isActive ? 'page' : undefined}
+          aria-expanded={hasChildren ? isExpanded : undefined}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            height: 40,
-            padding: collapsed ? '0 16px' : depth > 0 ? '0 12px 0 36px' : '0 12px',
-            borderRadius: 4,
-            marginBottom: 2,
-            cursor: item.disabled ? 'not-allowed' : 'pointer',
-            background: isActive ? NAV_ACTIVE_BG : 'transparent',
-            color: item.disabled ? NAV_TEXT_DIM : NAV_TEXT,
-            fontFamily,
+            width: '100%',
+            minHeight: 40,
+            padding: collapsed
+              ? '0'
+              : `0 16px 0 ${depth > 0 ? 32 : 16}px`,
+            paddingLeft: collapsed ? 0 : undefined,
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            background: isActive ? c.activeBg : 'transparent',
+            borderLeft: isActive
+              ? `3px solid ${c.activeAccent}`
+              : '3px solid transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: isActive ? c.activeText : c.text,
             fontSize: 14,
             fontWeight: isActive ? 600 : 400,
-            transition: 'background 150ms ease',
-            userSelect: 'none',
-            outline: 'none',
+            textAlign: 'left',
+            transition: 'background 150ms ease, color 150ms ease',
+            fontFamily: FONT,
+            flexShrink: 0,
           }}
-          onMouseEnter={e => {
-            if (!isActive && !item.disabled)
-              (e.currentTarget as HTMLDivElement).style.background = NAV_HOVER_BG;
+          onMouseEnter={(e) => {
+            if (!isActive) {
+              e.currentTarget.style.background = c.hoverBg;
+            }
           }}
-          onMouseLeave={e => {
-            if (!isActive)
-              (e.currentTarget as HTMLDivElement).style.background = isActive ? NAV_ACTIVE_BG : 'transparent';
+          onMouseLeave={(e) => {
+            if (!isActive) {
+              e.currentTarget.style.background = 'transparent';
+            }
           }}
         >
+          {/* Icon */}
           {item.icon && (
-            <span style={{ flexShrink: 0, width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', color: NAV_TEXT }}>
+            <span
+              style={{
+                fontSize: 16,
+                flexShrink: 0,
+                lineHeight: 1,
+                color: isActive ? c.activeText : c.text,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: collapsed ? '100%' : 'auto',
+              }}
+            >
               {item.icon}
             </span>
           )}
+
+          {/* Label (hidden when collapsed) */}
           {!collapsed && (
             <>
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {item.label}
-              </span>
+              <span style={{ flex: 1, lineHeight: 1.3 }}>{item.label}</span>
+
+              {/* Badge */}
               {item.badge !== undefined && (
-                <span style={{
-                  flexShrink: 0,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minWidth: 20,
-                  height: 20,
-                  padding: '0 5px',
-                  borderRadius: 10,
-                  background: 'rgba(255,255,255,0.2)',
-                  color: '#FFFFFF',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  fontFamily,
-                }}>
+                <span
+                  style={{
+                    background: c.badgeBg,
+                    color: c.badgeText,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    borderRadius: 10,
+                    padding: '1px 6px',
+                    minWidth: 18,
+                    textAlign: 'center',
+                    lineHeight: 1.6,
+                  }}
+                >
                   {item.badge}
                 </span>
               )}
+
+              {/* Expand chevron */}
               {hasChildren && (
-                <span style={{
-                  flexShrink: 0,
-                  color: NAV_TEXT,
-                  transition: 'transform 150ms ease',
-                  transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
-                  display: 'flex',
-                }}>
-                  <ChevronDown />
+                <span
+                  style={{
+                    fontSize: 12,
+                    transform: isExpanded ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 200ms ease',
+                    opacity: 0.7,
+                  }}
+                >
+                  ▾
                 </span>
               )}
             </>
           )}
-        </div>
+        </button>
+
+        {/* Sub-items */}
         {hasChildren && isExpanded && !collapsed && (
-          <div>{item.children!.map(child => renderItem(child, depth + 1))}</div>
+          <div
+            style={{
+              borderLeft: `2px solid ${c.subGroupLine}`,
+              marginLeft: 24,
+            }}
+          >
+            {item.children!.map((child) => (
+              <NavItemComponent key={child.id} item={child} depth={depth + 1} />
+            ))}
+          </div>
         )}
-      </div>
+      </>
     );
   };
 
   return (
     <nav
       className={className}
-      aria-label="Side navigation"
+      aria-label="Primary navigation"
       style={{
+        width,
+        minHeight: 500,
+        background: c.bg,
+        borderRight: `1px solid ${c.border}`,
         display: 'flex',
         flexDirection: 'column',
-        width: collapsed ? 56 : 240,
-        background: NAV_BG,
-        height: '100%',
-        padding: '16px 8px',
         transition: 'width 200ms ease',
-        fontFamily,
-        boxSizing: 'border-box',
+        overflow: 'hidden',
+        flexShrink: 0,
+        fontFamily: FONT,
       }}
     >
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-        {items.map(item => renderItem(item))}
-      </div>
-      {onCollapseToggle && (
-        <div style={{ borderTop: `1px solid ${NAV_BORDER}`, paddingTop: 8, marginTop: 8 }}>
-          <button
-            onClick={onCollapseToggle}
-            aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
+      {/* Logo header */}
+      {showLogo && (
+        <div
+          style={{
+            height: 56,
+            display: 'flex',
+            alignItems: 'center',
+            padding: collapsed ? '0 14px' : '0 16px',
+            borderBottom: `1px solid ${c.divider}`,
+            gap: 10,
+            flexShrink: 0,
+          }}
+        >
+          <div
             style={{
+              width: 28,
+              height: 28,
+              background: '#009CF4',
+              borderRadius: 4,
+              flexShrink: 0,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: collapsed ? 'center' : 'flex-end',
-              width: '100%',
-              height: 36,
-              border: 'none',
-              background: 'transparent',
-              color: NAV_TEXT_DIM,
-              cursor: 'pointer',
-              borderRadius: 4,
-              padding: '0 8px',
-              transition: 'color 150ms ease',
-              fontFamily,
+              justifyContent: 'center',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = NAV_TEXT}
-            onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = NAV_TEXT_DIM}
           >
-            {collapsed ? <ChevronRight /> : <ChevronLeft />}
-          </button>
+            <span style={{ color: '#FFFFFF', fontSize: 12, fontWeight: 700 }}>PS</span>
+          </div>
+          {!collapsed && (
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: 14,
+                color: c.logoText,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              ProProcure
+            </span>
+          )}
         </div>
       )}
+
+      {/* Nav items */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+        {items.map((item) => (
+          <NavItemComponent key={item.id} item={item} />
+        ))}
+      </div>
     </nav>
   );
-};
+}
 
 export default NavLeft;
