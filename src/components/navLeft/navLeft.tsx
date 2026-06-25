@@ -7,12 +7,17 @@ import React, { useState } from 'react';
  *
  * Dark variant spec (ProProcure / B2B default):
  *   - Background: #002F48 (Midnight)
- *   - Active item bg: #004A84, border-left 3px solid #009CF4 (Azure)
- *   - Active text: #009CF4
- *   - Hover bg: #003A68
- *   - Text: #FFFFFF
- *   - Icon color: #FFFFFF (default), #009CF4 (active)
- *   - Collapsed: 56px icon-only
+ *   - Expanded width: 240px | Collapsed width: 60px
+ *   - Logo area: 56px height, border-bottom 1px solid rgba(255,255,255,0.1)
+ *   - Nav item height: 44px, padding 0 16px
+ *   - Nav item default: text rgba(255,255,255,0.7), no bg
+ *   - Nav item hover: text rgba(255,255,255,0.9), bg rgba(255,255,255,0.08)
+ *   - Nav item active: text #FFFFFF, bg #005BA6 (PS Blue)
+ *   - Icons: 20px, same color as text
+ *   - Group label: 11px, uppercase, letter-spacing 0.1em, rgba(255,255,255,0.4), 32px height
+ *   - Badge: small pill, #005BA6 bg, white text, 18px height
+ *   - Transition: width 200ms ease
+ *   - Font: Source Sans 3, 14px, 400 normal, 500 for active
  *
  * Light variant spec:
  *   - Background: #FFFFFF
@@ -20,7 +25,7 @@ import React, { useState } from 'react';
  *   - Active text: #005BA6
  *   - Hover bg: #F1F1F1
  *   - Text: #4A4A4A
- *   - Collapsed: 56px icon-only
+ *   - Collapsed: 60px icon-only
  */
 
 export interface NavItem {
@@ -30,12 +35,14 @@ export interface NavItem {
   href?: string;
   badge?: number;
   children?: NavItem[];
+  /** Renders as a non-clickable group separator label */
+  isGroup?: boolean;
 }
 
 export interface NavLeftProps {
   /** Navigation items */
   items: NavItem[];
-  /** Collapse to icon-only (56px wide) */
+  /** Collapse to icon-only (60px wide) */
   collapsed?: boolean;
   /** Initially active item id */
   activeId?: string;
@@ -52,33 +59,33 @@ const FONT = "'Source Sans 3', -apple-system, sans-serif";
 
 // ── Color token sets ──────────────────────────────────────────────────────────
 const DARK = {
-  bg: '#002F48',
-  activeBg: '#004A84',
-  activeAccent: '#009CF4',
-  hoverBg: '#003A68',
-  text: '#FFFFFF',
-  activeText: '#009CF4',
-  border: 'rgba(255,255,255,0.10)',
-  divider: 'rgba(255,255,255,0.08)',
-  logoText: '#FFFFFF',
-  badgeBg: '#009CF4',
-  badgeText: '#FFFFFF',
-  subGroupLine: 'rgba(255,255,255,0.15)',
+  bg:            '#002F48',
+  activeItemBg:  '#005BA6',       // PS Blue fill for active item
+  activeText:    '#FFFFFF',
+  defaultText:   'rgba(255,255,255,0.7)',
+  hoverText:     'rgba(255,255,255,0.9)',
+  hoverBg:       'rgba(255,255,255,0.08)',
+  logoBorder:    'rgba(255,255,255,0.1)',
+  divider:       'rgba(255,255,255,0.08)',
+  groupLabel:    'rgba(255,255,255,0.4)',
+  badgeBg:       '#005BA6',
+  badgeText:     '#FFFFFF',
+  rightBorder:   'rgba(255,255,255,0.08)',
 };
 
 const LIGHT = {
-  bg: '#FFFFFF',
-  activeBg: '#EBF3FA',
-  activeAccent: '#005BA6',
-  hoverBg: '#F1F1F1',
-  text: '#4A4A4A',
-  activeText: '#005BA6',
-  border: '#DCDCDC',
-  divider: '#DCDCDC',
-  logoText: '#4A4A4A',
-  badgeBg: '#005BA6',
-  badgeText: '#FFFFFF',
-  subGroupLine: '#DCDCDC',
+  bg:            '#FFFFFF',
+  activeItemBg:  '#EBF3FA',
+  activeText:    '#005BA6',
+  defaultText:   '#4A4A4A',
+  hoverText:     '#2B2B2B',
+  hoverBg:       '#F1F1F1',
+  logoBorder:    '#DCDCDC',
+  divider:       '#DCDCDC',
+  groupLabel:    '#949494',
+  badgeBg:       '#005BA6',
+  badgeText:     '#FFFFFF',
+  rightBorder:   '#DCDCDC',
 };
 
 export function NavLeft({
@@ -90,13 +97,14 @@ export function NavLeft({
   onNavigate,
   className,
 }: NavLeftProps) {
-  const [activeId, setActiveId] = useState(externalActiveId || items[0]?.id || '');
+  const [activeId, setActiveId] = useState(externalActiveId || items.find(i => !i.isGroup)?.id || '');
   const [expanded, setExpanded] = useState<string[]>([]);
 
   const c = colorVariant === 'dark' ? DARK : LIGHT;
-  const width = collapsed ? 56 : 220;
+  const width = collapsed ? 60 : 240;
 
   const handleItemClick = (item: NavItem) => {
+    if (item.isGroup) return;
     setActiveId(item.id);
     onNavigate?.(item.id);
     if (item.children?.length) {
@@ -115,8 +123,33 @@ export function NavLeft({
     item: NavItem;
     depth?: number;
   }) => {
+    // Group label (section header)
+    if (item.isGroup) {
+      if (collapsed) return null;
+      return (
+        <div
+          style={{
+            height: 32,
+            display: 'flex',
+            alignItems: 'center',
+            paddingLeft: 16,
+            fontSize: 11,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: c.groupLabel,
+            fontFamily: FONT,
+            userSelect: 'none',
+            marginTop: 8,
+          }}
+        >
+          {item.label}
+        </div>
+      );
+    }
+
     const isActive = activeId === item.id;
-    const hasChildren = !!item.children?.length;
+    const hasChildren = !!(item.children?.length);
     const isExpanded = expanded.includes(item.id);
 
     return (
@@ -131,49 +164,50 @@ export function NavLeft({
             alignItems: 'center',
             gap: 10,
             width: '100%',
-            minHeight: 40,
+            height: 44,
             padding: collapsed
               ? '0'
               : `0 16px 0 ${depth > 0 ? 32 : 16}px`,
-            paddingLeft: collapsed ? 0 : undefined,
             justifyContent: collapsed ? 'center' : 'flex-start',
-            background: isActive ? c.activeBg : 'transparent',
-            borderLeft: isActive
-              ? `3px solid ${c.activeAccent}`
-              : '3px solid transparent',
+            background: isActive ? c.activeItemBg : 'transparent',
             border: 'none',
             cursor: 'pointer',
-            color: isActive ? c.activeText : c.text,
+            color: isActive ? c.activeText : c.defaultText,
             fontSize: 14,
-            fontWeight: isActive ? 600 : 400,
+            fontWeight: isActive ? 500 : 400,
             textAlign: 'left',
             transition: 'background 150ms ease, color 150ms ease',
             fontFamily: FONT,
             flexShrink: 0,
+            borderRadius: 0,
           }}
           onMouseEnter={(e) => {
             if (!isActive) {
               e.currentTarget.style.background = c.hoverBg;
+              e.currentTarget.style.color = c.hoverText;
             }
           }}
           onMouseLeave={(e) => {
             if (!isActive) {
               e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = c.defaultText;
             }
           }}
         >
-          {/* Icon */}
+          {/* Icon — 20px, same color as text (inherited via currentColor) */}
           {item.icon && (
             <span
               style={{
-                fontSize: 16,
                 flexShrink: 0,
-                lineHeight: 1,
-                color: isActive ? c.activeText : c.text,
+                width: 20,
+                height: 20,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: collapsed ? '100%' : 'auto',
+                fontSize: 20,
+                lineHeight: 1,
+                color: 'inherit',
+                ...(collapsed ? { width: '100%' } : {}),
               }}
             >
               {item.icon}
@@ -183,24 +217,31 @@ export function NavLeft({
           {/* Label (hidden when collapsed) */}
           {!collapsed && (
             <>
-              <span style={{ flex: 1, lineHeight: 1.3 }}>{item.label}</span>
+              <span style={{ flex: 1, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.label}
+              </span>
 
-              {/* Badge */}
+              {/* Badge — 18px height pill */}
               {item.badge !== undefined && (
                 <span
                   style={{
                     background: c.badgeBg,
                     color: c.badgeText,
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: 700,
-                    borderRadius: 10,
-                    padding: '1px 6px',
+                    borderRadius: 9,
+                    padding: '0 6px',
                     minWidth: 18,
-                    textAlign: 'center',
-                    lineHeight: 1.6,
+                    height: 18,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    lineHeight: 1,
+                    fontFamily: FONT,
+                    flexShrink: 0,
                   }}
                 >
-                  {item.badge}
+                  {item.badge > 99 ? '99+' : item.badge}
                 </span>
               )}
 
@@ -212,6 +253,7 @@ export function NavLeft({
                     transform: isExpanded ? 'rotate(180deg)' : 'none',
                     transition: 'transform 200ms ease',
                     opacity: 0.7,
+                    flexShrink: 0,
                   }}
                 >
                   ▾
@@ -225,7 +267,7 @@ export function NavLeft({
         {hasChildren && isExpanded && !collapsed && (
           <div
             style={{
-              borderLeft: `2px solid ${c.subGroupLine}`,
+              borderLeft: `2px solid ${c.divider}`,
               marginLeft: 24,
             }}
           >
@@ -246,7 +288,7 @@ export function NavLeft({
         width,
         minHeight: 500,
         background: c.bg,
-        borderRight: `1px solid ${c.border}`,
+        borderRight: `1px solid ${c.rightBorder}`,
         display: 'flex',
         flexDirection: 'column',
         transition: 'width 200ms ease',
@@ -255,7 +297,7 @@ export function NavLeft({
         fontFamily: FONT,
       }}
     >
-      {/* Logo header */}
+      {/* Logo header — 56px height */}
       {showLogo && (
         <div
           style={{
@@ -263,7 +305,7 @@ export function NavLeft({
             display: 'flex',
             alignItems: 'center',
             padding: collapsed ? '0 14px' : '0 16px',
-            borderBottom: `1px solid ${c.divider}`,
+            borderBottom: `1px solid ${c.logoBorder}`,
             gap: 10,
             flexShrink: 0,
           }}
@@ -287,7 +329,7 @@ export function NavLeft({
               style={{
                 fontWeight: 700,
                 fontSize: 14,
-                color: c.logoText,
+                color: colorVariant === 'dark' ? '#FFFFFF' : '#4A4A4A',
                 whiteSpace: 'nowrap',
               }}
             >
