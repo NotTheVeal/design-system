@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Tooltip } from './tooltip';
+import React from 'react';
 
 const meta = {
   title: 'Components/Tooltip',
@@ -11,7 +12,7 @@ const meta = {
       description: {
         component: `**PS Design System 2.0 — Tooltip**
 
-Midnight (#002F48) background, white text. Uses \`position: fixed\` so it renders correctly above all containers.
+Midnight (#002F48) background, white text. Uses \`position: absolute\` positioned relative to the trigger.
 
 | Property | Value |
 |---|---|
@@ -23,7 +24,7 @@ Midnight (#002F48) background, white text. Uses \`position: fixed\` so it render
 | placement | top / bottom / left / right |
 | arrow | 6px triangle toward trigger |
 
-**Hover** any button in the stories below to see the tooltip.`.trim(),
+**Hover** any button in the stories below to see the tooltip. The "Always Visible — Top" story shows the tooltip pre-rendered without hover so it is visible in Storybook docs.`.trim(),
       },
     },
   },
@@ -129,4 +130,77 @@ export const AllPlacements: Story = {
       ))}
     </div>
   ),
+};
+
+/**
+ * Always Visible — Top
+ *
+ * Renders the tooltip DOM directly (no hover required) so it is always visible
+ * in Storybook docs and screenshots. Uses the same tokens and styling as the
+ * live Tooltip component.
+ */
+export const AlwaysVisibleTop: Story = {
+  name: 'Always Visible — Top',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows the tooltip pre-rendered open above the trigger — no hover needed. Uses the exact PS Design System token values: `#002F48` bg, white 13px text, 4px border-radius, 6px 10px padding, max-width 240px.',
+      },
+    },
+  },
+  render: () => {
+    const FONT = "'Source Sans 3', -apple-system, sans-serif";
+    const tooltipStyle: React.CSSProperties = {
+      position: 'absolute',
+      bottom: 'calc(100% + 10px)',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: '#002F48',
+      color: '#FFFFFF',
+      fontSize: 13,
+      fontWeight: 400,
+      fontFamily: FONT,
+      lineHeight: '18px',
+      padding: '6px 10px',
+      borderRadius: 4,
+      maxWidth: 240,
+      whiteSpace: 'nowrap',
+      pointerEvents: 'none',
+      zIndex: 10000,
+    };
+    const arrowStyle: React.CSSProperties = {
+      position: 'absolute',
+      top: '100%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: 0,
+      height: 0,
+      borderLeft: '6px solid transparent',
+      borderRight: '6px solid transparent',
+      borderTop: '6px solid #002F48',
+    };
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 320, height: 180, border: '1px dashed #DCDCDC', borderRadius: 8,
+        fontFamily: FONT, position: 'relative',
+      }}>
+        <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* Tooltip bubble — always visible */}
+          <div role="tooltip" style={tooltipStyle}>
+            View order details
+            <div style={arrowStyle} />
+          </div>
+          {/* Trigger button */}
+          <button style={{
+            padding: '10px 20px', borderRadius: 4, border: '1px solid #DCDCDC',
+            fontFamily: FONT, fontSize: 14,
+            background: '#FFFFFF', cursor: 'pointer', color: '#4A4A4A',
+          }}>
+            View Details
+          </button>
+        </div>
+      </div>
+    );
+  },
 };
