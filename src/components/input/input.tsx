@@ -26,7 +26,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 
 const HEIGHT_MAP: Record<InputSize, number> = {
   small: 32,
-  medium: 40,
+  medium: 48,
   large: 80,
 };
 
@@ -44,21 +44,21 @@ const PADDING_X_MAP: Record<InputSize, string> = {
 
 const BORDER_COLOR: Record<InputState, string> = {
   default: '#D1D5DB',
-  error: '#DC2626',
+  error: '#E00000',
   success: '#0E7C55',
   disabled: '#E5E7EB',
 };
 
 const FOCUS_COLOR: Record<InputState, string> = {
   default: '#005BA6',
-  error: '#DC2626',
+  error: '#E00000',
   success: '#0E7C55',
   disabled: '#E5E7EB',
 };
 
 const HELPER_COLOR: Record<InputState, string> = {
   default: '#6B7280',
-  error: '#DC2626',
+  error: '#E00000',
   success: '#0E7C55',
   disabled: '#9CA3AF',
 };
@@ -98,7 +98,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       flexDirection: 'column',
       gap: 4,
       width: fullWidth ? '100%' : undefined,
-      fontFamily: "'Source Sans Pro', -apple-system, sans-serif",
+      fontFamily: "'Source Sans 3', -apple-system, sans-serif",
     };
 
     const fieldWrapperStyle: React.CSSProperties = {
