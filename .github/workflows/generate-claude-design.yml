@@ -57,7 +57,8 @@ Trigger: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rea
             git push
           fi
 
-      - name: Summary
+      - name: Notify Slack
+        continue-on-error: true
         run: |
           echo "## Claude Design Reference" >> $GITHUB_STEP_SUMMARY
           echo "**Live Storybook:** https://nottheveal.github.io/design-system/" >> $GITHUB_STEP_SUMMARY
