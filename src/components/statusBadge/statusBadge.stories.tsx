@@ -1,203 +1,79 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { StatusBadge } from './statusBadge';
-import type { StatusBadgeVariant, StatusBadgeShape } from './statusBadge';
 
 const meta: Meta<typeof StatusBadge> = {
   title: 'Components/StatusBadge',
   component: StatusBadge,
-  tags: ['autodocs'],
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'A compact badge used to communicate status, category, or state. Supports five semantic variants and three shape styles: status (rectangular), list (pill outlined), and dot (dot + label text).',
-      },
-    },
-  },
+  parameters: { layout: 'padded' },
   argTypes: {
-    variant: {
-      control: 'select',
-      options: ['success', 'danger', 'warning', 'info', 'neutral'] satisfies StatusBadgeVariant[],
-      description: 'Visual status variant',
-      table: { defaultValue: { summary: 'neutral' } },
-    },
-    shape: {
-      control: 'radio',
-      options: ['status', 'list', 'dot'] satisfies StatusBadgeShape[],
-      description: 'Shape/style of the badge',
-      table: { defaultValue: { summary: 'status' } },
-    },
-    label: { control: 'text', description: 'Label text rendered inside the badge' },
-    withDot: {
-      control: 'boolean',
-      description: 'Optional leading dot indicator (status and list shapes only)',
-      table: { defaultValue: { summary: 'false' } },
-    },
-  },
-  args: {
-    label: 'Active',
-    variant: 'neutral',
-    shape: 'status',
-    withDot: false,
+    color: { control: 'select', options: ['success', 'warning', 'danger', 'info', 'neutral', 'primary'] },
+    variant: { control: 'select', options: ['status', 'outlined', 'dot'] },
+    size: { control: 'select', options: ['sm', 'md'] },
   },
 };
-
 export default meta;
 type Story = StoryObj<typeof StatusBadge>;
 
-// ─── Playground ───────────────────────────────────────────────────────────────
-
-export const Playground: Story = {
-  args: { variant: 'info', label: 'In Progress' },
+export const StatusPill: Story = {
+  args: { label: 'In Stock', color: 'success', variant: 'status' },
 };
 
-// ─── All Variants — Status Shape ──────────────────────────────────────────────
-
-export const AllVariants: Story = {
-  name: 'All Variants — Status Shape',
-  render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-      <StatusBadge variant="success" label="Success" shape="status" />
-      <StatusBadge variant="danger" label="Error" shape="status" />
-      <StatusBadge variant="warning" label="Warning" shape="status" />
-      <StatusBadge variant="info" label="Info" shape="status" />
-      <StatusBadge variant="neutral" label="Neutral" shape="status" />
-    </div>
-  ),
+export const OutlinedBadge: Story = {
+  args: { label: 'Pending', color: 'warning', variant: 'outlined' },
 };
 
-// ─── All Variants — List Shape ────────────────────────────────────────────────
-
-export const AllVariantsList: Story = {
-  name: 'All Variants — List Shape',
-  render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-      <StatusBadge variant="success" label="Success" shape="list" />
-      <StatusBadge variant="danger" label="Error" shape="list" />
-      <StatusBadge variant="warning" label="Warning" shape="list" />
-      <StatusBadge variant="info" label="Info" shape="list" />
-      <StatusBadge variant="neutral" label="Neutral" shape="list" />
-    </div>
-  ),
+export const DotBadge: Story = {
+  args: { label: 'Active', color: 'success', variant: 'dot' },
 };
 
-// ─── All Variants — Dot Style (NEW) ──────────────────────────────────────────
-
-export const AllVariantsDot: Story = {
-  name: 'All Variants — Dot Style',
+export const AllColors: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
-        <StatusBadge variant="success" label="Online" shape="dot" />
-        <StatusBadge variant="danger" label="Offline" shape="dot" />
-        <StatusBadge variant="warning" label="Degraded" shape="dot" />
-        <StatusBadge variant="info" label="Syncing" shape="dot" />
-        <StatusBadge variant="neutral" label="Unknown" shape="dot" />
-      </div>
-    </div>
-  ),
-};
-
-// ─── With Dot ─────────────────────────────────────────────────────────────────
-
-export const WithDot: Story = {
-  name: 'With Dot Indicator',
-  render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-      <StatusBadge variant="success" label="Online" shape="status" withDot />
-      <StatusBadge variant="danger" label="Offline" shape="status" withDot />
-      <StatusBadge variant="warning" label="Degraded" shape="status" withDot />
-      <StatusBadge variant="info" label="Syncing" shape="status" withDot />
-      <StatusBadge variant="neutral" label="Unknown" shape="status" withDot />
-    </div>
-  ),
-};
-
-export const WithDotList: Story = {
-  name: 'With Dot Indicator — List Shape',
-  render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-      <StatusBadge variant="success" label="Online" shape="list" withDot />
-      <StatusBadge variant="danger" label="Offline" shape="list" withDot />
-      <StatusBadge variant="warning" label="Degraded" shape="list" withDot />
-      <StatusBadge variant="info" label="Syncing" shape="list" withDot />
-      <StatusBadge variant="neutral" label="Unknown" shape="list" withDot />
-    </div>
-  ),
-};
-
-// ─── Individual Variants ──────────────────────────────────────────────────────
-
-export const Success: Story = { args: { variant: 'success', label: 'Completed', withDot: true } };
-export const Danger: Story = { args: { variant: 'danger', label: 'Failed', withDot: true } };
-export const Warning: Story = { args: { variant: 'warning', label: 'Pending', withDot: true } };
-export const Info: Story = { args: { variant: 'info', label: 'In Review', withDot: true } };
-export const Neutral: Story = { args: { variant: 'neutral', label: 'Draft', withDot: false } };
-
-// ─── Real-world usage ─────────────────────────────────────────────────────────
-
-export const InContext: Story = {
-  name: 'In Context — Order Table Row',
-  render: () => (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
-        padding: '16px 20px',
-        border: '1px solid #DCDCDC',
-        borderRadius: '6px',
-        fontFamily: "'Source Sans 3', -apple-system, sans-serif",
-        fontSize: '14px',
-        color: '#4A4A4A',
-        width: '480px',
-      }}
-    >
-      <span style={{ flex: 1 }}>PO-2024-00871</span>
-      <span style={{ color: '#777777' }}>Apr 12, 2025</span>
-      <StatusBadge variant="success" label="Shipped" shape="status" withDot />
-    </div>
-  ),
-};
-
-export const DotInContext: Story = {
-  name: 'Dot In Context — User Status List',
-  render: () => (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        padding: '16px 20px',
-        border: '1px solid #DCDCDC',
-        borderRadius: '6px',
-        width: '280px',
-        fontFamily: "'Source Sans 3', -apple-system, sans-serif",
-      }}
-    >
-      {[
-        { name: 'Alex Rivera', variant: 'success' as const, status: 'Online' },
-        { name: 'Sam Chen', variant: 'warning' as const, status: 'Away' },
-        { name: 'Jordan Kim', variant: 'danger' as const, status: 'Offline' },
-        { name: 'Casey Patel', variant: 'neutral' as const, status: 'Unknown' },
-      ].map(user => (
-        <div key={user.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 14, color: '#2B2B2B' }}>{user.name}</span>
-          <StatusBadge variant={user.variant} label={user.status} shape="dot" />
-        </div>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
+      {(['success', 'warning', 'danger', 'info', 'neutral', 'primary'] as const).map(c => (
+        <StatusBadge key={c} label={c} color={c} variant="status" />
       ))}
     </div>
   ),
 };
 
-export const LongLabel: Story = {
-  name: 'Long Label',
-  args: { variant: 'warning', label: 'Awaiting Approval', shape: 'list', withDot: true },
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div>
+        <p style={{ margin: '0 0 8px', fontSize: 13, color: '#777', fontFamily: 'Source Sans Pro, sans-serif' }}>Status (solid pill)</p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {(['success', 'warning', 'danger', 'info', 'neutral'] as const).map(c => (
+            <StatusBadge key={c} label={c === 'success' ? 'In Stock' : c === 'warning' ? 'Low Stock' : c === 'danger' ? 'Out of Stock' : c === 'info' ? 'On Order' : 'Inactive'} color={c} variant="status" />
+          ))}
+        </div>
+      </div>
+      <div>
+        <p style={{ margin: '0 0 8px', fontSize: 13, color: '#777', fontFamily: 'Source Sans Pro, sans-serif' }}>Outlined</p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {(['success', 'warning', 'danger', 'info', 'neutral'] as const).map(c => (
+            <StatusBadge key={c} label={c === 'success' ? 'Approved' : c === 'warning' ? 'Review' : c === 'danger' ? 'Rejected' : c === 'info' ? 'Draft' : 'Archived'} color={c} variant="outlined" />
+          ))}
+        </div>
+      </div>
+      <div>
+        <p style={{ margin: '0 0 8px', fontSize: 13, color: '#777', fontFamily: 'Source Sans Pro, sans-serif' }}>Dot</p>
+        <div style={{ display: 'flex', gap: 16 }}>
+          {(['success', 'warning', 'danger', 'info', 'neutral'] as const).map(c => (
+            <StatusBadge key={c} label={c === 'success' ? 'Active' : c === 'warning' ? 'Pending' : c === 'danger' ? 'Error' : c === 'info' ? 'Processing' : 'Inactive'} color={c} variant="dot" />
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
 };
 
-export const CustomStyle: Story = {
-  name: 'Custom Style Override',
-  args: { variant: 'info', label: 'Custom', shape: 'status', style: { fontSize: '14px', padding: '6px 12px' } },
+export const SmallSize: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 8 }}>
+      <StatusBadge label="Active" color="success" variant="status" size="sm" />
+      <StatusBadge label="Pending" color="warning" variant="outlined" size="sm" />
+      <StatusBadge label="Online" color="info" variant="dot" size="sm" />
+    </div>
+  ),
 };
