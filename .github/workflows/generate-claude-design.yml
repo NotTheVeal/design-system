@@ -9,11 +9,6 @@ on:
       - 'src/components/**/*.stories.ts'
       - 'scripts/generate-claude-design.js'
   workflow_dispatch:
-    inputs:
-      reason:
-        description: 'Reason for manual trigger'
-        required: false
-        default: 'Manual refresh of Claude Design reference'
 
 permissions:
   contents: write
@@ -24,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -46,20 +41,16 @@ jobs:
         run: |
           git add docs/claude-design-reference.md
           if git diff --staged --quiet; then
-            echo "Claude Design reference is already up to date. No commit needed."
+            echo "No changes to commit"
           else
             git config user.email "actions@github.com"
             git config user.name "GitHub Actions"
-            git commit -m "docs: update Claude Design reference [automated]
-
-Regenerated from component story files.
-Trigger: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.reason || 'story file change' }}"
+            git commit -m "docs: update Claude Design reference [automated]"
             git push
           fi
 
-      - name: Notify Slack
+      - name: Summary
         continue-on-error: true
         run: |
-          echo "## Claude Design Reference" >> $GITHUB_STEP_SUMMARY
-          echo "**Live Storybook:** https://nottheveal.github.io/design-system/" >> $GITHUB_STEP_SUMMARY
-          echo "**Reference file:** `docs/claude-design-reference.md`" >> $GITHUB_STEP_SUMMARY
+          echo "## Claude Design Reference Updated" >> $GITHUB_STEP_SUMMARY
+          echo "Storybook: https://nottheveal.github.io/design-system/" >> $GITHUB_STEP_SUMMARY
