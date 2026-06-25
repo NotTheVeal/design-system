@@ -1,116 +1,140 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
-interface TableColumn<T = Record<string, unknown>> {
+export interface TableColumn<T = Record<string, unknown>> {
   key: string;
-  label: string;
-  width?: string;
+  header: string;
+  width?: string | number;
   sortable?: boolean;
-  render?: (value: unknown, row: T, index: number) => React.ReactNode;
   align?: 'left' | 'center' | 'right';
+  render?: (value: unknown, row: T, index: number) => React.ReactNode;
 }
 
-interface TableProps<T = Record<string, unknown>> {
+export interface TableProps<T = Record<string, unknown>> {
   columns: TableColumn<T>[];
   data: T[];
-  onRowClick?: (row: T, index: number) => void;
-  loading?: boolean;
-  emptyMessage?: string;
   selectable?: boolean;
-  onSelectionChange?: (selectedRows: T[]) => void;
+  onSelectionChange?: (selected: T[]) => void;
+  onRowClick?: (row: T, index: number) => void;
+  emptyText?: string;
+  loading?: boolean;
+  stickyHeader?: boolean;
+  rowKey?: keyof T | ((row: T) => string);
   className?: string;
-  striped?: boolean;
 }
 
 type SortDir = 'asc' | 'desc' | null;
 
-const SortIcon = ({ dir }: { dir: SortDir }) => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="flex-shrink-0">
-    <path d="M7 2v10M4 9l3 3 3-3" stroke={dir === 'desc' ? '#FFFFFF' : 'rgba(255,255,255,0.6)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M4 5l3-3 3 3" stroke={dir === 'asc' ? '#FFFFFF' : 'rgba(255,255,255,0.6)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
+const SortIcon: React.FC<{ dir: SortDir }> = ({ dir }) => (
+  <span style={{ marginLeft: 6, fontSize: 10, opacity: dir ? 1 : 0.5, userSelect: 'none' }}>
+    {dir === 'asc' ? '▲' : dir === 'desc' ? '▼' : '⇅'}
+  </span>
 );
 
-function Table<T extends Record<string, unknown>>({
+export function Table<T = Record<string, unknown>>({
   columns,
   data,
-  onRowClick,
-  loading = false,
-  emptyMessage = 'No data to display',
   selectable = false,
   onSelectionChange,
+  onRowClick,
+  emptyText = 'No results found.',
+  loading = false,
+  stickyHeader = false,
+  rowKey,
   className = '',
-  striped = false,
 }: TableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
-  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const handleSort = (key: string) => {
-    if (sortKey === key) {
-      setSortDir(prev => prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc');
-      if (sortDir === 'desc') setSortKey(null);
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
+  const getKey = (row: T, i: number): string => {
+    if (!rowKey) return String(i);
+    if (typeof rowKey === 'function') return rowKey(row);
+    return String(row[rowKey]);
   };
 
-  const sortedData = React.useMemo(() => {
+  const sorted = useMemo(() => {
     if (!sortKey || !sortDir) return data;
     return [...data].sort((a, b) => {
-      const av = a[sortKey] ?? '';
-      const bv = b[sortKey] ?? '';
-      const cmp = String(av).localeCompare(String(bv), undefined, { numeric: true });
+      const av = (a as Record<string, unknown>)[sortKey];
+      const bv = (b as Record<string, unknown>)[sortKey];
+      const cmp = String(av ?? '').localeCompare(String(bv ?? ''), undefined, { numeric: true });
       return sortDir === 'asc' ? cmp : -cmp;
     });
   }, [data, sortKey, sortDir]);
 
-  const toggleRow = (i: number) => {
-    const next = new Set(selected);
-    if (next.has(i)) next.delete(i);
-    else next.add(i);
-    setSelected(next);
-    onSelectionChange?.(Array.from(next).map(idx => sortedData[idx]));
+  const handleSort = (col: TableColumn<T>) => {
+    if (!col.sortable) return;
+    if (sortKey !== col.key) { setSortKey(col.key); setSortDir('asc'); return; }
+    setSortDir(d => d === 'asc' ? 'desc' : d === 'desc' ? null : 'asc');
+    if (sortDir === 'desc') setSortKey(null);
   };
+
+  const allSelected = sorted.length > 0 && sorted.every((r, i) => selected.has(getKey(r, i)));
+  const someSelected = sorted.some((r, i) => selected.has(getKey(r, i)));
 
   const toggleAll = () => {
-    if (selected.size === data.length) {
-      setSelected(new Set());
-      onSelectionChange?.([]);
-    } else {
-      setSelected(new Set(data.map((_, i) => i)));
-      onSelectionChange?.(sortedData);
-    }
+    const next = new Set(allSelected ? [] : sorted.map((r, i) => getKey(r, i)));
+    setSelected(next);
+    onSelectionChange?.(sorted.filter((r, i) => next.has(getKey(r, i))));
   };
 
-  const alignClass: Record<string, string> = { left: 'text-left', center: 'text-center', right: 'text-right' };
+  const toggleRow = (row: T, i: number) => {
+    const k = getKey(row, i);
+    const next = new Set(selected);
+    next.has(k) ? next.delete(k) : next.add(k);
+    setSelected(next);
+    onSelectionChange?.(sorted.filter((r, j) => next.has(getKey(r, j))));
+  };
+
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
 
   return (
-    <div className={`w-full overflow-auto ${className}`}>
-      <table className="w-full border-collapse text-left">
-        <thead className="bg-[#005BA6]">
+    <div
+      className={className}
+      style={{ width: '100%', overflowX: 'auto', border: '1px solid #DCDCDC', borderRadius: 4, fontFamily: font }}
+    >
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+        <thead>
           <tr>
             {selectable && (
-              <th className="w-[48px] px-4" style={{ height: 40 }}>
+              <th style={{ width: 40, padding: '0 12px', background: '#005BA6', borderBottom: '1px solid #004A84', textAlign: 'center', position: stickyHeader ? 'sticky' : undefined, top: stickyHeader ? 0 : undefined, zIndex: stickyHeader ? 1 : undefined }}>
                 <input
                   type="checkbox"
-                  checked={selected.size === data.length && data.length > 0}
+                  checked={allSelected}
+                  ref={el => el && (el.indeterminate = someSelected && !allSelected)}
                   onChange={toggleAll}
-                  className="w-[16px] h-[16px] rounded-[2px] border border-white accent-white"
+                  style={{ cursor: 'pointer', accentColor: '#FFFFFF' }}
                 />
               </th>
             )}
             {columns.map(col => (
               <th
                 key={col.key}
-                style={{ width: col.width, height: 40 }}
-                className={`px-4 text-[12px] font-semibold text-white uppercase tracking-[0.05em] whitespace-nowrap ${alignClass[col.align || 'left']} ${col.sortable ? 'cursor-pointer select-none hover:bg-[#004a8f]' : ''}`}
-                onClick={() => col.sortable && handleSort(col.key)}
+                onClick={() => handleSort(col)}
+                style={{
+                  height: 40,
+                  padding: '0 16px',
+                  background: '#005BA6',
+                  color: '#FFFFFF',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  textAlign: col.align || 'left',
+                  whiteSpace: 'nowrap',
+                  width: col.width,
+                  cursor: col.sortable ? 'pointer' : 'default',
+                  userSelect: 'none',
+                  borderBottom: '1px solid #004A84',
+                  borderRight: '1px solid rgba(255,255,255,0.12)',
+                  position: stickyHeader ? 'sticky' : undefined,
+                  top: stickyHeader ? 0 : undefined,
+                  zIndex: stickyHeader ? 1 : undefined,
+                  transition: 'background 150ms ease',
+                }}
+                onMouseEnter={e => col.sortable && ((e.currentTarget as HTMLElement).style.background = '#004A84')}
+                onMouseLeave={e => col.sortable && ((e.currentTarget as HTMLElement).style.background = '#005BA6')}
               >
-                <span className="inline-flex items-center gap-1">
-                  {col.label}
-                  {col.sortable && <SortIcon dir={sortKey === col.key ? sortDir : null} />}
-                </span>
+                {col.header}
+                {col.sortable && <SortIcon dir={sortKey === col.key ? sortDir : null} />}
               </th>
             ))}
           </tr>
@@ -118,55 +142,64 @@ function Table<T extends Record<string, unknown>>({
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-4 py-8 text-center text-[14px] text-[#949494]">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-[20px] h-[20px] border-2 border-[#DCDCDC] border-t-[#005BA6] rounded-full animate-spin" />
-                  Loading...
-                </div>
+              <td colSpan={columns.length + (selectable ? 1 : 0)} style={{ height: 120, textAlign: 'center', color: '#777777', padding: 24 }}>
+                Loading…
               </td>
             </tr>
-          ) : sortedData.length === 0 ? (
+          ) : sorted.length === 0 ? (
             <tr>
-              <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-4 py-8 text-center text-[14px] text-[#949494]">
-                {emptyMessage}
+              <td colSpan={columns.length + (selectable ? 1 : 0)} style={{ height: 120, textAlign: 'center', color: '#777777', padding: 24 }}>
+                {emptyText}
               </td>
             </tr>
           ) : (
-            sortedData.map((row, i) => {
-              const isSelected = selected.has(i);
-              const isOddStripe = striped && i % 2 === 1;
-              const rowBg = isSelected
-                ? 'bg-[#EFF9FE]'
-                : isOddStripe
-                ? 'bg-[#FAFAFA]'
-                : 'bg-white';
+            sorted.map((row, i) => {
+              const k = getKey(row, i);
+              const isSelected = selected.has(k);
+              const isOdd = i % 2 === 1;
               return (
                 <tr
-                  key={i}
-                  className={`border-b border-[#DCDCDC] last:border-0 transition-colors duration-150 ${rowBg} ${onRowClick ? 'cursor-pointer hover:bg-[#EFF9FE]' : ''}`}
+                  key={k}
                   onClick={() => onRowClick?.(row, i)}
+                  style={{
+                    height: 48,
+                    background: isSelected ? '#DCEAED' : isOdd ? '#FAFAFA' : '#FFFFFF',
+                    cursor: onRowClick ? 'pointer' : 'default',
+                    borderBottom: '1px solid #DCDCDC',
+                    transition: 'background 150ms ease',
+                  }}
+                  onMouseEnter={e => !isSelected && ((e.currentTarget as HTMLElement).style.background = '#EFF9FE')}
+                  onMouseLeave={e => !isSelected && ((e.currentTarget as HTMLElement).style.background = isOdd ? '#FAFAFA' : '#FFFFFF')}
                 >
                   {selectable && (
-                    <td
-                      className="w-[48px] px-4"
-                      style={{ height: 48 }}
-                      onClick={e => { e.stopPropagation(); toggleRow(i); }}
-                    >
+                    <td style={{ width: 40, padding: '0 12px', textAlign: 'center', borderRight: '1px solid #DCDCDC' }}>
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => toggleRow(i)}
-                        className="w-[16px] h-[16px] rounded-[2px] border border-[#DCDCDC] accent-[#005BA6]"
+                        onChange={() => toggleRow(row, i)}
+                        onClick={e => e.stopPropagation()}
+                        style={{ cursor: 'pointer', accentColor: '#005BA6' }}
                       />
                     </td>
                   )}
                   {columns.map(col => (
                     <td
                       key={col.key}
-                      style={{ height: 48 }}
-                      className={`px-4 text-[14px] text-[#4A4A4A] ${alignClass[col.align || 'left']}`}
+                      style={{
+                        padding: '0 16px',
+                        color: '#4A4A4A',
+                        textAlign: col.align || 'left',
+                        fontSize: 14,
+                        borderRight: '1px solid #DCDCDC',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        maxWidth: 300,
+                      }}
                     >
-                      {col.render ? col.render(row[col.key], row, i) : String(row[col.key] ?? '')}
+                      {col.render
+                        ? col.render((row as Record<string, unknown>)[col.key], row, i)
+                        : String((row as Record<string, unknown>)[col.key] ?? '')}
                     </td>
                   ))}
                 </tr>
