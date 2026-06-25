@@ -1,109 +1,165 @@
 import React, { useState } from 'react';
 
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+/**
+ * InlineButton — PS Design System 2.0
+ *
+ * For inline text actions within content flow (table cells, body copy, etc.).
+ * NOT for standalone CTAs — use Button for those.
+ *
+ * Variants:
+ *   tall        — 36px pill button, white bg, gray border. For CTAs within content.
+ *   link        — underlined text link, #4A4A4A. Hover: #005BA6
+ *   linkBlue    — blue underlined text link, always #005BA6
+ *   iconButton  — 32px circle, icon-only
+ *
+ * NOTE: 'tertiary' variant has been REMOVED from InlineButton.
+ * The tertiary pill button (light gray #F1F1F1 bg) belongs in the main Button component.
+ */
 
-type InlineButtonVariant = 'tall' | 'link' | 'linkBlue' | 'iconButton';
+export type InlineButtonVariant = 'tall' | 'link' | 'linkBlue' | 'iconButton';
 
-interface InlineButtonProps {
-  variant?: InlineButtonVariant;
+export interface InlineButtonProps {
   children?: React.ReactNode;
-  onClick?: () => void;
+  variant?: InlineButtonVariant;
   disabled?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  type?: 'button' | 'submit' | 'reset';
   className?: string;
-  icon?: React.ReactNode;
+  /** aria-label required for iconButton variant */
   'aria-label'?: string;
 }
 
-const InlineButton: React.FC<InlineButtonProps> = ({
-  variant = 'tall',
-  children,
-  onClick,
-  disabled = false,
-  className = '',
-  icon,
-  'aria-label': ariaLabel,
-}) => {
-  const [hovered, setHovered] = useState(false);
-  const [pressed, setPressed] = useState(false);
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
 
+export function InlineButton({
+  children,
+  variant = 'link',
+  disabled = false,
+  onClick,
+  type = 'button',
+  className,
+  'aria-label': ariaLabel,
+}: InlineButtonProps) {
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseEnter = () => { if (!disabled) setHovered(true); };
+  const handleMouseLeave = () => setHovered(false);
+
+  // ── Base styles shared by all variants ───────────────────────────────────
   const base: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    fontFamily: FONT,
+    fontSize: 14,
+    fontWeight: 400,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.4 : 1,
+    transition: 'all 150ms ease',
+    outline: 'none',
     border: 'none',
     background: 'none',
     padding: 0,
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    fontFamily,
-    opacity: disabled ? 0.4 : 1,
-    transition: 'color 150ms ease, background 150ms ease',
-    textDecoration: 'none',
-    outline: 'none',
+    gap: 4,
   };
 
-  let variantStyle: React.CSSProperties = {};
-
+  // ── tall: 36px pill, white bg, gray border ────────────────────────────────
   if (variant === 'tall') {
-    variantStyle = {
-      height: 40,
-      borderRadius: 100,
-      background: pressed && !disabled
-        ? '#CCCCCC'
-        : hovered && !disabled
-        ? '#DCDCDC'
-        : '#F1F1F1',
-      padding: '0 16px',
-      fontSize: 16,
-      fontWeight: 400,
-      color: '#2B2B2B',
-    };
-  } else if (variant === 'link') {
-    variantStyle = {
-      fontSize: 14,
-      fontWeight: 400,
-      color: hovered && !disabled ? '#4A4A4A' : '#4A4A4A',
-      textDecoration: hovered && !disabled ? 'underline' : 'none',
-    };
-  } else if (variant === 'linkBlue') {
-    variantStyle = {
-      fontSize: 14,
-      fontWeight: 400,
-      color: hovered && !disabled ? '#004A84' : '#005BA6',
-      textDecoration: hovered && !disabled ? 'underline' : 'none',
-    };
-  } else if (variant === 'iconButton') {
-    variantStyle = {
-      width: 32,
-      height: 32,
-      borderRadius: 4,
-      background: pressed && !disabled
-        ? '#CCCCCC'
-        : hovered && !disabled
-        ? '#DCDCDC'
-        : 'transparent',
-      color: '#4A4A4A',
-      padding: 0,
-    };
+    return (
+      <button
+        type={type}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        className={className}
+        aria-label={ariaLabel}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          ...base,
+          minHeight: 36,
+          padding: '0 16px',
+          borderRadius: 100,
+          border: `1px solid ${hovered ? '#005BA6' : '#DCDCDC'}`,
+          backgroundColor: hovered ? '#EBF3FA' : '#FFFFFF',
+          color: hovered ? '#005BA6' : '#4A4A4A',
+        }}
+      >
+        {children}
+      </button>
+    );
   }
 
+  // ── link: underlined, dark text, hover blue ───────────────────────────────
+  if (variant === 'link') {
+    return (
+      <button
+        type={type}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        className={className}
+        aria-label={ariaLabel}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          ...base,
+          color: hovered ? '#005BA6' : '#4A4A4A',
+          textDecoration: 'underline',
+          textDecorationColor: hovered ? '#005BA6' : '#4A4A4A',
+        }}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  // ── linkBlue: always blue, underlined ────────────────────────────────────
+  if (variant === 'linkBlue') {
+    return (
+      <button
+        type={type}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        className={className}
+        aria-label={ariaLabel}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          ...base,
+          color: '#005BA6',
+          textDecoration: 'underline',
+          textDecorationColor: '#005BA6',
+          opacity: disabled ? 0.4 : hovered ? 0.8 : 1,
+        }}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  // ── iconButton: 32px circle, icon-only ───────────────────────────────────
   return (
     <button
-      type="button"
+      type={type}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={className}
       aria-label={ariaLabel}
-      disabled={disabled}
-      onClick={onClick}
-      onMouseEnter={() => !disabled && setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setPressed(false); }}
-      onMouseDown={() => !disabled && setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      style={{ ...base, ...variantStyle }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        ...base,
+        width: 32,
+        height: 32,
+        borderRadius: '50%',
+        border: `1px solid ${hovered ? '#005BA6' : '#DCDCDC'}`,
+        backgroundColor: hovered ? '#EBF3FA' : 'transparent',
+        color: hovered ? '#005BA6' : '#4A4A4A',
+        flexShrink: 0,
+      }}
     >
-      {icon}
       {children}
     </button>
   );
-};
+}
 
 export default InlineButton;
