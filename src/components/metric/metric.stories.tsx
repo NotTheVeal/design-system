@@ -1,81 +1,58 @@
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { Metric } from './metric';
 
 const meta: Meta<typeof Metric> = {
   title: 'Components/Metric',
   component: Metric,
-  tags: ['autodocs'],
+  parameters: { layout: 'padded' },
   argTypes: {
     trend: { control: 'select', options: ['up', 'down', 'neutral'] },
+    size: { control: 'select', options: ['sm', 'md', 'lg'] },
+    variant: { control: 'select', options: ['default', 'card'] },
   },
 };
 export default meta;
 type Story = StoryObj<typeof Metric>;
 
 export const Default: Story = {
-  name: 'Default',
-  args: {
-    value: 1284,
-    label: 'Total Orders',
-    card: true,
-  },
+  args: { label: 'Total Revenue', value: '\$2.4M', trend: 'up', delta: '+12.5%', deltaLabel: 'vs last quarter', size: 'md' },
 };
 
-export const WithTrend: Story = {
-  name: 'WithTrend',
+export const Large: Story = {
+  args: { label: 'Parts Ordered', value: '14,820', unit: 'units', trend: 'up', delta: '+8.3%', deltaLabel: 'vs last month', size: 'lg' },
+};
+
+export const NegativeTrend: Story = {
+  args: { label: 'Avg. Order Value', value: '\$847', trend: 'down', delta: '-3.2%', deltaLabel: 'vs last month', size: 'md' },
+};
+
+export const Neutral: Story = {
+  args: { label: 'On-Time Delivery', value: '94%', trend: 'neutral', delta: '0%', deltaLabel: 'vs last week', size: 'md' },
+};
+
+export const CardVariant: Story = {
+  args: { label: 'Active Vendors', value: '312', trend: 'up', delta: '+15', deltaLabel: 'new this month', variant: 'card', size: 'md' },
+};
+
+export const VisualAnalyticsEvolution: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: 16 }}>
-      <Metric value={94.2} label="Fill Rate" trend="up" trendValue="+3.1%" trendLabel="vs last month" card />
-      <Metric value={2.4} label="Error Rate" trend="down" trendValue="-0.8%" trendLabel="vs last month" card />
+    <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontFamily: 'Source Sans Pro, sans-serif' }}>
+      <Metric label="Total Parts Ordered" value="247,891" trend="up" delta="+18.2%" deltaLabel="YoY" variant="card" size="lg" />
+      <Metric label="Avg. Resolution Time" value="4.2" unit="hrs" trend="down" delta="-22%" deltaLabel="vs Q1" variant="card" size="lg" />
+      <Metric label="Vendor Compliance" value="98.4%" trend="up" delta="+2.1pts" deltaLabel="vs last year" variant="card" size="lg" />
+      <Metric label="Cost Savings" value="\$1.8M" trend="up" delta="+31%" deltaLabel="YoY" variant="card" size="lg" />
     </div>
   ),
 };
 
-export const MetricGrid: Story = {
-  name: 'MetricGrid',
+export const SmallKPIs: Story = {
   render: () => (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, width: 480 }}>
-      <Metric value={1284} label="Total Orders" trend="up" trendValue="+12%" card />
-      <Metric value={94.2} label="Fill Rate" unit="%" trend="up" trendValue="+3.1%" card />
-      <Metric value={47} label="Pending" trend="neutral" description="Awaiting approval" card />
-      <Metric value={2.4} label="Error Rate" unit="%" trend="down" trendValue="-0.8%" card />
+    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+      <Metric label="Orders" value="1,284" trend="up" delta="+5%" size="sm" />
+      <Metric label="Revenue" value="\$892K" trend="up" delta="+12%" size="sm" />
+      <Metric label="Returns" value="42" trend="down" delta="-8%" size="sm" />
+      <Metric label="NPS" value="67" trend="neutral" delta="±0" size="sm" />
     </div>
   ),
 };
-
-export const WithSparkline: Story = {
-  name: 'WithSparkline',
-  render: () => (
-    <div style={{ display: 'flex', gap: 16 }}>
-      <Metric
-        value={8421}
-        label="Revenue"
-        unit="$"
-        trend="up"
-        trendValue="+18%"
-        card
-        sparkline={[
-          { value: 5200 }, { value: 6100 }, { value: 5800 }, { value: 7200 },
-          { value: 6900 }, { value: 7800 }, { value: 8421 },
-        ]}
-      />
-      <Metric
-        value={342}
-        label="Parts Shipped"
-        trend="up"
-        trendValue="+7%"
-        card
-        sparkline={[
-          { value: 210 }, { value: 240 }, { value: 195 }, { value: 280 },
-          { value: 310 }, { value: 295 }, { value: 342 },
-        ]}
-      />
-    </div>
-  ),
-};
-
-export const Positive: Story = { args: { value: 94.2, label: 'Fill Rate', trend: 'up', trendValue: '+3.1%' } };
-export const Negative: Story = { args: { value: 2.4, label: 'Error Rate', trend: 'down', trendValue: '-0.8%' } };
-export const Neutral: Story = { args: { value: 47, label: 'Pending Orders', trend: 'neutral' } };
-export const LargeNumber: Story = { args: { value: 1284392, label: 'Total Parts Ordered', trend: 'up', trendValue: '+12%' } };
