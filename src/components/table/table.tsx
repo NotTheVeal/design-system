@@ -1,51 +1,182 @@
-import React,{useState}from'react';
-const FONT="'Source Sans 3',-apple-system,sans-serif";
-export interface TableColumn{key:string;label:string;sortable?:boolean;align?:'left'|'center'|'right';width?:number;}
-export interface TableProps{columns:TableColumn[];data:Record<string,React.ReactNode>[];selectable?:boolean;onRowSelect?:(keys:string[])=>void;rowKey?:string;className?:string;}
-export const Table:React.FC<TableProps>=({columns,data,selectable=false,onRowSelect,rowKey='id',className=''})=>{
-  const[sortKey,setSortKey]=useState<string|null>(null);
-  const[sortDir,setSortDir]=useState<'asc'|'desc'>('asc');
-  const[selected,setSelected]=useState<string[]>([]);
-  const handleSort=(key:string)=>{
-    if(sortKey===key)setSortDir(d=>d==='asc'?'desc':'asc');
-    else{setSortKey(key);setSortDir('asc');}
+import React, { useState } from 'react';
+
+interface TableColumn<T = Record<string, unknown>> {
+  key: string;
+  label: string;
+  width?: string;
+  sortable?: boolean;
+  render?: (value: unknown, row: T, index: number) => React.ReactNode;
+  align?: 'left' | 'center' | 'right';
+}
+
+interface TableProps<T = Record<string, unknown>> {
+  columns: TableColumn<T>[];
+  data: T[];
+  onRowClick?: (row: T, index: number) => void;
+  loading?: boolean;
+  emptyMessage?: string;
+  selectable?: boolean;
+  onSelectionChange?: (selectedRows: T[]) => void;
+  className?: string;
+  striped?: boolean;
+}
+
+type SortDir = 'asc' | 'desc' | null;
+
+const SortIcon = ({ dir }: { dir: SortDir }) => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="flex-shrink-0">
+    <path d="M7 2v10M4 9l3 3 3-3" stroke={dir === 'desc' ? '#FFFFFF' : 'rgba(255,255,255,0.6)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4 5l3-3 3 3" stroke={dir === 'asc' ? '#FFFFFF' : 'rgba(255,255,255,0.6)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+function Table<T extends Record<string, unknown>>({
+  columns,
+  data,
+  onRowClick,
+  loading = false,
+  emptyMessage = 'No data to display',
+  selectable = false,
+  onSelectionChange,
+  className = '',
+  striped = false,
+}: TableProps<T>) {
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc');
+      if (sortDir === 'desc') setSortKey(null);
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
   };
-  const handleSelect=(key:string)=>{
-    const next=selected.includes(key)?selected.filter(k=>k!==key):[...selected,key];
-    setSelected(next);onRowSelect?.(next);
+
+  const sortedData = React.useMemo(() => {
+    if (!sortKey || !sortDir) return data;
+    return [...data].sort((a, b) => {
+      const av = a[sortKey] ?? '';
+      const bv = b[sortKey] ?? '';
+      const cmp = String(av).localeCompare(String(bv), undefined, { numeric: true });
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [data, sortKey, sortDir]);
+
+  const toggleRow = (i: number) => {
+    const next = new Set(selected);
+    if (next.has(i)) next.delete(i);
+    else next.add(i);
+    setSelected(next);
+    onSelectionChange?.(Array.from(next).map(idx => sortedData[idx]));
   };
-  return(
-    <div className={className}style={{width:'100%',overflowX:'auto',fontFamily:FONT}}>
-      <table style={{width:'100%',borderCollapse:'collapse',fontSize:14}}>
-        <thead>
-          <tr style={{backgroundColor:'#005BA6'}}>
-            {selectable&&<th style={{width:40,padding:'10px 12px',textAlign:'center',color:'#FFFFFF',fontWeight:700,fontSize:12}}><input type="checkbox" onChange={e=>{const all=data.map(r=>String(r[rowKey]));const next=e.target.checked?all:[];setSelected(next);onRowSelect?.(next);}} checked={selected.length===data.length&&data.length>0}/></th>}
-            {columns.map(col=>(
-              <th key={col.key} style={{padding:'10px 16px',textAlign:col.align||'left',color:'#FFFFFF',fontWeight:700,fontSize:12,textTransform:'uppercase',letterSpacing:'1.5px',cursor:col.sortable?'pointer':'default',userSelect:'none',whiteSpace:'nowrap'}} onClick={()=>col.sortable&&handleSort(col.key)}>
-                {col.label}{col.sortable&&sortKey===col.key&&(sortDir==='asc'?' ↑':' ↓')}
+
+  const toggleAll = () => {
+    if (selected.size === data.length) {
+      setSelected(new Set());
+      onSelectionChange?.([]);
+    } else {
+      setSelected(new Set(data.map((_, i) => i)));
+      onSelectionChange?.(sortedData);
+    }
+  };
+
+  const alignClass: Record<string, string> = { left: 'text-left', center: 'text-center', right: 'text-right' };
+
+  return (
+    <div className={`w-full overflow-auto ${className}`}>
+      <table className="w-full border-collapse text-left">
+        <thead className="bg-[#005BA6]">
+          <tr>
+            {selectable && (
+              <th className="w-[48px] px-4" style={{ height: 40 }}>
+                <input
+                  type="checkbox"
+                  checked={selected.size === data.length && data.length > 0}
+                  onChange={toggleAll}
+                  className="w-[16px] h-[16px] rounded-[2px] border border-white accent-white"
+                />
+              </th>
+            )}
+            {columns.map(col => (
+              <th
+                key={col.key}
+                style={{ width: col.width, height: 40 }}
+                className={`px-4 text-[12px] font-semibold text-white uppercase tracking-[0.05em] whitespace-nowrap ${alignClass[col.align || 'left']} ${col.sortable ? 'cursor-pointer select-none hover:bg-[#004a8f]' : ''}`}
+                onClick={() => col.sortable && handleSort(col.key)}
+              >
+                <span className="inline-flex items-center gap-1">
+                  {col.label}
+                  {col.sortable && <SortIcon dir={sortKey === col.key ? sortDir : null} />}
+                </span>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row,i)=>{
-            const key=String(row[rowKey]||i);
-            const isSel=selected.includes(key);
-            return(
-              <tr key={key} style={{backgroundColor:isSel?'#EFF9FE':i%2===0?'#FFFFFF':'#FAFAFA',borderBottom:'1px solid #DCDCDC',cursor:selectable?'pointer':'default',transition:'background 120ms ease'}}
-                onMouseEnter={e=>{if(!isSel)(e.currentTarget as HTMLElement).style.backgroundColor='#F1F1F1';}}
-                onMouseLeave={e=>{if(!isSel)(e.currentTarget as HTMLElement).style.backgroundColor=i%2===0?'#FFFFFF':'#FAFAFA';}}
-                onClick={()=>selectable&&handleSelect(key)}>
-                {selectable&&<td style={{width:40,padding:'10px 12px',textAlign:'center'}}><input type="checkbox" checked={isSel} onChange={()=>handleSelect(key)} onClick={e=>e.stopPropagation()}/></td>}
-                {columns.map(col=>(
-                  <td key={col.key} style={{padding:'10px 16px',textAlign:col.align||'left',color:'#4A4A4A',verticalAlign:'middle'}}>{row[col.key]}</td>
-                ))}
-              </tr>
-            );
-          })}
+          {loading ? (
+            <tr>
+              <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-4 py-8 text-center text-[14px] text-[#949494]">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-[20px] h-[20px] border-2 border-[#DCDCDC] border-t-[#005BA6] rounded-full animate-spin" />
+                  Loading...
+                </div>
+              </td>
+            </tr>
+          ) : sortedData.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-4 py-8 text-center text-[14px] text-[#949494]">
+                {emptyMessage}
+              </td>
+            </tr>
+          ) : (
+            sortedData.map((row, i) => {
+              const isSelected = selected.has(i);
+              const isOddStripe = striped && i % 2 === 1;
+              const rowBg = isSelected
+                ? 'bg-[#EFF9FE]'
+                : isOddStripe
+                ? 'bg-[#FAFAFA]'
+                : 'bg-white';
+              return (
+                <tr
+                  key={i}
+                  className={`border-b border-[#DCDCDC] last:border-0 transition-colors duration-150 ${rowBg} ${onRowClick ? 'cursor-pointer hover:bg-[#EFF9FE]' : ''}`}
+                  onClick={() => onRowClick?.(row, i)}
+                >
+                  {selectable && (
+                    <td
+                      className="w-[48px] px-4"
+                      style={{ height: 48 }}
+                      onClick={e => { e.stopPropagation(); toggleRow(i); }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleRow(i)}
+                        className="w-[16px] h-[16px] rounded-[2px] border border-[#DCDCDC] accent-[#005BA6]"
+                      />
+                    </td>
+                  )}
+                  {columns.map(col => (
+                    <td
+                      key={col.key}
+                      style={{ height: 48 }}
+                      className={`px-4 text-[14px] text-[#4A4A4A] ${alignClass[col.align || 'left']}`}
+                    >
+                      {col.render ? col.render(row[col.key], row, i) : String(row[col.key] ?? '')}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
   );
-};
+}
+
 export default Table;
