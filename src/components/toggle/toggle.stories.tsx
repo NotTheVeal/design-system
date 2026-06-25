@@ -1,16 +1,83 @@
-import type{Meta,StoryObj}from'@storybook/react';
-import{Toggle}from'./toggle';
-const meta:Meta<typeof Toggle>={title:'Components/Toggle',component:Toggle,tags:['autodocs'],
-  parameters:{docs:{description:{component:'`current`=Orange#005BA6 ADA-FAIL(2.9:1) | `future`=Blue#005BA6 ADA-PASS(4.8:1)'}}}};
-export default meta;type Story=StoryObj<typeof Toggle>;
-const B=({s}:{s:'current'|'future'})=>s==='future'
-  ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>✅ ADA COMPLIANT — PS Blue #005BA6 — 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>⚠️ LEGACY — Orange #005BA6 — 2.9:1 — DO NOT USE IN PRODUCTION</div>;
-export const Future_AllStates:Story={name:'✅ Future · All States (PS Blue)',render:()=><div style={{display:'flex',flexDirection:'column',gap:12}}><B s="future"/><Toggle colorScheme="future" label="Off"/><Toggle colorScheme="future" checked label="On"/><Toggle colorScheme="future" disabled label="Disabled Off"/><Toggle colorScheme="future" checked disabled label="Disabled On"/></div>};
-export const Current_AllStates:Story={name:'⚠️ Current · All States (Legacy Orange)',render:()=><div style={{display:'flex',flexDirection:'column',gap:12}}><B s="current"/><Toggle colorScheme="future" label="Off"/><Toggle colorScheme="future" checked label="On"/><Toggle colorScheme="future" disabled label="Disabled Off"/><Toggle colorScheme="future" checked disabled label="Disabled On"/></div>};
-export const SideBySide:Story={name:'🔄 Side-by-Side: Current vs Future',render:()=>(
-  <div style={{display:'flex',gap:40,fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>⚠️ CURRENT — Orange #005BA6</div><Toggle colorScheme="future" label="Off"/><div style={{marginTop:12}}/><Toggle colorScheme="future" checked label="On"/></div>
-    <div style={{width:1,background:'#DCDCDC'}}/>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>✅ FUTURE — PS Blue #005BA6</div><Toggle colorScheme="future" label="Off"/><div style={{marginTop:12}}/><Toggle colorScheme="future" checked label="On"/></div>
-  </div>)};
+import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import { Toggle } from './toggle';
+
+const meta: Meta<typeof Toggle> = {
+  title: 'Components/Toggle',
+  component: Toggle,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Toggle (Switch) — PS Design System 2.0. Track: 40x22px, grey OFF, PS Blue #005BA6 ON. Thumb: 18x18px white. Supports disabled and labelled states.',
+      },
+    },
+  },
+  argTypes: {
+    checked: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    label: { control: 'text' },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Toggle>;
+
+export const Default: Story = {
+  name: 'Default (ON — PS Blue #005BA6)',
+  args: {
+    checked: true,
+    label: 'Notifications enabled',
+  },
+};
+
+export const Off: Story = {
+  name: 'Off',
+  args: {
+    checked: false,
+    label: 'Notifications disabled',
+  },
+};
+
+export const DisabledOn: Story = {
+  name: 'Disabled ON',
+  args: {
+    checked: true,
+    disabled: true,
+    label: 'Enabled (disabled control)',
+  },
+};
+
+export const DisabledOff: Story = {
+  name: 'Disabled OFF',
+  args: {
+    checked: false,
+    disabled: true,
+    label: 'Disabled (disabled control)',
+  },
+};
+
+export const AllStates: Story = {
+  name: 'All States',
+  render: () => (
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, padding: 24, maxWidth: 480 } },
+      React.createElement('div', null,
+        React.createElement('div', { style: { fontSize: 11, fontWeight: 700, color: '#777', textTransform: 'uppercase', marginBottom: 8 } }, 'ON'),
+        React.createElement(Toggle, { checked: true, label: 'Toggle ON' })
+      ),
+      React.createElement('div', null,
+        React.createElement('div', { style: { fontSize: 11, fontWeight: 700, color: '#777', textTransform: 'uppercase', marginBottom: 8 } }, 'OFF'),
+        React.createElement(Toggle, { checked: false, label: 'Toggle OFF' })
+      ),
+      React.createElement('div', null,
+        React.createElement('div', { style: { fontSize: 11, fontWeight: 700, color: '#777', textTransform: 'uppercase', marginBottom: 8 } }, 'Disabled ON'),
+        React.createElement(Toggle, { checked: true, disabled: true, label: 'Disabled ON' })
+      ),
+      React.createElement('div', null,
+        React.createElement('div', { style: { fontSize: 11, fontWeight: 700, color: '#777', textTransform: 'uppercase', marginBottom: 8 } }, 'Disabled OFF'),
+        React.createElement(Toggle, { checked: false, disabled: true, label: 'Disabled OFF' })
+      )
+    )
+  ),
+};
