@@ -1,59 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Alert from './alert';
-
-const meta: Meta<typeof Alert> = {
-  title: 'Components/Alert',
-  component: Alert,
-  parameters: { layout: 'padded' },
-  tags: ['autodocs'],
-  argTypes: {
-    type: { control: 'select', options: ['success', 'danger', 'warning', 'info'] },
-  },
-};
-
+import React from 'react';
+import { Alert } from './alert';
+const meta: Meta<typeof Alert> = { title: 'Components/Alert', component: Alert, parameters: { layout: 'padded' }, argTypes: { type: { control: 'select', options: ['success','error','warning','info'] } } };
 export default meta;
 type Story = StoryObj<typeof Alert>;
-
-export const Success: Story = {
-  args: {
-    type: 'success',
-    title: 'Order Submitted',
-    message: 'Your purchase order #PO-28491 has been successfully submitted and is pending approval.',
-    onDismiss: () => {},
-  },
-};
-
-export const Danger: Story = {
-  args: {
-    type: 'danger',
-    title: 'Payment Failed',
-    message: 'We could not process your payment. Please verify your billing information and try again.',
-    onDismiss: () => {},
-  },
-};
-
-export const Warning: Story = {
-  args: {
-    type: 'warning',
-    title: 'Low Inventory',
-    message: 'This part has fewer than 5 units remaining. Consider placing a reorder to avoid stockouts.',
-    onDismiss: () => {},
-  },
-};
-
-export const Info: Story = {
-  args: {
-    type: 'info',
-    title: 'Scheduled Maintenance',
-    message: 'The platform will be unavailable on Saturday June 14 from 2:00â4:00 AM EST for scheduled maintenance.',
-    onDismiss: () => {},
-  },
-};
-
-export const NoDismiss: Story = {
-  args: {
-    type: 'info',
-    title: 'Contract Renewal Due',
-    message: 'Your service contract for GE Dash 4000 expires in 30 days. Review renewal options in the portal.',
-  },
-};
+export const Success: Story = { args: { type:'success', title:'Order Submitted', message:'PO #PO-12847 submitted for processing.' } };
+export const Error: Story = { args: { type:'error', title:'Payment Failed', message:'Payment could not be processed. Check billing info.' } };
+export const Warning: Story = { args: { type:'warning', title:'Low Stock Alert', message:'SKU CT-7821 has only 3 units remaining.' } };
+export const Info: Story = { args: { type:'info', title:'Scheduled Maintenance', message:'PartsSource maintenance Sun Jun 29, 2–4am EST.' } };
+export const WithClose: Story = { render: () => { const [o,setO]=React.useState(true); return o?<Alert type="success" title="Saved" message="Changes saved." onClose={()=>setO(false)}/>:<button onClick={()=>setO(true)} style={{padding:'8px 16px'}}>Show</button>; } };
+export const WithAction: Story = { args: { type:'warning', title:'Quote Expiring', message:'Quote #Q-2847 expires in 48h.', action:{label:'View Quote',onClick:()=>{}} } };
+export const AllTypes: Story = { render: () => (<div style={{display:'flex',flexDirection:'column',gap:12,maxWidth:600}}><Alert type="success" title="Confirmed" message="Order placed and being prepared."/><Alert type="error" title="Error" message="Unable to connect to API."/><Alert type="warning" title="Budget" message="Approaching 90% of monthly budget."/><Alert type="info" message="New vendor catalog updates available."/></div>) };
