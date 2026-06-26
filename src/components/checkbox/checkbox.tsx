@@ -43,7 +43,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     onChange?.(e.target.checked);
   };
 
-  const borderColor = error ? '#D32F2F' : disabled ? '#DCDCDC' : isChecked || indeterminate ? '#005BA6' : '#949494';
+  const borderColor = error ? '#D32F2F' : disabled ? '#DCDCDC' : isChecked || indeterminate ? '#005BA6' : '#DCDCDC';
   const bgColor = isChecked || indeterminate ? (disabled ? '#949494' : '#005BA6') : '#FFFFFF';
 
   return (
