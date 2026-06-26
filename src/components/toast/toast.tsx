@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 export interface ToastMessage { id: string; type: ToastType; title: string; message?: string; duration?: number; }
 export interface ToastProps { toasts?: ToastMessage[]; position?: string; onDismiss?: (id: string) => void; className?: string; }
-const colors: Record<ToastType, {border:string;icon:string;bar:string}> = { success:{border:'#17AB78',icon:'#0E7C55',bar:'#17AB78'}, error:{border:'#FF0000',icon:'#D32F2F',bar:'#D32F2F'}, warning:{border:'#E3A92D',icon:'#B45309',bar:'#E3A92D'}, info:{border:'#005BA6',icon:'#005BA6',bar:'#005BA6'} };
-const icons: Record<ToastType, string> = { success:'✓', error:'✗', warning:'⚠', info:'ℹ' };
+const colors: Record<ToastType, {border:string;icon:string;bar:string}> = { success:{border:'#17AB78',icon:'#0E7C55',bar:'#17AB78'}, error:{border:'#D32F2F',icon:'#D32F2F',bar:'#D32F2F'}, warning:{border:'#E3A92D',icon:'#B45309',bar:'#E3A92D'}, info:{border:'#005BA6',icon:'#005BA6',bar:'#005BA6'} };
+const icons: Record<ToastType, string> = { success:'â', error:'â', warning:'â ', info:'â¹' };
 const ToastItem: React.FC<{toast: ToastMessage; onDismiss: (id:string)=>void}> = ({ toast, onDismiss }) => {
   const [progress, setProgress] = useState(100);
   const [visible, setVisible] = useState(false);
@@ -17,7 +17,7 @@ const ToastItem: React.FC<{toast: ToastMessage; onDismiss: (id:string)=>void}> =
     <div style={{padding:'12px 14px',display:'flex',gap:10,alignItems:'flex-start'}}>
       <span style={{color:c.icon,fontWeight:700,fontSize:16,flexShrink:0}}>{icons[toast.type]}</span>
       <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:600,color:'#002F48',lineHeight:'20px'}}>{toast.title}</div>{toast.message&&<div style={{fontSize:13,color:'#777',lineHeight:'18px',marginTop:2}}>{toast.message}</div>}</div>
-      <button onClick={dismiss} style={{background:'none',border:'none',cursor:'pointer',color:'#949494',padding:0,fontSize:18,lineHeight:1}}>×</button>
+      <button onClick={dismiss} style={{background:'none',border:'none',cursor:'pointer',color:'#949494',padding:0,fontSize:18,lineHeight:1}}>Ã</button>
     </div>
     {!!dur&&<div style={{height:3,background:'#F1F1F1'}}><div style={{height:'100%',background:c.bar,width:progress+'%',transition:'width 50ms linear'}}/></div>}
   </div>);
