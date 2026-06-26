@@ -5,7 +5,7 @@ const meta:Meta<typeof Skeleton>={title:'Components/Skeleton',component:Skeleton
 export default meta;
 type Story=StoryObj<typeof Skeleton>;
 export const TextLine:Story={args:{width:'100%',height:16}};
-export const Circle:Story={args:{width:48,height:48,shape:'circle'}};
+export const Circle:Story={render:()=><Skeleton width={48} height={48} style={{borderRadius:'50%'}}/>};
 export const Rectangle:Story={args:{width:200,height:120}};
 export const CardSkeleton:Story={render:()=>(<div style={{display:'flex',flexDirection:'column',gap:12,padding:16,border:'1px solid #DCDCDC',borderRadius:4,maxWidth:320}}>
   <Skeleton width="100%" height={160}/>
