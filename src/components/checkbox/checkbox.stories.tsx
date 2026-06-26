@@ -1,22 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React, { useState } from 'react';
-import { Checkbox } from './checkbox';
-const meta: Meta<typeof Checkbox> = { title:'Components/Checkbox', component:Checkbox, parameters:{layout:'padded'}, argTypes:{disabled:{control:'boolean'},error:{control:'boolean'}} };
+import React from 'react';
+import Checkbox from './checkbox';
+const meta: Meta<typeof Checkbox> = { title:'Components/Checkbox', component:Checkbox, parameters:{ layout:'centered' } };
 export default meta;
 type Story = StoryObj<typeof Checkbox>;
-export const Default: Story = { args:{label:'Accept terms and conditions'} };
-export const Checked: Story = { args:{label:'Email notifications',defaultChecked:true} };
-export const WithDescription: Story = { args:{label:'Approved Vendor Only',description:'Only show parts from approved vendors',defaultChecked:true} };
-export const Indeterminate: Story = { args:{label:'Select all items',indeterminate:true} };
-export const Disabled: Story = { args:{label:'Disabled option',disabled:true,defaultChecked:true} };
-export const CheckboxGroup: Story = {
-  render: () => {
-    const [selected,setSelected]=useState(['imaging']);
-    const toggle=(v:string)=>setSelected(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
-    return (<div style={{display:'flex',flexDirection:'column',gap:12,fontFamily:'Source Sans Pro,sans-serif'}}>
-      <p style={{margin:0,fontSize:13,fontWeight:600,color:'#4A4A4A'}}>Filter by Category ({selected.length} selected)</p>
-      {[['imaging','Imaging'],['surgical','Surgical'],['monitoring','Monitoring'],['infusion','Infusion'],['lab','Lab']].map(([v,l])=><Checkbox key={v} label={l} checked={selected.includes(v)} onChange={()=>toggle(v)}/>)}
-    </div>);
-  },
+export const Default: Story = { args:{ label:'Accept terms and conditions' } };
+export const Checked: Story = { args:{ label:'I agree', checked:true, onChange:()=>{} } };
+export const Unchecked: Story = { args:{ label:'Subscribe', checked:false, onChange:()=>{} } };
+export const Indeterminate: Story = { args:{ label:'Select all', indeterminate:true } };
+export const Disabled: Story = { args:{ label:'Disabled', disabled:true } };
+export const DisabledChecked: Story = { args:{ label:'Disabled checked', disabled:true, checked:true, onChange:()=>{} } };
+export const WithHelperText: Story = { args:{ label:'Email notifications', helperText:'Receive order updates via email' } };
+export const Interactive: Story = {
+  render: () => { const [c,setC]=React.useState(false); return <Checkbox label={c?'Checked':'Click to check'} checked={c} onChange={setC}/>; },
 };
-export const Interactive: Story = { render: () => { const [c,setC]=useState(false); return <Checkbox label={c?'Checked':'Unchecked'} description="Click to toggle" checked={c} onChange={setC}/>; } };
+export const AllStates: Story = {
+  parameters:{ layout:'padded' },
+  render:()=>(
+    <div style={{display:'flex',flexDirection:'column',gap:16,fontFamily:"'Source Sans Pro',sans-serif"}}>
+      <Checkbox label="Unchecked"/>
+      <Checkbox label="Checked" defaultChecked/>
+      <Checkbox label="Indeterminate" indeterminate/>
+      <Checkbox label="Disabled" disabled/>
+      <Checkbox label="Disabled checked" disabled defaultChecked/>
+    </div>
+  ),
+};
