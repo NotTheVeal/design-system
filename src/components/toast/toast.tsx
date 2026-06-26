@@ -1,32 +1,28 @@
-import React, { useEffect, useState, useCallback } from 'react';
-const FONT = "'Source Sans 3', -apple-system, sans-serif";
-export type ToastVariant = 'success' | 'danger' | 'warning' | 'info';
-const BG = { success: '#E2F5EE', danger: '#FDEBEB', warning: '#FFF4E5', info: '#EFF9FE' };
-const CLR = { success: '#0E7C55', danger: '#E00000', warning: '#B45309', info: '#005BA6' };
-export interface ToastProps { variant?: ToastVariant; message: string; description?: string; duration?: number; onDismiss?: () => void; visible?: boolean; }
-export const Toast: React.FC<ToastProps> = ({ variant = 'info', message, description, duration = 4000, onDismiss, visible = true }) => {
-const [isVisible, setIsVisible] = useState(visible);
-const [isExiting, setIsExiting] = useState(false);
-const bg = BG[variant]; const clr = CLR[variant];
-const handleDismiss = useCallback(() => { setIsExiting(true); setTimeout(() => { setIsVisible(false); onDismiss?.(); }, 200); }, [onDismiss]);
-useEffect(() => {
-if (!visible) { setIsVisible(false); return; }
-setIsVisible(true); setIsExiting(false);
-if (duration > 0) { const t = setTimeout(handleDismiss, duration); return () => clearTimeout(t); }
-}, [visible, duration, handleDismiss]);
-if (!isVisible) return null;
-return (<div role="alert" aria-live="polite" style={{ position: 'relative', maxWidth: 420, display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', backgroundColor: bg, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,47,72,0.15), 0 0 0 1px rgba(0,47,72,0.05)', fontFamily: FONT, color: clr, opacity: isExiting ? 0 : 1, transition: 'opacity 200ms ease' }}>
-<div style={{ flex: 1, minWidth: 0 }}>
-<div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px', color: clr }}>{message}</div>
-{description && <div style={{ fontSize: 13, fontWeight: 400, lineHeight: '18px', color: clr, opacity: 0.85, marginTop: 2 }}>{description}</div>}
-</div>
-<button onClick={handleDismiss} aria-label="Dismiss notification" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, width: 24, height: 24, padding: 0, background: 'none', border: 'none', borderRadius: 4, cursor: 'pointer', color: clr, opacity: 0.7, transition: 'opacity 150ms ease', marginTop: -2, marginRight: -4 }}>
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-    <line x1="18" y1="6" x2="6" y2="18"/>
-    <line x1="6" y1="6" x2="18" y2="18"/>
-  </svg>
-</button>
-</div>);
+import React, { useState, useEffect, useCallback } from 'react';
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export interface ToastMessage { id: string; type: ToastType; title: string; message?: string; duration?: number; }
+export interface ToastProps { toasts?: ToastMessage[]; position?: string; onDismiss?: (id: string) => void; className?: string; }
+const colors: Record<ToastType, {border:string;icon:string;bar:string}> = { success:{border:'#17AB78',icon:'#0E7C55',bar:'#17AB78'}, error:{border:'#FF0000',icon:'#D32F2F',bar:'#D32F2F'}, warning:{border:'#E3A92D',icon:'#B45309',bar:'#E3A92D'}, info:{border:'#005BA6',icon:'#005BA6',bar:'#005BA6'} };
+const icons: Record<ToastType, string> = { success:'✓', error:'✗', warning:'⚠', info:'ℹ' };
+const ToastItem: React.FC<{toast: ToastMessage; onDismiss: (id:string)=>void}> = ({ toast, onDismiss }) => {
+  const [progress, setProgress] = useState(100);
+  const [visible, setVisible] = useState(false);
+  const dur = toast.duration ?? 4000;
+  const c = colors[toast.type];
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 10); return () => clearTimeout(t); }, []);
+  useEffect(() => { if (!dur) return; const start = Date.now(); const iv = setInterval(() => { const p = Math.max(0,100-((Date.now()-start)/dur)*100); setProgress(p); if(p<=0){clearInterval(iv);dismiss();} },50); return ()=>clearInterval(iv); }, []);
+  const dismiss = useCallback(()=>{setVisible(false);setTimeout(()=>onDismiss(toast.id),250);},[toast.id]);
+  return (<div style={{background:'#FFF',border:'1px solid #DCDCDC',borderLeft:`4px solid ${c.border}`,borderRadius:4,boxShadow:'0 4px 16px rgba(0,47,72,.12)',minWidth:300,maxWidth:400,overflow:'hidden',fontFamily:font,transform:visible?'translateX(0)':'translateX(20px)',opacity:visible?1:0,transition:'all 250ms ease'}}>
+    <div style={{padding:'12px 14px',display:'flex',gap:10,alignItems:'flex-start'}}>
+      <span style={{color:c.icon,fontWeight:700,fontSize:16,flexShrink:0}}>{icons[toast.type]}</span>
+      <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:600,color:'#002F48',lineHeight:'20px'}}>{toast.title}</div>{toast.message&&<div style={{fontSize:13,color:'#777',lineHeight:'18px',marginTop:2}}>{toast.message}</div>}</div>
+      <button onClick={dismiss} style={{background:'none',border:'none',cursor:'pointer',color:'#949494',padding:0,fontSize:18,lineHeight:1}}>×</button>
+    </div>
+    {!!dur&&<div style={{height:3,background:'#F1F1F1'}}><div style={{height:'100%',background:c.bar,width:progress+'%',transition:'width 50ms linear'}}/></div>}
+  </div>);
 };
-Toast.displayName = 'Toast';
+const pos: Record<string,React.CSSProperties> = { 'top-right':{top:16,right:16}, 'top-left':{top:16,left:16}, 'bottom-right':{bottom:16,right:16}, 'bottom-left':{bottom:16,left:16} };
+export const Toast: React.FC<ToastProps> = ({toasts=[],position='top-right',onDismiss,className=''}) => (<div className={className} style={{position:'fixed',zIndex:9999,display:'flex',flexDirection:'column',gap:8,...pos[position||'top-right']}}>{toasts.map(t=><ToastItem key={t.id} toast={t} onDismiss={onDismiss||(() => {})}/>)}</div>);
+export function useToast() { const [toasts,setToasts]=useState<ToastMessage[]>([]); const add=useCallback((t:Omit<ToastMessage,'id'>)=>{const id=Date.now().toString();setToasts(p=>[...p,{...t,id}]);return id;},[]);const dismiss=useCallback((id:string)=>setToasts(p=>p.filter(t=>t.id!==id)),[]);const success=(title:string,message?:string)=>add({type:'success',title,message});const error=(title:string,message?:string)=>add({type:'error',title,message});const warning=(title:string,message?:string)=>add({type:'warning',title,message});const info=(title:string,message?:string)=>add({type:'info',title,message});return{toasts,dismiss,success,error,warning,info}; }
 export default Toast;
