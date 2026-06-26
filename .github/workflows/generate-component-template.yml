@@ -43,7 +43,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - name: Install deps
-        run: npm ci --prefer-offline || npm install
+        run: npm ci --prefer-offline || npm install --legacy-peer-deps
       - name: Generate component
         run: node scripts/generate-component-template.js "${{ inputs.component_name }}" "${{ inputs.component_type }}" "${{ inputs.force }}"
       - name: Commit generated component
