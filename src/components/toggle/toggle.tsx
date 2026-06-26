@@ -1,29 +1,73 @@
-import React, { useState } from 'react';
-
-const FONT = "'Source Sans 3', -apple-system, sans-serif";
+import React from 'react';
 
 export interface ToggleProps {
   checked?: boolean;
-  disabled?: boolean;
+  defaultChecked?: boolean;
+  onChange?: (checked: boolean) => void;
   label?: string;
-  onChange?: (v: boolean) => void;
-  id?: string;
+  description?: string;
+  disabled?: boolean;
+  size?: 'sm' | 'md';
   className?: string;
+  id?: string;
 }
 
-/**
- * Toggle (Switch) — PS Design System 2.0
- * Figma spec: 40×22px track, #CCCCCC OFF, #005BA6 ON, 18×18px thumb
- */
-export const Toggle: React.FC<ToggleProps> = ({ checked = false, disabled = false, label, onChange, id, className = '' }) => {
-  const [focused, setFocused] = useState(false);
+export const Toggle: React.FC<ToggleProps> = ({
+  checked: ctrl,
+  defaultChecked = false,
+  onChange,
+  label,
+  description,
+  disabled = false,
+  size = 'md',
+  className = '',
+  id,
+}) => {
+  const [internal, setInternal] = React.useState(defaultChecked);
+  const isOn = ctrl !== undefined ? ctrl : internal;
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+
+  const handleChange = () => {
+    if (disabled) return;
+    const next = !isOn;
+    if (ctrl === undefined) setInternal(next);
+    onChange?.(next);
+  };
+
+  const W = size === 'sm' ? 36 : 44;
+  const H = size === 'sm' ? 20 : 24;
+  const D = size === 'sm' ? 14 : 18;
+  const offset = size === 'sm' ? 3 : 3;
+
   return (
-    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1, fontFamily: FONT }} className={className}>
-      <div role="switch" aria-checked={checked} tabIndex={disabled ? -1 : 0} id={id} onClick={() => !disabled && onChange?.(!checked)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} style={{ position: 'relative', width: 40, height: 22, borderRadius: 11, background: disabled ? '#DCDCDC' : checked ? '#005BA6' : '#CCCCCC', transition: 'background 200ms ease', outline: 'none', boxShadow: focused ? '0 0 0 3px rgba(0,91,166,0.35)' : 'none' }}>
-        <div style={{ position: 'absolute', top: '50%', left: checked ? 'calc(100% - 20px)' : 2, transform: 'translateY(-50%)', width: 18, height: 18, borderRadius: '50%', background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,47,72,0.25)', transition: 'left 200ms ease' }} />
+    <div className={className} style={{ display:'inline-flex', alignItems:'flex-start', gap:10, cursor:disabled?'not-allowed':'pointer', fontFamily:font, opacity:disabled?0.5:1 }} onClick={handleChange}>
+      {/* Track */}
+      <div style={{
+        position:'relative', width:W, height:H, borderRadius:H/2,
+        background: isOn ? (disabled ? '#949494' : '#005BA6') : '#CCCCCC',
+        transition:'background 200ms ease',
+        flexShrink:0,
+        marginTop:1,
+      }}>
+        {/* Thumb */}
+        <div style={{
+          position:'absolute',
+          top: offset,
+          left: isOn ? W - D - offset : offset,
+          width:D, height:D, borderRadius:'50%',
+          background:'#FFFFFF',
+          boxShadow:'0 1px 3px rgba(0,0,0,0.2)',
+          transition:'left 200ms ease',
+        }}/>
       </div>
-      {label && <span style={{ fontSize: 14, color: disabled ? '#949494' : '#4A4A4A' }}>{label}</span>}
-    </label>
+      {(label || description) && (
+        <span style={{ display:'flex', flexDirection:'column', gap:2 }}>
+          {label && <span style={{ fontSize:14, color:disabled?'#949494':'#4A4A4A', lineHeight:'20px' }}>{label}</span>}
+          {description && <span style={{ fontSize:12, color:'#777', lineHeight:'18px' }}>{description}</span>}
+        </span>
+      )}
+    </div>
   );
 };
+
 export default Toggle;
