@@ -31,6 +31,7 @@ export const Accordion: React.FC<AccordionProps> = ({
   className = '',
 }) => {
   const [openIds, setOpenIds] = useState<Set<string>>(new Set(defaultOpen));
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const toggle = (id: string) => {
     setOpenIds(prev => {
@@ -46,11 +47,14 @@ export const Accordion: React.FC<AccordionProps> = ({
   };
 
   const font = "'Source Sans Pro', -apple-system, sans-serif";
-  const triggerHeight = size === 'lg' ? 60 : 48;
-  const contentPadding = size === 'lg' ? '16px 24px 20px' : '12px 16px 16px';
-
   const isCard = variant === 'card';
   const isInlineFaq = variant === 'inline-faq';
+  const triggerHeight = size === 'lg' ? 64 : 52;
+
+  // Font sizes and weights per variant
+  const titleFontSize = isInlineFaq ? 17 : (size === 'lg' ? 16 : 15);
+  const titleFontWeight = isInlineFaq ? 600 : 600;
+  const titleColor = isInlineFaq ? '#002F48' : '#4A4A4A';
 
   return (
     <div
@@ -58,23 +62,33 @@ export const Accordion: React.FC<AccordionProps> = ({
       style={{
         width: '100%',
         fontFamily: font,
-        borderRadius: isCard ? 8 : 0,
-        overflow: isCard ? 'hidden' : undefined,
-        boxShadow: isCard ? '0 2px 10px rgba(0,47,72,0.10)' : undefined,
-        border: isCard ? '1px solid #DCDCDC' : undefined,
+        ...(isCard ? {
+          borderRadius: 4,
+          overflow: 'hidden',
+          border: '1px solid #DCDCDC',
+          boxShadow: '0 2px 10px rgba(0,47,72,0.10)',
+        } : {}),
       }}
     >
       {items.map((item, i) => {
         const isOpen = openIds.has(item.id);
+        const isHovered = hoveredId === item.id;
         const isFirst = i === 0;
         const isLast = i === items.length - 1;
+
+        const triggerBg = item.disabled
+          ? '#FFFFFF'
+          : isHovered && !isOpen
+            ? '#FAFAFA'
+            : isOpen
+              ? (isCard ? '#F7FAFD' : '#FAFAFA')
+              : '#FFFFFF';
 
         return (
           <div
             key={item.id}
             style={{
-              borderTop: !isCard && !isFirst ? '1px solid #DCDCDC' : undefined,
-              borderBottom: isCard && !isLast ? '1px solid #DCDCDC' : undefined,
+              borderTop: !isFirst ? '1px solid #DCDCDC' : (isCard ? 'none' : 'none'),
             }}
           >
             {/* Trigger */}
@@ -82,39 +96,37 @@ export const Accordion: React.FC<AccordionProps> = ({
               onClick={() => !item.disabled && toggle(item.id)}
               aria-expanded={isOpen}
               disabled={item.disabled}
+              onMouseEnter={() => !item.disabled && setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId(null)}
               style={{
                 width: '100%',
-                height: triggerHeight,
+                minHeight: triggerHeight,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: size === 'lg' ? '0 24px' : '0 16px',
-                background: '#FFFFFF',
+                padding: size === 'lg' ? '14px 24px' : '12px 16px',
+                background: triggerBg,
                 border: 'none',
                 cursor: item.disabled ? 'not-allowed' : 'pointer',
                 fontFamily: font,
-                fontSize: isInlineFaq ? 16 : 14,
-                fontWeight: 300,
-                color: item.disabled ? '#949494' : isInlineFaq ? '#002F48' : '#4A4A4A',
+                fontSize: titleFontSize,
+                fontWeight: titleFontWeight,
+                color: item.disabled ? '#949494' : titleColor,
                 textAlign: 'left',
                 transition: 'background 150ms ease',
                 outline: 'none',
+                gap: 12,
               }}
-              onMouseEnter={e => !item.disabled && ((e.currentTarget as HTMLElement).style.background = '#FAFAFA')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#FFFFFF')}
-              onFocus={e => ((e.currentTarget as HTMLElement).style.outline = '2px solid #005BA6')}
-              onBlur={e => ((e.currentTarget as HTMLElement).style.outline = 'none')}
             >
-              <span style={{ flex: 1, fontWeight: isInlineFaq ? 400 : 300 }}>{item.title}</span>
+              <span style={{ flex: 1, lineHeight: 1.4 }}>{item.title}</span>
               <span
                 style={{
                   flexShrink: 0,
-                  marginLeft: 12,
-                  color: '#005BA6',
+                  color: item.disabled ? '#DCDCDC' : '#005BA6',
                   display: 'flex',
                   alignItems: 'center',
                   transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 200ms ease',
+                  transition: 'transform 220ms ease',
                 }}
               >
                 <ChevronDown />
@@ -126,17 +138,17 @@ export const Accordion: React.FC<AccordionProps> = ({
               aria-hidden={!isOpen}
               style={{
                 overflow: 'hidden',
-                maxHeight: isOpen ? 1000 : 0,
-                transition: 'max-height 250ms ease',
+                maxHeight: isOpen ? 2000 : 0,
+                transition: 'max-height 280ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               <div
                 style={{
-                  padding: contentPadding,
-                  background: '#FFFFFF',
+                  padding: size === 'lg' ? '4px 24px 20px' : '4px 16px 16px',
+                  background: isCard ? '#F7FAFD' : '#FAFAFA',
                   fontSize: 14,
                   fontWeight: 400,
-                  color: '#4A4A4A',
+                  color: isInlineFaq ? '#4A4A4A' : '#777777',
                   lineHeight: '22px',
                   borderTop: '1px solid #DCDCDC',
                 }}
