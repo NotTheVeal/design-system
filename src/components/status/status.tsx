@@ -1,76 +1,21 @@
 import React from 'react';
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-type StatusType = 'active' | 'inactive' | 'busy' | 'away' | 'offline' | 'online' | 'error' | 'warning' | 'info';
-
-interface StatusColors { dot: string; text: string; }
-
-const STATUS_COLORS: Record<StatusType, StatusColors> = {
-  active:   { dot: '#17AB78', text: '#0E7C55' },
-  online:   { dot: '#17AB78', text: '#0E7C55' },
-  inactive: { dot: '#949494', text: '#4A4A4A' },
-  offline:  { dot: '#949494', text: '#4A4A4A' },
-  busy:     { dot: '#E00000', text: '#E00000' },
-  error:    { dot: '#E00000', text: '#E00000' },
-  away:     { dot: '#E3A92D', text: '#B45309' },
-  warning:  { dot: '#E3A92D', text: '#B45309' },
-  info:     { dot: '#009CF4', text: '#005BA6' },
+export type StatusValue = 'active'|'inactive'|'pending'|'error'|'warning'|'draft'|'archived';
+export interface StatusProps { value: StatusValue; label?: string; showDot?: boolean; size?: 'sm'|'md'; className?: string; }
+const cfg: Record<StatusValue,{color:string;bg:string;border:string;dot:string;label:string}> = {
+  active:{color:'#0E7C55',bg:'#E2F5EE',border:'#0E7C55',dot:'#17AB78',label:'Active'},
+  inactive:{color:'#777',bg:'#F1F1F1',border:'#949494',dot:'#949494',label:'Inactive'},
+  pending:{color:'#B45309',bg:'#FFF4D0',border:'#B45309',dot:'#E3A92D',label:'Pending'},
+  error:{color:'#D32F2F',bg:'#FACBCB',border:'#D32F2F',dot:'#FF0000',label:'Error'},
+  warning:{color:'#B45309',bg:'#FFF4D0',border:'#E3A92D',dot:'#E3A92D',label:'Warning'},
+  draft:{color:'#005BA6',bg:'#DCEAED',border:'#005BA6',dot:'#009CF4',label:'Draft'},
+  archived:{color:'#777',bg:'#F1F1F1',border:'#DCDCDC',dot:'#DCDCDC',label:'Archived'},
 };
-
-interface StatusProps {
-  type?: StatusType;
-  label?: string;
-  children?: React.ReactNode;
-  className?: string;
-  dotSize?: number;
-}
-
-const Status: React.FC<StatusProps> = ({
-  type = 'inactive',
-  label,
-  children,
-  className = '',
-  dotSize = 8,
-}) => {
-  const colors = STATUS_COLORS[type] ?? STATUS_COLORS.inactive;
-  const text = label ?? children ?? type;
-
-  return (
-    <span
-      className={className}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        fontFamily,
-      }}
-    >
-      <span
-        style={{
-          width: dotSize,
-          height: dotSize,
-          borderRadius: '50%',
-          backgroundColor: colors.dot,
-          flexShrink: 0,
-          display: 'inline-block',
-        }}
-      />
-      {text && (
-        <span
-          style={{
-            fontSize: 14,
-            fontWeight: 500,
-            color: colors.text,
-            textTransform: 'capitalize',
-            fontFamily,
-          }}
-        >
-          {text}
-        </span>
-      )}
-    </span>
-  );
+export const Status: React.FC<StatusProps> = ({value,label,showDot=true,size='md',className=''}) => {
+  const c = cfg[value]||cfg.inactive; const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const fs = size==='sm'?11:12; const ds = size==='sm'?6:8;
+  return (<span className={className} style={{display:'inline-flex',alignItems:'center',gap:6,padding:size==='sm'?'2px 8px':'3px 10px',borderRadius:'100px',background:c.bg,border:`1px solid ${c.border}`,fontFamily:font,fontSize:fs,fontWeight:700,color:c.color,whiteSpace:'nowrap',lineHeight:'16px'}}>
+    {showDot&&<span style={{width:ds,height:ds,borderRadius:'50%',background:c.dot,flexShrink:0,display:'inline-block',animation:value==='pending'?'statusPulse 1.5s ease-in-out infinite':'none'}}/>}
+    {label||c.label}<style>{`@keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
+  </span>);
 };
-
 export default Status;
