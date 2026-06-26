@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const FONT = "'Source Sans 3', 'Source Sans Pro', -apple-system, sans-serif";
+const FONT = "'Source Sans Pro', -apple-system, sans-serif";
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -38,7 +38,6 @@ export const Modal: React.FC<ModalProps> = ({
   const closeRef = useRef<HTMLButtonElement>(null);
   const [visible, setVisible] = useState(false);
 
-  // Animate in on open
   useEffect(() => {
     if (open) {
       requestAnimationFrame(() => setVisible(true));
@@ -92,7 +91,6 @@ export const Modal: React.FC<ModalProps> = ({
         padding: 24,
       }}
     >
-      {/* Backdrop */}
       <div
         style={{
           position: 'absolute',
@@ -105,7 +103,6 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={closeOnBackdrop ? onClose : undefined}
       />
 
-      {/* Dialog Panel */}
       <div
         ref={dialogRef}
         role="dialog"
@@ -126,8 +123,8 @@ export const Modal: React.FC<ModalProps> = ({
           maxWidth: SIZE_WIDTH[size],
           maxHeight: 'calc(100vh - 48px)',
           backgroundColor: '#FFFFFF',
-          borderRadius: 8,
-          boxShadow: '0 20px 60px rgba(0, 47, 72, 0.25)',
+          borderRadius: 4,
+          boxShadow: '0 6px 20px rgba(0,47,72,0.18)',
           display: 'flex',
           flexDirection: 'column',
           fontFamily: FONT,
@@ -135,7 +132,6 @@ export const Modal: React.FC<ModalProps> = ({
           zIndex: 1001,
         }}
       >
-        {/* Header — 60px height */}
         {title && (
           <div
             style={{
@@ -178,10 +174,8 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
         )}
 
-        {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>{children}</div>
 
-        {/* Footer — 64px height */}
         {footer && (
           <div
             style={{
