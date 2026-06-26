@@ -1,8 +1,8 @@
 /**
- * ProductCard — PS Design System 2.0
+ * ProductCard â PS Design System 2.0
  *
  * SRP (Search Results Page) product card.
- * Both colorScheme='current' AND colorScheme='future' use #005BA6 (PS Blue) — no orange.
+ * Both colorScheme='current' AND colorScheme='future' use #005BA6 (PS Blue) â no orange.
  *
  * Spec:
  *   - Font: Source Sans 3, -apple-system, sans-serif
@@ -27,7 +27,7 @@ import React, { useState } from 'react';
 
 const FONT = "'Source Sans 3', -apple-system, sans-serif";
 
-// Both colorSchemes use PS Blue — no orange ever
+// Both colorSchemes use PS Blue â no orange ever
 const COLOR_SCHEMES = {
   current: {
     primary:      '#005BA6',
@@ -75,7 +75,7 @@ const ImagePlaceholder = ({ size = 48 }: { size?: number }) => (
   </svg>
 );
 
-/** Grid variant — vertical portrait card */
+/** Grid variant â vertical portrait card */
 const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] }> = (props) => {
   const {
     c,
@@ -128,7 +128,7 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
         flexDirection: 'column',
       }}
     >
-      {/* Image area — aspect-ratio 1:1, #F5F5F5 bg */}
+      {/* Image area â aspect-ratio 1:1, #F5F5F5 bg */}
       <div
         style={{
           width: '100%',
@@ -149,7 +149,7 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
 
       {/* Body */}
       <div style={{ padding: '12px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {/* Product name — 14px, 600, #2B2B2B, 2-line clamp */}
+        {/* Product name â 14px, 600, #2B2B2B, 2-line clamp */}
         <div
           style={{
             fontSize: 14,
@@ -165,10 +165,10 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
           {productName}
         </div>
 
-        {/* Manufacturer — 12px, #777777 */}
+        {/* Manufacturer â 12px, #777777 */}
         <div style={{ fontSize: 12, color: '#777777' }}>{oem}</div>
 
-        {/* Part number — 12px, #777777 */}
+        {/* Part number â 12px, #777777 */}
         <div style={{ fontSize: 12, color: '#777777' }}>Part #: {partNumber}</div>
 
         {/* Availability badge */}
@@ -191,13 +191,13 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
           {availability}
         </span>
 
-        {/* Price — 18px, 700, #2B2B2B */}
+        {/* Price â 18px, 700, #2B2B2B */}
         <div style={{ fontSize: 18, fontWeight: 700, color: '#2B2B2B', marginTop: 4 }}>{price}</div>
       </div>
 
-      {/* Buttons — 8px gap */}
+      {/* Buttons â 8px gap */}
       <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {/* ADD TO CART — filled PS Blue */}
+        {/* ADD TO CART â filled PS Blue */}
         <button
           onClick={onPrimary}
           onMouseEnter={() => setAddHovered(true)}
@@ -214,7 +214,7 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
           Add to Cart
         </button>
 
-        {/* SEE OPTIONS — outline */}
+        {/* SEE OPTIONS â outline */}
         <button
           onClick={onSeeBuyingOptions}
           onMouseEnter={() => setSeeHovered(true)}
@@ -222,7 +222,7 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
           style={{
             ...btnBase,
             background: seeHovered ? '#EFF9FE' : '#FFFFFF',
-            border: `1px solid ${seeHovered ? c.primary : '#DCDCDC'}`,
+            border: `1px solid ${c.primary}`,
             color: c.primary,
           }}
         >
@@ -233,7 +233,7 @@ const GridCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
   );
 };
 
-/** List variant — horizontal SRP row */
+/** List variant â horizontal SRP row */
 const ListCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] }> = (props) => {
   const {
     c,
@@ -268,7 +268,7 @@ const ListCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
         gap: 16,
       }}
     >
-      {/* Image — 80x80px */}
+      {/* Image â 80x80px */}
       <div
         style={{
           width: 80,
@@ -314,7 +314,7 @@ const ListCard: React.FC<ProductCardProps & { c: typeof COLOR_SCHEMES['future'] 
         </div>
       </div>
 
-      {/* Right — price + button */}
+      {/* Right â price + button */}
       <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: 10, minWidth: 160 }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: '#2B2B2B' }}>{price}</div>
         <button
