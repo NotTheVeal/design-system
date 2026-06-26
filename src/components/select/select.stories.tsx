@@ -1,139 +1,28 @@
-import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import Select from './select';
-
-const meta: Meta<typeof Select> = {
-  title: 'Components/Select',
-  component: Select,
-  parameters: { layout: 'padded' },
-  tags: ['autodocs'],
-};
-
+import React, { useState } from 'react';
+import { Select } from './select';
+const CATEGORIES = [{value:'imaging',label:'Imaging & Diagnostics'},{value:'surgical',label:'Surgical Equipment'},{value:'monitoring',label:'Patient Monitoring'},{value:'infusion',label:'Infusion Systems'},{value:'lab',label:'Lab Supplies'},{value:'respiratory',label:'Respiratory'}];
+const MANUFACTURERS = [{value:'ge',label:'GE Healthcare'},{value:'siemens',label:'Siemens Healthineers'},{value:'philips',label:'Philips Healthcare'},{value:'stryker',label:'Stryker'},{value:'medtronic',label:'Medtronic'},{value:'bd',label:'Becton Dickinson'}];
+const meta: Meta<typeof Select> = { title:'Components/Select', component:Select, parameters:{layout:'padded'}, argTypes:{size:{control:'select',options:['sm','md','lg']},disabled:{control:'boolean'}} };
 export default meta;
 type Story = StoryObj<typeof Select>;
-
-export const Default: Story = {
+export const Default: Story = { args:{options:CATEGORIES,placeholder:'Select category'} };
+export const WithLabel: Story = { args:{options:CATEGORIES,label:'Category'} };
+export const PreSelected: Story = { args:{options:CATEGORIES,label:'Category',defaultValue:'imaging'} };
+export const WithError: Story = { args:{options:CATEGORIES,label:'Category',error:'Please select a category'} };
+export const Disabled: Story = { args:{options:CATEGORIES,label:'Category',defaultValue:'imaging',disabled:true} };
+export const SmallSize: Story = { args:{options:MANUFACTURERS,label:'Manufacturer',size:'sm'} };
+export const Interactive: Story = {
   render: () => {
-    const [val, setVal] = useState('');
+    const [cat,setCat] = useState('');
+    const [mfr,setMfr] = useState('');
     return (
-      <div style={{ width: 360 }}>
-        <Select
-          label="Equipment Category"
-          options={['MRI Systems', 'CT Scanners', 'Ultrasound', 'X-Ray', 'Patient Monitoring', 'Lab Equipment']}
-          value={val}
-          onChange={setVal}
-        />
-      </div>
-    );
-  },
-};
-
-export const WithSelected: Story = {
-  render: () => {
-    const [val, setVal] = useState('ct');
-    return (
-      <div style={{ width: 360 }}>
-        <Select
-          label="Modality"
-          options={[
-            { label: 'MRI', value: 'mri' },
-            { label: 'CT Scanner', value: 'ct' },
-            { label: 'Ultrasound', value: 'us' },
-            { label: 'X-Ray', value: 'xr' },
-          ]}
-          value={val}
-          onChange={setVal}
-        />
-      </div>
-    );
-  },
-};
-
-export const NoLabel: Story = {
-  render: () => {
-    const [val, setVal] = useState('');
-    return (
-      <div style={{ width: 280 }}>
-        <Select
-          placeholder="Select supplier..."
-          options={['Siemens Healthineers', 'GE Healthcare', 'Philips Medical', 'Canon Medical']}
-          value={val}
-          onChange={setVal}
-        />
-      </div>
-    );
-  },
-};
-
-export const WithError: Story = {
-  render: () => {
-    const [val, setVal] = useState('');
-    return (
-      <div style={{ width: 360 }}>
-        <Select
-          label="Approval Level"
-          options={['Manager', 'Director', 'VP', 'CFO']}
-          value={val}
-          onChange={setVal}
-          error="Please select an approval level before submitting."
-        />
-      </div>
-    );
-  },
-};
-
-export const WithHelperText: Story = {
-  render: () => {
-    const [val, setVal] = useState('net30');
-    return (
-      <div style={{ width: 360 }}>
-        <Select
-          label="Payment Terms"
-          options={[
-            { label: 'Net 15', value: 'net15' },
-            { label: 'Net 30', value: 'net30' },
-            { label: 'Net 60', value: 'net60' },
-            { label: 'Due on Receipt', value: 'due' },
-          ]}
-          value={val}
-          onChange={setVal}
-          helperText="Payment terms must match your active vendor agreement."
-        />
-      </div>
-    );
-  },
-};
-
-export const Disabled: Story = {
-  render: () => (
-    <div style={{ width: 360 }}>
-      <Select
-        label="Contract Type"
-        options={['Full Coverage', 'Parts Only', 'Labor Only']}
-        value="Full Coverage"
-        onChange={() => {}}
-        disabled
-      />
-    </div>
-  ),
-};
-
-export const WithDisabledOption: Story = {
-  render: () => {
-    const [val, setVal] = useState('');
-    return (
-      <div style={{ width: 360 }}>
-        <Select
-          label="Service Level"
-          options={[
-            { label: 'Bronze', value: 'bronze' },
-            { label: 'Silver', value: 'silver' },
-            { label: 'Gold', value: 'gold' },
-            { label: 'Platinum (Coming Soon)', value: 'platinum', disabled: true },
-          ]}
-          value={val}
-          onChange={setVal}
-        />
+      <div style={{ display:'flex', flexDirection:'column', gap:16, maxWidth:400, fontFamily:'Source Sans Pro, sans-serif' }}>
+        <Select options={CATEGORIES} label="Category" value={cat} onChange={setCat} />
+        <Select options={MANUFACTURERS} label="Manufacturer" value={mfr} onChange={setMfr} />
+        <div style={{ padding:'12px 16px', background:'#F1F1F1', borderRadius:4, fontSize:13 }}>
+          <strong>Selected:</strong> {cat||'—'} / {mfr||'—'}
+        </div>
       </div>
     );
   },
