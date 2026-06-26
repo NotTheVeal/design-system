@@ -1,15 +1,16 @@
 name: Generate Component (Template)
+
 on:
   workflow_dispatch:
     inputs:
       component_name:
-        description: 'PascalCase component name (e.g. FilterChip)'
+        description: Component name in PascalCase
         required: true
         type: string
       component_type:
-        description: 'Component type: ui, data, layout, feedback'
+        description: Type of component
         required: false
-        default: 'ui'
+        default: ui
         type: string
 
 jobs:
@@ -18,71 +19,53 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
 
-      - name: Generate component via Claude API
+      - name: Create component directory
+        run: mkdir -p src/components/${{ inputs.component_name }}
+
+      - name: Generate via Claude API
+        run: |
+          node -e "
+            const https = require('https');
+            const name = process.env.COMPONENT_NAME;
+            const type = process.env.COMPONENT_TYPE;
+            const apiKey = process.env.ANTHROPIC_API_KEY;
+            const prompt = 'Generate a TypeScript React component named ' + name + ' for PartsSource Design System 2.0. Use PS Blue #005BA6 as primary color. Export as named and default export. Return ONLY the TSX code.';
+            const body = JSON.stringify({model:'claude-opus-4-5',max_tokens:2048,messages:[{role:'user',content:prompt}]});
+            const req = https.request({hostname:'api.anthropic.com',path:'/v1/messages',method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
+              let d='';
+              res.on('data',c=>d+=c);
+              res.on('end',()=>{
+                try {
+                  const r=JSON.parse(d);
+                  const code=r.content[0].text;
+                  require('fs').writeFileSync('src/components/'+name+'/'+name+'.tsx',code);
+                  require('fs').writeFileSync('src/components/'+name+'/index.ts','export {default} from \'./'+name+'\';\nexport * from \'./'+name+'\';');
+                  console.log('Generated: src/components/'+name+'/'+name+'.tsx');
+                } catch(e) {
+                  const fallback='import React from \'react\';\nexport const '+name+' = () => <div className=\"ps-component\">'+name+'</div>;\nexport default '+name+';';
+                  require('fs').writeFileSync('src/components/'+name+'/'+name+'.tsx',fallback);
+                  console.log('Fallback generated for: '+name);
+                }
+              });
+            });
+            req.write(body);
+            req.end();
+          "
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           COMPONENT_NAME: ${{ inputs.component_name }}
           COMPONENT_TYPE: ${{ inputs.component_type }}
-        run: |
-          echo "Generating ${COMPONENT_NAME} component..."
-          
-          PROMPT="You are a React component generator for PartsSource Design System 2.0. Generate a complete, production-ready TypeScript React component named ${COMPONENT_NAME} (type: ${COMPONENT_TYPE}). Use PS Blue #005BA6 as primary color, Source Sans Pro font, 4px border-radius. Return ONLY valid TypeScript/TSX code, no explanation."
-          
-          RESPONSE=$(curl -s -X POST https://api.anthropic.com/v1/messages \
-            -H "x-api-key: ${ANTHROPIC_API_KEY}" \
-            -H "anthropic-version: 2023-06-01" \
-            -H "content-type: application/json" \
-            -d "{
-              \"model\": \"claude-opus-4-5\",
-              \"max_tokens\": 2048,
-              \"messages\": [{
-                \"role\": \"user\",
-                \"content\": \"${PROMPT}\"
-              }]
-            }")
-          
-          echo "API response received"
-          
-          CONTENT=$(echo "$RESPONSE" | node -e "
-            let d='';
-            process.stdin.on('data',c=>d+=c);
-            process.stdin.on('end',()=>{
-              try {
-                const r=JSON.parse(d);
-                console.log(r.content[0].text||'');
-              } catch(e) {
-                console.log('// Generated component\nimport React from \'react\';\nexport const ${COMPONENT_NAME} = () => <div>Component</div>;\nexport default ${COMPONENT_NAME};');
-              }
-            });
-          " COMPONENT_NAME="${COMPONENT_NAME}")
-          
-          mkdir -p "src/components/${COMPONENT_NAME}"
-          
-          echo "$CONTENT" > "src/components/${COMPONENT_NAME}/${COMPONENT_NAME}.tsx"
-          
-          cat > "src/components/${COMPONENT_NAME}/index.ts" << 'INDEXEOF'
-export { default } from './${COMPONENT_NAME}';
-export * from './${COMPONENT_NAME}';
-INDEXEOF
-          
-          echo "Component generated successfully at src/components/${COMPONENT_NAME}/"
-          ls -la "src/components/${COMPONENT_NAME}/"
 
-      - name: Commit generated component
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/components/${{ inputs.component_name }}/ || true
-          git diff --staged --quiet || git commit -m "feat(${{ inputs.component_name }}): generate PS Design System component via Claude [skip ci]"
-          git push || true
-
-      - name: Summary
-        run: echo "Component ${{ inputs.component_name }} generated successfully"
+          git add src/components/${{ inputs.component_name }}/
+          git diff --staged --quiet || git commit -m "feat(${{ inputs.component_name }}): generate via Claude template [skip ci]"
+          git push || echo "Nothing to push"
