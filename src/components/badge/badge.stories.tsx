@@ -1,22 +1,42 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { Badge } from './badge';
-const meta: Meta<typeof Badge> = { title:'Components/Badge', component:Badge, parameters:{layout:'padded'} };
+import Badge from './badge';
+
+const meta: Meta<typeof Badge> = {
+  title: 'Components/Badge',
+  component: Badge,
+  parameters: { layout: 'centered' },
+  argTypes: {
+    variant: { control: 'select', options: ['status','list','assignment'] },
+    status: { control: 'select', options: ['available','unavailable','pending','on-order','active','inactive','neutral','new','sale','featured'] },
+  },
+};
 export default meta;
 type Story = StoryObj<typeof Badge>;
-export const Default: Story = { args:{label:'New',variant:'status',color:'primary'} };
-export const AllVariants: Story = {
+
+export const Default: Story = { args: { label: 'Available', variant: 'status', status: 'available' } };
+export const Available: Story = { args: { label: 'Available', variant: 'status', status: 'available' } };
+export const Unavailable: Story = { args: { label: 'Unavailable', variant: 'status', status: 'unavailable' } };
+export const OnOrder: Story = { args: { label: 'On Order', variant: 'status', status: 'on-order' } };
+export const Pending: Story = { args: { label: 'Pending', variant: 'status', status: 'pending' } };
+export const New: Story = { args: { label: 'New', variant: 'status', status: 'new' } };
+export const Neutral: Story = { args: { label: 'Draft', variant: 'status', status: 'neutral' } };
+export const ListPill: Story = { args: { label: 'Category', variant: 'list', status: 'new' } };
+export const AssignmentTag: Story = { args: { label: 'Assigned', variant: 'assignment', status: 'available' } };
+
+export const AllStatuses: Story = {
+  parameters: { layout: 'padded' },
   render: () => (
-    <div style={{display:'flex',flexDirection:'column',gap:20,fontFamily:'Source Sans Pro, sans-serif'}}>
-      <div><p style={{margin:'0 0 8px',fontSize:12,color:'#777',fontWeight:600}}>Status</p>
-        <div style={{display:'flex',gap:8}}>{[['New','primary'],['Active','success'],['Pending','warning'],['Rejected','danger']].map(([l,c])=><Badge key={l} label={l} variant="status" color={c as any}/>)}</div>
-      </div>
-      <div><p style={{margin:'0 0 8px',fontSize:12,color:'#777',fontWeight:600}}>List (Pill)</p>
-        <div style={{display:'flex',gap:8}}>{[['OEM','primary'],['Imaging','secondary'],['In Stock','success'],['Low Stock','warning']].map(([l,c])=><Badge key={l} label={l} variant="list" color={c as any}/>)}</div>
-      </div>
-      <div><p style={{margin:'0 0 8px',fontSize:12,color:'#777',fontWeight:600}}>Assignment</p>
-        <div style={{display:'flex',gap:8}}>{[['Q2 Budget','info'],['Priority','danger'],['Review','warning']].map(([l,c])=><Badge key={l} label={l} variant="assignment" color={c as any}/>)}</div>
-      </div>
+    <div style={{ display:'flex', flexWrap:'wrap', gap:12, padding:24, fontFamily:"'Source Sans Pro',sans-serif" }}>
+      <Badge label="Available"   variant="status" status="available" />
+      <Badge label="Unavailable" variant="status" status="unavailable" />
+      <Badge label="On Order"    variant="status" status="on-order" />
+      <Badge label="Pending"     variant="status" status="pending" />
+      <Badge label="New"         variant="status" status="new" />
+      <Badge label="Featured"    variant="status" status="featured" />
+      <Badge label="Draft"       variant="status" status="neutral" />
+      <Badge label="List Pill"   variant="list"   status="new" />
+      <Badge label="Tag"         variant="assignment" status="pending" />
     </div>
   ),
 };
