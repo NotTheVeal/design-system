@@ -1,12 +1,12 @@
 name: Generate Component (On-Demand)
 
-# ─────────────────────────────────────────────────────────────────────────────
+# âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 # Trigger this workflow from GitHub UI:
-# Repo → Actions → "Generate Component (On-Demand)" → Run workflow
+# Repo â Actions â "Generate Component (On-Demand)" â Run workflow
 #
 # As a UX designer you can trigger this any time you've finished designing
 # a new component in Figma and want it generated as code automatically.
-# ─────────────────────────────────────────────────────────────────────────────
+# âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 on:
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
           if [ -f scripts/generate-component.js ]; then
             node scripts/generate-component.js "$COMPONENT_NAME"
           else
-            echo "generate-component.js not found — creating placeholder"
+            echo "generate-component.js not found â creating placeholder"
             mkdir -p src/components/$(echo $COMPONENT_NAME | tr '[:upper:]' '[:lower:]')
             echo "// TODO: Implement $COMPONENT_NAME component" > src/components/$(echo $COMPONENT_NAME | tr '[:upper:]' '[:lower:]')/$(echo $COMPONENT_NAME | tr '[:upper:]' '[:lower:]').tsx
           fi
@@ -81,3 +81,13 @@ jobs:
             git pull --rebase origin main
             git push
           fi
+      - name: Notify Slack
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": "[${{ github.workflow }}] ${{ job.status }}: ${{ github.repository }}@${{ github.ref_name }} — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
