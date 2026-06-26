@@ -1,75 +1,83 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import Status from './status';
+import { Status } from './status';
 
-const meta = {
+const meta: Meta<typeof Status> = {
   title: 'Components/Status',
   component: Status,
-  tags: ['autodocs'],
-  parameters: {
-    docs: {
-      description: {
-        component: 'Small Status Chip — colored dot + label. Maps order/procurement statuses to PS color tokens.',
-      },
-    },
+  parameters: { layout: 'padded' },
+  argTypes: {
+    value: { control: 'select', options: ['active','inactive','pending','error','warning','draft','archived'] },
+    size: { control: 'select', options: ['sm','md'] },
   },
-} satisfies Meta<typeof Status>;
-
+};
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof Status>;
 
-export const Processing: Story = {
-  name: 'Processing — Blue dot',
-  render: () => <Status type="info" label="Processing" />,
-};
+export const Active: Story = { args: { value: 'active' } };
+export const Inactive: Story = { args: { value: 'inactive' } };
+export const Pending: Story = { args: { value: 'pending' } };
+export const Error: Story = { args: { value: 'error' } };
+export const Warning: Story = { args: { value: 'warning' } };
+export const Draft: Story = { args: { value: 'draft' } };
+export const Archived: Story = { args: { value: 'archived' } };
 
-export const Shipped: Story = {
-  name: 'Shipped — Green dot',
-  render: () => <Status type="active" label="Shipped" />,
-};
-
-export const Pending: Story = {
-  name: 'Pending — Yellow dot',
-  render: () => <Status type="away" label="Pending" />,
-};
-
-export const UnderContract: Story = {
-  name: 'Under Contract — Blue dot',
-  render: () => <Status type="info" label="Under Contract" />,
-};
-
-export const Delivered: Story = {
-  name: 'Delivered — Green dot',
-  render: () => <Status type="active" label="Delivered" />,
-};
-
-export const Approved: Story = {
-  name: 'Approved — Green dot',
-  render: () => <Status type="online" label="Approved" />,
-};
-
-export const Urgent: Story = {
-  name: 'Urgent — Red dot',
-  render: () => <Status type="busy" label="Urgent" />,
-};
-
-export const Critical: Story = {
-  name: 'Critical — Red dot',
-  render: () => <Status type="error" label="Critical" />,
-};
-
-export const AllOrderStatuses: Story = {
-  name: 'All Order Statuses Grid',
+export const AllStates: Story = {
   render: () => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, auto)', gap: '16px 32px', padding: 24, fontFamily: "'Source Sans Pro','Source Sans 3',sans-serif" }}>
-      <Status type="info" label="Processing" />
-      <Status type="active" label="Shipped" />
-      <Status type="away" label="Pending" />
-      <Status type="info" label="Under Contract" />
-      <Status type="active" label="Delivered" />
-      <Status type="online" label="Approved" />
-      <Status type="busy" label="Urgent" />
-      <Status type="error" label="Critical" />
+    <div style={{ display:'flex', flexWrap:'wrap', gap:12, fontFamily:'Source Sans Pro, sans-serif' }}>
+      {(['active','inactive','pending','error','warning','draft','archived'] as const).map(v => (
+        <Status key={v} value={v} />
+      ))}
     </div>
+  ),
+};
+
+export const SmallSize: Story = {
+  render: () => (
+    <div style={{ display:'flex', flexWrap:'wrap', gap:8, fontFamily:'Source Sans Pro, sans-serif' }}>
+      {(['active','inactive','pending','error'] as const).map(v => (
+        <Status key={v} value={v} size="sm" />
+      ))}
+    </div>
+  ),
+};
+
+export const CustomLabels: Story = {
+  render: () => (
+    <div style={{ display:'flex', flexWrap:'wrap', gap:12, fontFamily:'Source Sans Pro, sans-serif' }}>
+      <Status value="active" label="Online" />
+      <Status value="inactive" label="Offline" />
+      <Status value="pending" label="Processing" />
+      <Status value="error" label="Failed" />
+      <Status value="warning" label="Review Required" />
+      <Status value="draft" label="In Progress" />
+      <Status value="archived" label="Closed" />
+    </div>
+  ),
+};
+
+export const InTable: Story = {
+  render: () => (
+    <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Source Sans Pro, sans-serif', fontSize:13 }}>
+      <thead>
+        <tr style={{ background:'#005BA6', color:'white' }}>
+          {['Vendor','Category','Orders','Status'].map(h => <th key={h} style={{ padding:'8px 16px', textAlign:'left', fontWeight:600 }}>{h}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          ['GE Healthcare','Imaging',142,'active'],['Siemens Healthineers','CT/MRI',98,'active'],
+          ['Philips Healthcare','Monitoring',67,'pending'],['Stryker','Surgical',45,'warning'],
+          ['Medtronic','Infusion',23,'inactive'],
+        ].map(([name,cat,orders,status],i) => (
+          <tr key={String(name)} style={{ background:i%2?'#FAFAFA':'white', borderBottom:'1px solid #DCDCDC' }}>
+            <td style={{ padding:'10px 16px', fontWeight:600, color:'#002F48' }}>{name}</td>
+            <td style={{ padding:'10px 16px', color:'#777' }}>{cat}</td>
+            <td style={{ padding:'10px 16px' }}>{orders}</td>
+            <td style={{ padding:'10px 16px' }}><Status value={status as any} size="sm" /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   ),
 };
