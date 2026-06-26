@@ -1,155 +1,76 @@
-import React, { useState, useRef, useEffect, useId } from 'react';
+import React from 'react';
 
-export interface SelectOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
-}
-
+export interface SelectOption { value: string; label: string; disabled?: boolean; }
 export interface SelectProps {
-  options: SelectOption[];
-  value?: string;
-  defaultValue?: string;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-  label?: string;
-  disabled?: boolean;
-  error?: string;
-  helperText?: string;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  id?: string;
-  name?: string;
+  label: string; options: SelectOption[]; value?: string; defaultValue?: string;
+  onChange?: (value: string) => void; helperText?: string; errorText?: string;
+  disabled?: boolean; placeholder?: string;
 }
-
-const ChevronDown = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9"/>
-  </svg>
-);
-
-const heights = { sm: 36, md: 48, lg: 56 };
 
 export const Select: React.FC<SelectProps> = ({
-  options,
-  value: controlled,
-  defaultValue = '',
-  onChange,
-  placeholder = 'Select an option',
-  label,
-  disabled = false,
-  error,
-  helperText,
-  size = 'md',
-  className = '',
-  id,
-  name,
+  label, options, value, defaultValue='', onChange, helperText, errorText, disabled, placeholder='Select an option',
 }) => {
-  const [internal, setInternal] = useState(defaultValue);
-  const [open, setOpen] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const generatedId = useId();
-  const selectId = id || generatedId;
+  const [internalValue, setInternalValue] = React.useState(defaultValue);
+  const [focused, setFocused] = React.useState(false);
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+  const hasValue = Boolean(currentValue);
+  const isFloated = focused || hasValue;
+  const hasError = Boolean(errorText);
   const font = "'Source Sans Pro', -apple-system, sans-serif";
-  const h = heights[size];
-
-  const selected = controlled !== undefined ? controlled : internal;
-  const selectedLabel = options.find(o => o.value === selected)?.label;
-  const isFloated = open || focused || !!selected;
-
-  const handleSelect = (opt: SelectOption) => {
-    if (opt.disabled) return;
-    if (controlled === undefined) setInternal(opt.value);
-    onChange?.(opt.value);
-    setOpen(false);
-  };
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  const borderColor = error ? '#D32F2F' : (open || focused) ? '#005BA6' : '#DCDCDC';
-  const labelColor = error ? '#D32F2F' : (open || focused) ? '#005BA6' : '#777777';
+  const borderColor = hasError ? '#D32F2F' : focused ? '#005BA6' : '#DCDCDC';
 
   return (
-    <div className={className} ref={containerRef} style={{ position:'relative', fontFamily:font, width:'100%' }}>
-      {/* Trigger */}
-      <div
-        onClick={() => !disabled && setOpen(v => !v)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        tabIndex={disabled ? -1 : 0}
-        role="combobox"
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        aria-controls={selectId + '-listbox'}
-        aria-disabled={disabled}
-        style={{
-          position:'relative', height:h,
-          border:'1px solid ' + borderColor,
-          borderRadius:4, background:disabled?'#F1F1F1':'#FFFFFF',
-          display:'flex', alignItems:'center',
-          padding:'0 40px 0 12px',
-          cursor:disabled?'not-allowed':'pointer',
-          boxSizing:'border-box',
-          transition:'border-color 150ms ease',
-          outline:'none',
-          userSelect:'none',
-        }}
-        onKeyDown={e => { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); !disabled&&setOpen(v=>!v); } if(e.key==='Escape') setOpen(false); }}
-      >
-        {/* Floating label */}
-        {label && (
-          <span style={{
-            position:'absolute', left:12,
-            top: isFloated ? 6 : '50%',
-            transform: isFloated ? 'none' : 'translateY(-50%)',
-            fontSize: isFloated ? 12 : 14,
-            fontWeight: isFloated ? 600 : 400,
-            color: labelColor,
-            transition:'all 150ms ease',
-            pointerEvents:'none',
-            lineHeight:1,
-          }}>
-            {label}
-          </span>
-        )}
-        {/* Selected value */}
-        <span style={{ fontSize:14, color:selected?'#4A4A4A':'#949494', paddingTop:label?14:0 }}>
-          {selectedLabel || (label ? '' : placeholder)}
-        </span>
-        {/* Chevron */}
-        <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%) rotate('+(open?'180deg':'0deg')+')', transition:'transform 200ms ease', color:focused?'#005BA6':'#949494', display:'flex' }}>
-          <ChevronDown/>
+    <div style={{ display:'flex', flexDirection:'column', gap:4, width:'100%', fontFamily:font }}>
+      <div style={{
+        position:'relative', height:48,
+        border:`1px solid ${borderColor}`, borderRadius:4,
+        background: disabled ? '#F1F1F1' : '#FFFFFF',
+        transition:'border-color 150ms ease',
+        boxShadow: focused ? '0 0 0 3px rgba(0,91,166,0.15)' : 'none',
+      }}>
+        <label style={{
+          position:'absolute', left:12,
+          top: isFloated ? 6 : '50%',
+          transform: isFloated ? 'none' : 'translateY(-50%)',
+          fontSize: isFloated ? 11 : 14,
+          fontWeight: isFloated ? 700 : 400,
+          color: hasError ? '#D32F2F' : isFloated ? '#005BA6' : '#777777',
+          transition:'all 150ms ease', pointerEvents:'none',
+          lineHeight:1, fontFamily:font, zIndex:1,
+        }}>{label}</label>
+        <select
+          value={currentValue} disabled={disabled}
+          onChange={e => { if(!isControlled) setInternalValue(e.target.value); onChange?.(e.target.value); }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            position:'absolute', inset:0, width:'100%', height:'100%',
+            padding: isFloated ? '22px 36px 6px 12px' : '0 36px 0 12px',
+            border:'none', outline:'none', background:'transparent',
+            fontSize:14, color: hasValue ? '#4A4A4A' : 'transparent',
+            fontFamily:font, cursor: disabled ? 'not-allowed' : 'pointer',
+            appearance:'none', WebkitAppearance:'none',
+          }}
+        >
+          <option value="" disabled hidden>{placeholder}</option>
+          {options.map(o => <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>)}
+        </select>
+        <span style={{
+          position:'absolute', right:12, top:'50%',
+          transform: `translateY(-50%) ${focused ? 'rotate(180deg)' : 'rotate(0deg)'}`,
+          transition:'transform 200ms ease', pointerEvents:'none',
+          color: disabled ? '#DCDCDC' : '#777777', display:'flex', alignItems:'center',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </span>
       </div>
-
-      {/* Dropdown */}
-      {open && (
-        <div id={selectId+'-listbox'} role="listbox"
-          style={{ position:'absolute', top:'100%', left:0, right:0, zIndex:999, background:'#FFFFFF', border:'1px solid #DCDCDC', borderRadius:4, boxShadow:'0 4px 12px rgba(0,47,72,0.12)', marginTop:4, overflow:'hidden', maxHeight:260, overflowY:'auto' }}
-        >
-          {options.map(opt => (
-            <div key={opt.value} role="option" aria-selected={opt.value===selected} aria-disabled={opt.disabled}
-              onClick={()=>handleSelect(opt)}
-              style={{ padding:'10px 14px', fontSize:14, color:opt.disabled?'#CCCCCC':opt.value===selected?'#005BA6':'#4A4A4A', background:opt.value===selected?'#EFF9FE':'transparent', cursor:opt.disabled?'not-allowed':'pointer', fontWeight:opt.value===selected?600:400, transition:'background 100ms ease' }}
-              onMouseEnter={e=>!opt.disabled&&opt.value!==selected&&((e.currentTarget as HTMLElement).style.background='#FAFAFA')}
-              onMouseLeave={e=>!opt.disabled&&opt.value!==selected&&((e.currentTarget as HTMLElement).style.background='transparent')}
-            >
-              {opt.label}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Helper / Error */}
-      {(error || helperText) && (
-        <p style={{ margin:'4px 0 0', fontSize:12, color:error?'#D32F2F':'#777777' }}>{error || helperText}</p>
+      {(helperText||errorText) && (
+        <span style={{ fontSize:12, color:hasError?'#D32F2F':'#777777', paddingLeft:2, fontFamily:font }}>
+          {errorText||helperText}
+        </span>
       )}
     </div>
   );
