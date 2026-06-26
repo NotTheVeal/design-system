@@ -1,0 +1,15 @@
+name: Phase 6 QA Test
+on:
+  workflow_dispatch:
+    inputs:
+      test_input:
+        description: 'Test input'
+        required: false
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Phase 6 QA verification
+        run: echo "workflow_dispatch is working! Input = ${{ inputs.test_input }}"
