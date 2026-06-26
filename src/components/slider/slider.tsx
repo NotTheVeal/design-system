@@ -1,87 +1,25 @@
-import React from 'react';
-
-interface SliderProps {
-  label?: string;
-  value: number;
-  min?: number;
-  max?: number;
-  step?: number;
-  onChange: (value: number) => void;
-  disabled?: boolean;
-  showValue?: boolean;
-  valueSuffix?: string;
-  className?: string;
-}
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-const STYLE_ID = 'ps-slider-styles';
-const injectSliderStyles = () => {
-  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    .ps-slider {
-      -webkit-appearance: none; appearance: none;
-      width: 100%; height: 4px; border-radius: 100px;
-      outline: none; cursor: pointer; transition: box-shadow 150ms ease;
-    }
-    .ps-slider:focus-visible { box-shadow: 0 0 0 3px rgba(0,147,244,0.3); }
-    .ps-slider:disabled { cursor: not-allowed; opacity: 0.5; }
-    .ps-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; appearance: none;
-      width: 20px; height: 20px; border-radius: 50%;
-      background: #FFFFFF; border: 2px solid #005BA6;
-      cursor: pointer; box-shadow: 0 1px 4px rgba(0,47,72,0.15);
-      transition: box-shadow 150ms ease;
-    }
-    .ps-slider::-webkit-slider-thumb:hover { box-shadow: 0 0 0 6px rgba(0,91,166,0.15); }
-    .ps-slider:disabled::-webkit-slider-thumb { border-color: #DCDCDC; cursor: not-allowed; }
-    .ps-slider::-moz-range-thumb {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: #FFFFFF; border: 2px solid #005BA6;
-      cursor: pointer; box-shadow: 0 1px 4px rgba(0,47,72,0.15);
-    }
-    .ps-slider:disabled::-moz-range-thumb { border-color: #DCDCDC; cursor: not-allowed; }
-    .ps-slider::-moz-range-track { height: 4px; border-radius: 100px; background: transparent; }
-  `;
-  document.head.appendChild(style);
-};
-
-const Slider: React.FC<SliderProps> = ({
-  label, value, min = 0, max = 100, step = 1,
-  onChange, disabled = false, showValue = true, valueSuffix = '', className = '',
-}) => {
-  if (typeof document !== 'undefined') injectSliderStyles();
-
-  const percent = Math.round(((value - min) / (max - min)) * 100);
-  const trackBg = disabled
-    ? 'linear-gradient(to right, #DCDCDC 0%, #DCDCDC 100%)'
-    : `linear-gradient(to right, #005BA6 0%, #005BA6 ${percent}%, #DCDCDC ${percent}%, #DCDCDC 100%)`;
-
-  return (
-    <div className={className} style={{ width: '100%', fontFamily }}>
-      {(label || showValue) && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          {label && <span style={{ fontSize: 14, color: '#4A4A4A', fontWeight: 600, fontFamily }}>{label}</span>}
-          {showValue && <span style={{ fontSize: 14, color: '#4A4A4A', fontFamily, marginLeft: 'auto' }}>{value}{valueSuffix}</span>}
-        </div>
-      )}
-      <input
-        type="range"
-        className="ps-slider"
-        min={min} max={max} step={step} value={value}
-        disabled={disabled}
-        onChange={e => onChange(Number(e.target.value))}
-        aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-label={label}
-        style={{ background: trackBg }}
-      />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-        <span style={{ fontSize: 12, color: '#949494', fontFamily }}>{min}{valueSuffix}</span>
-        <span style={{ fontSize: 12, color: '#949494', fontFamily }}>{max}{valueSuffix}</span>
+import React, { useState } from 'react';
+export interface SliderProps { min?: number; max?: number; step?: number; value?: number; defaultValue?: number; onChange?: (v:number)=>void; label?: string; showValue?: boolean; showMinMax?: boolean; disabled?: boolean; className?: string; }
+export const Slider: React.FC<SliderProps> = ({min=0,max=100,step=1,value:ctrl,defaultValue=0,onChange,label,showValue=true,showMinMax=false,disabled=false,className=''}) => {
+  const [internal,setInternal]=useState(defaultValue);
+  const cur=ctrl!==undefined?ctrl:internal;
+  const pct=((cur-min)/(max-min))*100;
+  const font="'Source Sans Pro',-apple-system,sans-serif";
+  const handleChange=(e:React.ChangeEvent<HTMLInputElement>)=>{const v=Number(e.target.value);if(ctrl===undefined)setInternal(v);onChange?.(v);};
+  return (<div className={className} style={{display:'flex',flexDirection:'column',gap:8,fontFamily:font}}>
+    {(label||showValue)&&<div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      {label&&<label style={{fontSize:13,fontWeight:600,color:'#4A4A4A'}}>{label}</label>}
+      {showValue&&<span style={{fontSize:13,fontWeight:600,color:'#005BA6'}}>{cur}</span>}
+    </div>}
+    <div style={{position:'relative',display:'flex',alignItems:'center',height:24}}>
+      <div style={{position:'absolute',left:0,right:0,height:4,background:'#DCDCDC',borderRadius:2}}>
+        <div style={{position:'absolute',left:0,width:pct+'%',height:'100%',background:disabled?'#DCDCDC':'#005BA6',borderRadius:2}}/>
       </div>
+      <input type="range" min={min} max={max} step={step} value={cur} onChange={handleChange} disabled={disabled}
+        style={{position:'relative',width:'100%',height:4,appearance:'none',WebkitAppearance:'none' as never,background:'transparent',cursor:disabled?'not-allowed':'pointer',outline:'none'}}/>
     </div>
-  );
+    {showMinMax&&<div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'#949494'}}><span>{min}</span><span>{max}</span></div>}
+    <style>{"input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:" + (disabled?'#DCDCDC':'#005BA6') + ";border:2px solid white;box-shadow:0 1px 4px rgba(0,91,166,.3);cursor:" + (disabled?'not-allowed':'pointer') + ";transition:transform 150ms,box-shadow 150ms}input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);box-shadow:0 2px 8px rgba(0,91,166,.4)}input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:" + (disabled?'#DCDCDC':'#005BA6') + ";border:2px solid white}"}</style>
+  </div>);
 };
-
 export default Slider;
