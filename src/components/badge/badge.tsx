@@ -1,70 +1,43 @@
 import React from 'react';
-const FONT = "'Source Sans Pro', -apple-system, sans-serif";
 
-export type BadgeVariant = 'active' | 'approved' | 'pending' | 'warning' | 'danger' | 'error' | 'neutral' | 'default' | 'success' | 'info' | 'unavailable' | 'on-order';
-export type BadgeType = 'status' | 'assignment' | 'list';
-export interface BadgeProps { label: string; variant?: BadgeVariant; type?: BadgeType; icon?: React.ReactNode; className?: string; style?: React.CSSProperties; }
+export type BadgeVariant = 'status' | 'list' | 'assignment';
+export type BadgeStatus = 'available' | 'unavailable' | 'pending' | 'on-order' | 'active' | 'inactive' | 'neutral' | 'new' | 'sale' | 'featured';
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  'Available':    { bg: '#E2F5EE', text: '#0E7C55' },
-  'Unavailable':  { bg: '#FACBCB', text: '#D32F2F' },
-  'On Order':     { bg: '#FFF4D0', text: '#B45309' },
-  'Pending':      { bg: '#FFF4D0', text: '#B45309' },
+export interface BadgeProps {
+  label: string;
+  variant?: BadgeVariant;
+  status?: BadgeStatus;
+  uppercase?: boolean;
+}
+
+const STATUS_COLORS: Record<BadgeStatus, { bg: string; color: string; border: string }> = {
+  available:   { bg: '#E2F5EE', color: '#0E7C55', border: 'rgba(14,124,85,0.2)' },
+  active:      { bg: '#E2F5EE', color: '#0E7C55', border: 'rgba(14,124,85,0.2)' },
+  unavailable: { bg: '#FACBCB', color: '#D32F2F', border: 'rgba(211,47,47,0.2)' },
+  inactive:    { bg: '#FACBCB', color: '#D32F2F', border: 'rgba(211,47,47,0.2)' },
+  pending:     { bg: '#FFF4D0', color: '#B45309', border: 'rgba(180,83,9,0.2)'  },
+  'on-order':  { bg: '#FFF4D0', color: '#B45309', border: 'rgba(180,83,9,0.2)'  },
+  new:         { bg: '#EFF9FE', color: '#005BA6', border: 'rgba(0,91,166,0.2)'  },
+  sale:        { bg: '#EFF9FE', color: '#005BA6', border: 'rgba(0,91,166,0.2)'  },
+  featured:    { bg: '#EDE9FE', color: '#6D28D9', border: 'rgba(109,40,217,0.2)' },
+  neutral:     { bg: '#F1F1F1', color: '#777777', border: '#DCDCDC'             },
 };
 
-const VARIANT_COLORS: Record<string, { bg: string; text: string; border: string; dot: string }> = {
-  active:      { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#0E7C55' },
-  approved:    { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#0E7C55' },
-  success:     { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#0E7C55' },
-  unavailable: { bg: '#FACBCB', text: '#D32F2F', border: '#D32F2F', dot: '#D32F2F' },
-  danger:      { bg: '#FEF0F0', text: '#D32F2F', border: '#FFCFCF', dot: '#D32F2F' },
-  error:       { bg: '#FEF0F0', text: '#D32F2F', border: '#FFCFCF', dot: '#D32F2F' },
-  'on-order':  { bg: '#FFF4D0', text: '#B45309', border: '#FFCA82', dot: '#B45309' },
-  warning:     { bg: '#FFF4D0', text: '#B45309', border: '#FFCA82', dot: '#B45309' },
-  pending:     { bg: '#FFF4D0', text: '#B45309', border: '#FFCA82', dot: '#B45309' },
-  info:        { bg: '#EFF9FE', text: '#005BA6', border: '#B0C6D3', dot: '#005BA6' },
-  default:     { bg: '#F1F1F1', text: '#777777', border: '#DCDCDC', dot: '#777777' },
-  neutral:     { bg: '#F1F1F1', text: '#777777', border: '#DCDCDC', dot: '#777777' },
-};
-
-const getColors = (v: BadgeVariant) => VARIANT_COLORS[v] ?? VARIANT_COLORS['neutral'];
-
-export const Badge: React.FC<BadgeProps> = ({ label, variant = 'neutral', type = 'status', icon, className = '', style }) => {
-  // Status type: check label for semantic coloring
-  if (type === 'status') {
-    const sc = STATUS_COLORS[label];
-    const bg = sc ? sc.bg : getColors(variant).bg;
-    const text = sc ? sc.text : getColors(variant).text;
-    return (
-      <span className={className} role="status" aria-label={label}
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: FONT, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1, whiteSpace: 'nowrap', backgroundColor: bg, color: text, padding: '4px 8px', borderRadius: 4, border: 'none', ...style }}>
-        {icon && <span style={{ display: 'inline-flex', alignItems: 'center' }}>{icon}</span>}
-        {label}
-      </span>
-    );
-  }
-
-  // Assignment type: square corners (border-radius: 4px)
-  if (type === 'assignment') {
-    const { bg, text, dot } = getColors(variant);
-    return (
-      <span className={className} role="status" aria-label={label}
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: FONT, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1, whiteSpace: 'nowrap', backgroundColor: bg, color: text, padding: '6px 16px', borderRadius: 4, border: 'none', ...style }}>
-        <span aria-hidden="true" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', backgroundColor: dot, flexShrink: 0 }} />
-        {label}
-      </span>
-    );
-  }
-
-  // List/pill type: full pill (border-radius: 100px)
-  const { bg, text, border } = getColors(variant);
-  return (
-    <span className={className} role="status" aria-label={label}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: FONT, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1, whiteSpace: 'nowrap', backgroundColor: bg, color: text, padding: '6px 16px', borderRadius: 100, border: `1px solid ${border}`, ...style }}>
-      {icon && <span style={{ display: 'inline-flex', alignItems: 'center' }}>{icon}</span>}
-      {label}
-    </span>
-  );
+export const Badge: React.FC<BadgeProps> = ({
+  label, variant = 'status', status = 'neutral', uppercase = true,
+}) => {
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const colors = STATUS_COLORS[status] || STATUS_COLORS.neutral;
+  const base: React.CSSProperties = {
+    fontFamily: font, fontSize: 12, fontWeight: 700, lineHeight: 1,
+    display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
+    letterSpacing: variant === 'list' ? '0.5px' : '0.3px',
+    textTransform: uppercase ? 'uppercase' : 'none',
+    background: colors.bg, color: colors.color, border: `1px solid ${colors.border}`,
+  };
+  if (variant === 'list')       return <span style={{ ...base, padding: '4px 12px', borderRadius: 100 }}>{label}</span>;
+  if (variant === 'assignment') return <span style={{ ...base, padding: '3px 8px',  borderRadius: 4   }}>{label}</span>;
+  return <span style={{ ...base, padding: '4px 10px', borderRadius: 4 }}>{label}</span>;
 };
 
 export default Badge;
