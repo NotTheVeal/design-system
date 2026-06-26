@@ -56,7 +56,7 @@ export const Select: React.FC<SelectProps> = ({
 
   const selected = controlled !== undefined ? controlled : internal;
   const selectedLabel = options.find(o => o.value === selected)?.label;
-  const isFloated = open || !!selected;
+  const isFloated = open || focused || !!selected;
 
   const handleSelect = (opt: SelectOption) => {
     if (opt.disabled) return;
@@ -109,7 +109,7 @@ export const Select: React.FC<SelectProps> = ({
             position:'absolute', left:12,
             top: isFloated ? 6 : '50%',
             transform: isFloated ? 'none' : 'translateY(-50%)',
-            fontSize: isFloated ? 11 : 14,
+            fontSize: isFloated ? 12 : 14,
             fontWeight: isFloated ? 600 : 400,
             color: labelColor,
             transition:'all 150ms ease',
