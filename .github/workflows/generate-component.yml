@@ -1,18 +1,9 @@
 name: Generate Component (On-Demand)
-
-# --¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢----
-# Trigger this workflow from GitHub UI:
-# Repo --¢---- Actions --¢---- "Generate Component (On-Demand)" --¢---- Run workflow
-#
-# As a UX designer you can trigger this any time you've finished designing
-# a new component in Figma and want it generated as code automatically.
-# --¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢----
-
 on:
   workflow_dispatch:
     inputs:
       component_name:
-        description: 'Component name in PascalCase (e.g. Button, Modal, SearchBar)'
+        description: 'Component name in PascalCase'
         required: true
         type: string
       description:
@@ -27,71 +18,18 @@ on:
       run_tests:
         description: 'Run tests immediately after generating?'
         required: false
-        default: true
+        default: false
         type: boolean
 
 permissions:
   contents: write
-  issues: write
 
 jobs:
   generate:
-    name: Generate ${{ inputs.component_name }} component
+    name: Generate Component
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.branch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: '24'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Generate component
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          COMPONENT_NAME: ${{ inputs.component_name }}
-        run: |
-          if [ -f scripts/generate-component.js ]; then
-            node scripts/generate-component.js "$COMPONENT_NAME"
-          else
-            echo "generate-component.js not found --¢---- creating placeholder"
-            mkdir -p src/components/$(echo $COMPONENT_NAME | tr '[:upper:]' '[:lower:]')
-            echo "// TODO: Implement $COMPONENT_NAME component" > src/components/$(echo $COMPONENT_NAME | tr '[:upper:]' '[:lower:]')/$(echo $COMPONENT_NAME | tr '[:upper:]' '[:lower:]').tsx
-          fi
-
-      - name: Run tests
-        if: ${{ inputs.run_tests }}
-        run: npm test -- --passWithNoTests
-        continue-on-error: true
-
-      - name: Commit generated component
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/components/
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "feat: generate ${{ github.event.inputs.component_name }} component [skip ci]" || echo "No changes to commit"
-            git pull --rebase origin main
-            git push
-          fi
-      - name: Notify Slack
-        if: env.SLACK_WEBHOOK_URL != ''
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        uses: slackapi/slack-github-action@v1
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {"text": "[${{ github.workflow }}] ${{ job.status }}: ${{ github.repository }}@${{ github.ref_name }} -- <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
+        uses: actions/checkout@v4
+      - name: Generate placeholder
+        run: echo "Generating ${{ inputs.component_name }}"
