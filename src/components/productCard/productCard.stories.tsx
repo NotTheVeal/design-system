@@ -1,26 +1,13 @@
-import type{Meta,StoryObj}from'@storybook/react';
-import{ProductCard}from'./productCard';
-const meta:Meta<typeof ProductCard>={title:'Components/ProductCard',component:ProductCard,tags:['autodocs'],parameters:{docs:{description:{component:'variant="grid" = vertical portrait card (default). variant="list" = horizontal SRP row (matches Figma SRP Equivalents).\n\ncurrent=Orange#FF9505 CTAs ADA-FAIL | future=Blue#005BA6 CTAs ADA-PASS'}}}};
-export default meta;type Story=StoryObj<typeof ProductCard>;
-const B=({s}:{s:'current'|'future'})=>s==='future'
-  ?<div style={{padding:'8px 12px',background:'#E2F5EE',borderRadius:4,fontSize:12,color:'#0E7C55',marginBottom:8}}>ADA COMPLIANT - PS Blue #005BA6 - 4.8:1</div>
-  :<div style={{padding:'8px 12px',background:'#FACBCB',borderRadius:4,fontSize:12,color:'#C00',marginBottom:8}}>LEGACY - Orange #FF9505 - 2.9:1 - DO NOT USE IN PRODUCTION</div>;
-export const Future_Grid:Story={name:'Future Grid Card (PS Blue)',render:()=><div style={{padding:24}}><B s="future"/><ProductCard variant="grid" colorScheme="future"/></div>};
-export const Current_Grid:Story={name:'Current Grid Card (Legacy Orange)',render:()=><div style={{padding:24}}><B s="current"/><ProductCard variant="grid" colorScheme="current"/></div>};
-export const Future_List:Story={name:'Future List Row - Figma SRP match (PS Blue)',render:()=>(
-  <div style={{padding:24,display:'flex',flexDirection:'column',gap:8}}>
-    <B s="future"/>
-    <ProductCard variant="list" colorScheme="future" productName="Patient Cable, SpO2 Spot Check" partNumber="OEM-89400-01" oem="Nellcor" price="$42.50" availability="In Stock" optionsCount={2}/>
-    <ProductCard variant="list" colorScheme="future" productName="Blood Pressure Cuff, Adult Standard" partNumber="BP-5104-AS" oem="Welch Allyn" price="$31.00" availability="Low Stock" optionsCount={4}/>
-    <ProductCard variant="list" colorScheme="future" productName="ECG Lead Set, 10-Wire Clip" partNumber="ECG-1001-10" oem="GE Healthcare" price="$88.75" availability="In Stock" optionsCount={6}/>
-  </div>)};
-export const Current_List:Story={name:'Current List Row (Legacy Orange)',render:()=>(
-  <div style={{padding:24,display:'flex',flexDirection:'column',gap:8}}>
-    <B s="current"/>
-    <ProductCard variant="list" colorScheme="current" productName="Patient Cable, SpO2 Spot Check" partNumber="OEM-89400-01" oem="Nellcor" price="$42.50" availability="In Stock" optionsCount={2}/>
-  </div>)};
-export const Grid_SideBySide:Story={name:'Grid: Current vs Future',render:()=>(
-  <div style={{display:'flex',gap:32,padding:24,flexWrap:'wrap',fontFamily:"'Source Sans Pro',sans-serif"}}>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#C00',marginBottom:8}}>CURRENT - Orange #FF9505</div><ProductCard variant="grid" colorScheme="current"/></div>
-    <div><div style={{fontSize:11,fontWeight:700,color:'#0E7C55',marginBottom:8}}>FUTURE - PS Blue #005BA6</div><ProductCard variant="grid" colorScheme="future"/></div>
-  </div>)};
+import type {Meta,StoryObj} from '@storybook/react';
+import React from 'react';
+import {ProductCard} from './productCard';
+const meta:Meta<typeof ProductCard>={title:'Components/ProductCard',component:ProductCard,parameters:{layout:'padded'}};
+export default meta;
+type Story=StoryObj<typeof ProductCard>;
+export const Default:Story={args:{name:'GE Healthcare Ultrasound Probe',sku:'4542-0012',manufacturer:'GE Healthcare',price:'$1,249.00',status:'In Stock',colorScheme:'future'}};
+export const LowStock:Story={args:{name:'Siemens CT Filter',sku:'CT-7821',manufacturer:'Siemens Healthineers',price:'$89.50',status:'Low Stock',colorScheme:'future'}};
+export const OutOfStock:Story={args:{name:'Philips Monitor Lead',sku:'PM-4401',manufacturer:'Philips Healthcare',price:'$34.99',status:'Out of Stock',colorScheme:'future'}};
+export const LegacyOrange:Story={args:{name:'Medtronic Tubing',sku:'INF-2280',manufacturer:'Medtronic',price:'$24.99',status:'In Stock',colorScheme:'current'}};
+export const SearchResultsPage:Story={render:()=>(<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16}}>
+  {[{name:'GE Probe',sku:'4542',manufacturer:'GE Healthcare',price:'$1,249',status:'In Stock'},{name:'CT Filter',sku:'CT-78',manufacturer:'Siemens',price:'$89.50',status:'Low Stock'},{name:'Monitor Lead',sku:'PM-44',manufacturer:'Philips',price:'$34.99',status:'Out of Stock'},{name:'Surgical Drill',sku:'STR-99',manufacturer:'Stryker',price:'$3,450',status:'In Stock'},{name:'Infusion Tubing',sku:'INF-22',manufacturer:'Medtronic',price:'$24.99',status:'In Stock'},{name:'Vacutainer',sku:'BD-55',manufacturer:'BD',price:'$12.75',status:'Low Stock'}].map(p=><ProductCard key={p.sku} {...p as any} colorScheme="future"/>)}
+</div>)};
