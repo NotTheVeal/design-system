@@ -35,7 +35,7 @@ env:
   NODE_VERSION: '24'
 
 jobs:
-  # ─── JOB 1: Validate Tokens ────────────────────────────────────────────────
+  # âââ JOB 1: Validate Tokens ââââââââââââââââââââââââââââââââââââââââââââââââ
   validate-tokens:
     name: Validate Token Files
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
       - name: Validate token references
         run: npm run validate
 
-  # ─── JOB 2: Lint & Test Components ─────────────────────────────────────────
+  # âââ JOB 2: Lint & Test Components âââââââââââââââââââââââââââââââââââââââââ
   lint-and-test:
     name: Lint and Test
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
       - name: Test
         run: npm test
 
-  # ─── JOB 3: Build Storybook ────────────────────────────────────────────────
+  # âââ JOB 3: Build Storybook ââââââââââââââââââââââââââââââââââââââââââââââââ
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
           path: storybook-static/
           retention-days: 1
 
-  # ─── JOB 4: E2E UX Workflow Tests ──────────────────────────────────────────
+  # âââ JOB 4: E2E UX Workflow Tests ââââââââââââââââââââââââââââââââââââââââââ
   e2e-tests:
     name: E2E UX Workflow Tests
     timeout-minutes: 30
@@ -152,3 +152,21 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  # ── Notify Slack ─────────────────────────────────────────────────────────────
+  notify-slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [validate-tokens, e2e-tests]
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Notify Slack on completion
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": "[${{ github.workflow }}] Pipeline ${{ contains(needs.*.result, 'failure') && 'FAILED' || 'passed' }}: ${{ github.repository }}@${{ github.ref_name }} — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
