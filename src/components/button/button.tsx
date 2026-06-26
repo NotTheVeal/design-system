@@ -1,83 +1,129 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'danger';
-  colorScheme?: 'future' | 'current';
-  size?: 'lg' | 'sm';
-  disabled?: boolean;
-  style?: React.CSSProperties;
-  children?: React.ReactNode;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ColorScheme = 'current' | 'future';
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  colorScheme?: ColorScheme;
+  loading?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: 'left' | 'right';
+  fullWidth?: boolean;
 }
 
-// Fix: 'Source Sans 3' is the correct font name (Source Sans Pro is deprecated)
-const FONT = "'Source Sans 3', -apple-system, sans-serif";
+const heights: Record<ButtonSize, number> = { sm: 32, md: 40, lg: 50 };
+const fontSizes: Record<ButtonSize, number> = { sm: 13, md: 14, lg: 14 };
+const paddings: Record<ButtonSize, string> = { sm: '0 14px', md: '0 20px', lg: '0 24px' };
 
-const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
-  colorScheme = 'future',
   size = 'lg',
-  disabled = false,
-  style,
+  colorScheme = 'future',
+  loading = false,
+  icon,
+  iconPosition = 'left',
+  fullWidth = false,
   children,
-  onClick,
+  disabled,
+  style,
+  onMouseEnter,
+  onMouseLeave,
   ...rest
 }) => {
-  const [hovered, setHovered] = useState(false);
-  const [active, setActive] = useState(false);
-  const base: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    borderStyle: 'solid', borderRadius: '4px', fontFamily: FONT, fontWeight: 600,
-    cursor: 'pointer', transition: 'all 200ms ease', outline: 'none', userSelect: 'none',
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const h = heights[size];
+  const fs = fontSizes[size];
+  const pad = paddings[size];
+  const isDisabled = disabled || loading;
+
+  // Primary colors
+  const primaryFill = colorScheme === 'future' ? '#005BA6' : '#FF9505';
+  const primaryHover = colorScheme === 'future' ? '#004A84' : '#EC8000';
+
+  const baseStyle: React.CSSProperties = {
+    height: h,
+    padding: pad,
+    fontSize: fs,
+    fontWeight: 600,
+    fontFamily: font,
+    borderRadius: 4,
+    border: '2px solid transparent',
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    width: fullWidth ? '100%' : 'auto',
+    transition: 'all 200ms ease',
+    opacity: isDisabled ? 0.5 : 1,
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
+    lineHeight: 1,
+    ...style,
   };
 
-  if (disabled) {
-    const sz = size === 'lg' ? { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase' as const, letterSpacing: '0.08em' } : { height: '32px', padding: '0 16px', fontSize: '14px' };
-    return <button {...rest} disabled style={{ ...base, ...sz, borderWidth: '1px', borderColor: '#777777', backgroundColor: '#DCDCDC', color: '#777777', cursor: 'not-allowed', ...style }}>{children}</button>;
-  }
+  const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
+    primary: {
+      background: primaryFill,
+      borderColor: primaryFill,
+      color: '#FFFFFF',
+    },
+    secondary: {
+      background: '#FFFFFF',
+      borderColor: '#DCDCDC',
+      color: '#4A4A4A',
+    },
+    tertiary: {
+      background: '#F1F1F1',
+      borderColor: 'transparent',
+      color: '#2B2B2B',
+      borderRadius: 100,
+    },
+    ghost: {
+      background: 'transparent',
+      borderColor: 'transparent',
+      color: '#005BA6',
+    },
+    danger: {
+      background: '#FFFFFF',
+      borderColor: '#D32F2F',
+      color: '#D32F2F',
+    },
+  };
 
-  if (variant === 'tertiary') {
-    const bg = active ? '#CCCCCC' : hovered ? '#DCDCDC' : '#F1F1F1';
-    return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, height: '40px', padding: '0 24px', fontSize: '15px', borderRadius: '100px', borderWidth: '0', backgroundColor: bg, color: '#4A4A4A', ...style }}>{children}</button>;
-  }
+  const hoverStyles: Record<ButtonVariant, React.CSSProperties> = {
+    primary: { background: primaryHover, borderColor: primaryHover },
+    secondary: { background: '#005BA6', borderColor: '#005BA6', color: '#FFFFFF' },
+    tertiary: { background: '#DCDCDC' },
+    ghost: { background: 'rgba(0,91,166,0.06)' },
+    danger: { background: '#D32F2F', color: '#FFFFFF' },
+  };
 
-  if (variant === 'ghost') {
-    const sz = size === 'sm' ? { height: '32px', padding: '0 16px', fontSize: '14px' } : { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase' as const, letterSpacing: '0.08em' };
-    const bg = active ? '#D9F0FC' : hovered ? '#EFF9FE' : 'transparent';
-    return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, ...sz, borderWidth: '0', backgroundColor: bg, color: '#005BA6', ...style }}>{children}</button>;
-  }
+  const [hovered, setHovered] = React.useState(false);
+  const computedStyle = {
+    ...baseStyle,
+    ...variantStyles[variant],
+    ...(hovered && !isDisabled ? hoverStyles[variant] : {}),
+  };
 
-  if (variant === 'danger') {
-    const sz = size === 'sm' ? { height: '32px', padding: '0 16px', fontSize: '14px' } : { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase' as const, letterSpacing: '0.08em' };
-    const bg = active ? '#CC0000' : hovered ? '#FF0000' : '#FFFFFF';
-    const clr = hovered || active ? '#FFFFFF' : '#FF0000';
-    return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, ...sz, borderWidth: '2px', borderColor: '#FF0000', backgroundColor: bg, color: clr, ...style }}>{children}</button>;
-  }
-
-  if (variant === 'secondary') {
-    const sz = size === 'sm' ? { height: '32px', padding: '0 16px', fontSize: '14px' } : { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase' as const, letterSpacing: '0.08em' };
-    if (colorScheme === 'current') {
-      // Current secondary: white bg, orange border — outline style (legacy)
-      const bg = active ? '#CC7800' : hovered ? '#FF9505' : '#FFFFFF';
-      const clr = hovered || active ? '#FFFFFF' : '#FF9505';
-      return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, ...sz, borderWidth: '2px', borderColor: '#FF9505', backgroundColor: bg, color: clr, ...style }}>{children}</button>;
-    }
-    // Future secondary: white bg, PS Blue border — outline style
-    const bg = active ? '#004A84' : hovered ? '#005BA6' : '#FFFFFF';
-    const clr = hovered || active ? '#FFFFFF' : '#005BA6';
-    return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, ...sz, borderWidth: '2px', borderColor: '#005BA6', backgroundColor: bg, color: clr, ...style }}>{children}</button>;
-  }
-
-  // Primary variant — FILLED (not outline)
-  const sz = size === 'sm' ? { height: '32px', padding: '0 16px', fontSize: '14px' } : { height: '50px', padding: '0 24px', fontSize: '15px', textTransform: 'uppercase' as const, letterSpacing: '0.08em' };
-  if (colorScheme === 'current') {
-    // Current primary: filled orange background, white text (legacy)
-    const bg = active ? '#CC7800' : hovered ? '#E08700' : '#FF9505';
-    return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, ...sz, borderWidth: '2px', borderColor: bg, backgroundColor: bg, color: '#FFFFFF', ...style }}>{children}</button>;
-  }
-  // Future primary: filled PS Blue (#005BA6) background, white text
-  const bg = active ? '#003D6B' : hovered ? '#004A84' : '#005BA6';
-  return <button {...rest} onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setActive(false); }} onMouseDown={() => setActive(true)} onMouseUp={() => setActive(false)} style={{ ...base, ...sz, borderWidth: '2px', borderColor: bg, backgroundColor: bg, color: '#FFFFFF', ...style }}>{children}</button>;
+  return (
+    <button
+      {...rest}
+      disabled={isDisabled}
+      style={computedStyle}
+      onMouseEnter={(e) => { setHovered(true); onMouseEnter?.(e); }}
+      onMouseLeave={(e) => { setHovered(false); onMouseLeave?.(e); }}
+    >
+      {loading && <span style={{ width: fs, height: fs, border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite', display: 'inline-block' }} />}
+      {!loading && icon && iconPosition === 'left' && icon}
+      {children}
+      {!loading && icon && iconPosition === 'right' && icon}
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </button>
+  );
 };
 
 export default Button;
