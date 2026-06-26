@@ -54,3 +54,13 @@ jobs:
         run: |
           echo "## Claude Design Reference Updated" >> $GITHUB_STEP_SUMMARY
           echo "Storybook: https://nottheveal.github.io/design-system/" >> $GITHUB_STEP_SUMMARY
+      - name: Notify Slack
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": "[${{ github.workflow }}] ${{ job.status }}: ${{ github.repository }}@${{ github.ref_name }} — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
