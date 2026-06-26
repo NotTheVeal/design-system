@@ -11,7 +11,7 @@ export interface StatusBadgeProps {
   className?: string;
 }
 
-// Status (solid) = filled pill with dark colored text — light bg IS the PS standard
+// Status (solid) = filled pill with dark colored text â light bg IS the PS standard
 // But for true "solid" feel, we use darker bg tones
 const colorMap: Record<StatusBadgeColor, {
   solidBg: string; solidText: string;
@@ -20,8 +20,8 @@ const colorMap: Record<StatusBadgeColor, {
 }> = {
   success: { solidBg: '#17AB78', solidText: '#FFFFFF', outlinedBg: '#E2F5EE', outlinedText: '#0E7C55', outlinedBorder: '#0E7C55', dot: '#17AB78' },
   warning: { solidBg: '#E3A92D', solidText: '#FFFFFF', outlinedBg: '#FFF4D0', outlinedText: '#B45309', outlinedBorder: '#B45309', dot: '#E3A92D' },
-  danger:  { solidBg: '#D32F2F', solidText: '#FFFFFF', outlinedBg: '#FACBCB', outlinedText: '#D32F2F', outlinedBorder: '#D32F2F', dot: '#FF0000' },
-  info:    { solidBg: '#009CF4', solidText: '#FFFFFF', outlinedBg: '#EFF9FE', outlinedText: '#005BA6', outlinedBorder: '#009CF4', dot: '#009CF4' },
+  danger:  { solidBg: '#D32F2F', solidText: '#FFFFFF', outlinedBg: '#FACBCB', outlinedText: '#D32F2F', outlinedBorder: '#D32F2F', dot: '#D32F2F' },
+  info:    { solidBg: '#005BA6', solidText: '#FFFFFF', outlinedBg: '#EFF9FE', outlinedText: '#005BA6', outlinedBorder: '#005BA6', dot: '#005BA6' },
   neutral: { solidBg: '#949494', solidText: '#FFFFFF', outlinedBg: '#F1F1F1', outlinedText: '#777777', outlinedBorder: '#949494', dot: '#949494' },
   primary: { solidBg: '#005BA6', solidText: '#FFFFFF', outlinedBg: '#DCEAED', outlinedText: '#002F48', outlinedBorder: '#005BA6', dot: '#005BA6' },
 };
