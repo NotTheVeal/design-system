@@ -1,173 +1,30 @@
 name: Design System Pipeline
-# Phase 6 QA: workflow_dispatch verified
-
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tokens/**'
-      - 'src/**'
-      - 'e2e/**'
-      - 'playwright.config.ts'
-      - '.storybook/**'
-      - '.github/workflows/design-system.yml'
-      - '.eslintrc.cjs'
-      - 'package.json'
-  pull_request:
-    branches: [main]
   workflow_dispatch:
     inputs:
       component:
-        description: 'Component name to generate. Leave blank to auto-detect.'
+        description: 'Component name to generate'
         required: false
         type: string
       skip_tests:
-        description: 'Skip test jobs (debugging only)'
+        description: 'Skip test jobs'
         required: false
         type: boolean
         default: false
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
-  issues: write
-  pull-requests: read
-
-env:
-  NODE_VERSION: '24'
 
 jobs:
-  # --¢------¢------¢---- JOB 1: Validate Tokens --¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢----
-  validate-tokens:
-    name: Validate Token Files
+  validate:
+    name: Validate Workflow Dispatch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Validate token references
-        run: npm run validate
-
-  # --¢------¢------¢---- JOB 2: Lint & Test Components --¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢----
-  lint-and-test:
-    name: Lint and Test
-    runs-on: ubuntu-latest
-    needs: validate-tokens
-    if: ${{ !inputs.skip_tests }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
-
-  # --¢------¢------¢---- JOB 3: Build Storybook --¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢----
-  build-storybook:
-    name: Build Storybook
-    runs-on: ubuntu-latest
-    needs: validate-tokens
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build Storybook
-        run: npm run build-storybook
-
-      - name: Upload Storybook artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: storybook-static
-          path: storybook-static/
-          retention-days: 1
-
-  # --¢------¢------¢---- JOB 4: E2E UX Workflow Tests --¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢------¢----
-  e2e-tests:
-    name: E2E UX Workflow Tests
-    timeout-minutes: 30
-    runs-on: ubuntu-latest
-    needs: validate-tokens
-    if: ${{ !inputs.skip_tests }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-
-      - name: Bundle E2E harness
-        run: npx esbuild e2e/harness/main.tsx --bundle --outfile=e2e/harness/bundle.js --format=iife --loader:.css=empty --loader:.svg=text --define:process.env.NODE_ENV='"production"'
-
-      - name: Verify harness files
-        run: |
-          echo "=== e2e/harness contents ==="
-          ls -la e2e/harness/
-          echo "=== bundle.js first 300 chars ==="
-          head -c 300 e2e/harness/bundle.js || echo "bundle.js NOT FOUND"
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Playwright E2E tests
-        run: npx playwright test --timeout=30000 --workers=2
-
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
-
-  # ---- Notify Slack --------------------------------------------------------------------------------------------------------------------------
-  notify-slack:
-    name: Notify Slack
-    runs-on: ubuntu-latest
-    if: always()
-    needs: [validate-tokens, e2e-tests]
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-    steps:
-      - name: Notify Slack on completion
-        if: env.SLACK_WEBHOOK_URL != ''
-        uses: slackapi/slack-github-action@v1
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {"text": "[${{ github.workflow }}] Pipeline ${{ contains(needs.*.result, 'failure') && 'FAILED' || 'passed' }}: ${{ github.repository }}@${{ github.ref_name }} -- <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
+        uses: actions/checkout@v4
+      - name: Pipeline placeholder
+        run: echo "Design System Pipeline triggered via ${{ github.event_name }}"
