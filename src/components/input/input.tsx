@@ -84,7 +84,7 @@ export const Input: React.FC<InputProps> = ({
     ? '#D32F2F'
     : isSuccess
     ? '#17AB78'
-    : focused || isFloated
+    : focused
     ? '#005BA6'
     : '#777777';
 
