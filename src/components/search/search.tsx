@@ -30,7 +30,7 @@ const ClearIcon = () => (
   </svg>
 );
 
-const heightMap = { sm: 32, md: 40, lg: 48 };
+const heightMap = { sm: 36, md: 48, lg: 56 };
 const fontSizeMap = { sm: 13, md: 14, lg: 15 };
 
 export const Search: React.FC<SearchProps> = ({
