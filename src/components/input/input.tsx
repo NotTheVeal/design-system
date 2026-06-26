@@ -1,205 +1,71 @@
-import React, { useState, useId } from 'react';
+import React from 'react';
 
-export interface InputProps {
-  label?: string;
-  value?: string;
-  defaultValue?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  error?: string;
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>,'size'> {
+  label: string;
   helperText?: string;
-  type?: string;
-  size?: 'small' | 'medium' | 'large';
-  className?: string;
-  required?: boolean;
-  id?: string;
-  name?: string;
-  readOnly?: boolean;
-  prefix?: React.ReactNode;
-  suffix?: React.ReactNode;
-  // Legacy / alias props for stories compatibility
+  errorText?: string;
+  size?: 'default' | 'large';
   leadingIcon?: React.ReactNode;
   trailingIcon?: React.ReactNode;
-  state?: 'default' | 'error' | 'success' | 'disabled';
-  fullWidth?: boolean;
 }
 
-const heightMap = { small: '36px', medium: '48px', large: '56px' };
-const labelSizeMap = { small: '12px', medium: '13px', large: '14px' };
-
 export const Input: React.FC<InputProps> = ({
-  label,
-  value,
-  defaultValue,
-  onChange,
-  placeholder,
-  disabled,
-  error,
-  helperText,
-  type = 'text',
-  size = 'medium',
-  className = '',
-  required,
-  id,
-  name,
-  readOnly,
-  prefix,
-  suffix,
-  leadingIcon,
-  trailingIcon,
-  state = 'default',
-  fullWidth = false,
+  label, helperText, errorText, size='default',
+  leadingIcon, trailingIcon, value, defaultValue, onChange, onFocus, onBlur, disabled, ...rest
 }) => {
-  const [focused, setFocused] = useState(false);
-  const [internalValue, setInternalValue] = useState(defaultValue || '');
-  const generatedId = useId();
-  const inputId = id || generatedId;
-
-  const isDisabled = disabled || state === 'disabled';
-  const hasError = !!error || state === 'error';
-  const isSuccess = state === 'success';
-  const hasValue = value !== undefined ? value !== '' : internalValue !== '';
-  const isFloated = focused || hasValue || !!placeholder;
-
-  const leadingContent = prefix || leadingIcon;
-  const trailingContent = suffix || trailingIcon;
-
-  const height = heightMap[size];
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (value === undefined) setInternalValue(e.target.value);
-    onChange?.(e);
-  };
-
-  const borderColor = hasError
-    ? '#D32F2F'
-    : isSuccess
-    ? '#17AB78'
-    : focused
-    ? '#005BA6'
-    : '#DCDCDC';
-
-  const labelColor = hasError
-    ? '#D32F2F'
-    : isSuccess
-    ? '#17AB78'
-    : focused
-    ? '#005BA6'
-    : '#777777';
+  const [internalValue, setInternalValue] = React.useState(defaultValue ?? '');
+  const [focused, setFocused] = React.useState(false);
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+  const hasValue = String(currentValue ?? '').length > 0;
+  const isFloated = focused || hasValue;
+  const hasError = Boolean(errorText);
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const height = size === 'large' ? 80 : 48;
+  const borderColor = hasError ? '#D32F2F' : focused ? '#005BA6' : '#DCDCDC';
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: fullWidth ? '100%' : '320px',
-        fontFamily: "'Source Sans Pro', -apple-system, sans-serif",
-      }}
-      className={className}
-    >
-      <div
-        style={{
-          position: 'relative',
-          height,
-          border: `1px solid ${borderColor}`,
-          borderRadius: '4px',
-          background: isDisabled ? '#F1F1F1' : '#FFFFFF',
-          display: 'flex',
-          alignItems: 'center',
-          padding: leadingContent ? '0 12px 0 40px' : '0 12px',
-          paddingRight: trailingContent ? '40px' : '12px',
-          boxSizing: 'border-box',
-          transition: 'border-color 150ms ease',
-        }}
-      >
-        {leadingContent && (
-          <span
-            style={{
-              position: 'absolute',
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#777777',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {leadingContent}
-          </span>
-        )}
-
-        {label && (
-          <label
-            htmlFor={inputId}
-            style={{
-              position: 'absolute',
-              left: leadingContent ? '40px' : '12px',
-              top: isFloated ? '6px' : '50%',
-              transform: isFloated ? 'none' : 'translateY(-50%)',
-              fontSize: isFloated ? '11px' : '14px',
-              fontWeight: isFloated ? 600 : 400,
-              color: labelColor,
-              transition: 'all 150ms ease',
-              pointerEvents: 'none',
-              lineHeight: 1,
-            }}
-          >
-            {label}{required && ' *'}
-          </label>
-        )}
-
+    <div style={{ display:'flex', flexDirection:'column', gap:4, width:'100%', fontFamily:font }}>
+      <div style={{
+        position:'relative', height,
+        border:`1px solid ${borderColor}`, borderRadius:4,
+        background: disabled ? '#F1F1F1' : '#FFFFFF',
+        transition:'border-color 150ms ease',
+        boxShadow: focused ? '0 0 0 3px rgba(0,91,166,0.15)' : 'none',
+        display:'flex', alignItems:'center',
+      }}>
+        {leadingIcon && <span style={{ position:'absolute', left:12, color:'#777777', display:'flex', alignItems:'center' }}>{leadingIcon}</span>}
+        <label style={{
+          position:'absolute', left: leadingIcon ? 40 : 12,
+          top: isFloated ? (size==='large' ? 12 : 6) : '50%',
+          transform: isFloated ? 'none' : 'translateY(-50%)',
+          fontSize: isFloated ? 11 : 14,
+          fontWeight: isFloated ? 700 : 400,
+          color: hasError ? '#D32F2F' : isFloated ? '#005BA6' : '#777777',
+          transition:'all 150ms ease', pointerEvents:'none',
+          lineHeight:1, fontFamily:font, zIndex:1,
+        }}>{label}</label>
         <input
-          id={inputId}
-          name={name}
-          type={type}
-          value={value !== undefined ? value : internalValue}
-          onChange={handleChange}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={!label ? placeholder : undefined}
-          disabled={isDisabled}
-          readOnly={readOnly}
-          required={required}
+          {...rest} value={currentValue} disabled={disabled}
+          onChange={e => { if(!isControlled) setInternalValue(e.target.value); onChange?.(e); }}
+          onFocus={e => { setFocused(true); onFocus?.(e); }}
+          onBlur={e => { setFocused(false); onBlur?.(e); }}
           style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-            outline: 'none',
-            background: 'transparent',
-            fontSize: '14px',
-            color: isDisabled ? '#949494' : '#4A4A4A',
-            paddingTop: label ? '14px' : '0',
-            fontFamily: 'inherit',
-            cursor: isDisabled ? 'not-allowed' : 'text',
+            position:'absolute', inset:0, width:'100%', height:'100%',
+            padding: isFloated
+              ? `${size==='large'?30:22}px ${trailingIcon?40:12}px 8px ${leadingIcon?40:12}px`
+              : `0 ${trailingIcon?40:12}px 0 ${leadingIcon?40:12}px`,
+            border:'none', outline:'none', background:'transparent',
+            fontSize:14, color:'#4A4A4A', fontFamily:font,
+            cursor: disabled ? 'not-allowed' : 'text',
           }}
         />
-
-        {trailingContent && (
-          <span
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#777777',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {trailingContent}
-          </span>
-        )}
+        {trailingIcon && <span style={{ position:'absolute', right:12, color:'#777777', display:'flex', alignItems:'center' }}>{trailingIcon}</span>}
       </div>
-
-      {hasError && error && (
-        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#D32F2F' }}>
-          {error}
-        </p>
-      )}
-      {!hasError && helperText && (
-        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#777777' }}>
-          {helperText}
-        </p>
+      {(helperText||errorText) && (
+        <span style={{ fontSize:12, color:hasError?'#D32F2F':'#777777', paddingLeft:2, fontFamily:font }}>
+          {errorText||helperText}
+        </span>
       )}
     </div>
   );
