@@ -1,136 +1,148 @@
 import React, { useState, useRef } from 'react';
 
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+export interface SearchProps {
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onSubmit?: (value: string) => void;
+  onClear?: () => void;
+  placeholder?: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'autocomplete' | 'filter';
+  disabled?: boolean;
+  className?: string;
+  autoFocus?: boolean;
+  id?: string;
+  name?: string;
+}
 
 const SearchIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="8" cy="8" r="5.5" />
-    <line x1="12.5" y1="12.5" x2="16" y2="16" />
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
 );
 
 const ClearIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="4" y1="4" x2="12" y2="12" /><line x1="12" y1="4" x2="4" y2="12" />
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 
-interface SearchProps {
-  value?: string;
-  defaultValue?: string;
-  onChange?: (value: string) => void;
-  onSearch?: (value: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
-  id?: string;
-}
+const heightMap = { sm: 32, md: 40, lg: 48 };
+const fontSizeMap = { sm: 13, md: 14, lg: 15 };
 
-const Search: React.FC<SearchProps> = ({
+export const Search: React.FC<SearchProps> = ({
   value,
   defaultValue = '',
   onChange,
-  onSearch,
-  placeholder = 'Searchâ¦',
+  onFocus,
+  onBlur,
+  onSubmit,
+  onClear,
+  placeholder = 'Search...',
+  size = 'md',
+  variant = 'default',
   disabled = false,
   className = '',
+  autoFocus,
   id,
+  name,
 }) => {
   const [focused, setFocused] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue);
   const inputRef = useRef<HTMLInputElement>(null);
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
 
-  const controlled = value !== undefined;
-  const currentValue = controlled ? value : internalValue;
-
-  const borderColor = focused
-    ? '#005BA6'
-    : hovered && !disabled
-    ? '#949494'
-    : '#DCDCDC';
+  const currentValue = value !== undefined ? value : internalValue;
+  const height = heightMap[size];
+  const fontSize = fontSizeMap[size];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!controlled) setInternalValue(e.target.value);
+    if (value === undefined) setInternalValue(e.target.value);
     onChange?.(e.target.value);
   };
 
-  const handleClear = () => {
-    if (!controlled) setInternalValue('');
-    onChange?.('');
-    inputRef.current?.focus();
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(true);
+    onFocus?.(e);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(false);
+    onBlur?.(e);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') onSearch?.(currentValue);
+    if (e.key === 'Enter') onSubmit?.(currentValue);
+    if (e.key === 'Escape') { handleClear(); }
   };
 
-  const inputId = id ?? 'ps-search';
+  const handleClear = () => {
+    if (value === undefined) setInternalValue('');
+    onChange?.('');
+    onClear?.();
+    inputRef.current?.focus();
+  };
 
   return (
     <div
       className={className}
       style={{
         position: 'relative',
-        display: 'flex',
+        display: 'inline-flex',
         alignItems: 'center',
-        height: 48,
-        border: `1px solid ${borderColor}`,
+        width: '100%',
+        height,
+        border: `1px solid ${focused ? '#005BA6' : '#DCDCDC'}`,
         borderRadius: 4,
         background: disabled ? '#F1F1F1' : '#FFFFFF',
-        boxShadow: focused ? '0 0 0 3px rgba(0,147,244,0.3)' : 'none',
-        transition: 'border-color 150ms ease, box-shadow 150ms ease',
-        fontFamily,
+        transition: 'border-color 150ms ease',
+        fontFamily: font,
+        boxSizing: 'border-box',
       }}
-      onMouseEnter={() => !disabled && setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       {/* Search icon */}
-      <span style={{ paddingLeft: 12, paddingRight: 8, color: focused ? '#005BA6' : '#949494', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+      <span style={{ position: 'absolute', left: 10, color: focused ? '#005BA6' : '#949494', display: 'flex', alignItems: 'center', pointerEvents: 'none', transition: 'color 150ms ease' }}>
         <SearchIcon />
       </span>
 
-      {/* Input */}
       <input
         ref={inputRef}
-        id={inputId}
+        id={id}
+        name={name}
         type="search"
         value={currentValue}
         onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        disabled={disabled}
         placeholder={placeholder}
+        disabled={disabled}
+        autoFocus={autoFocus}
         style={{
-          flex: 1,
+          width: '100%',
+          height: '100%',
           border: 'none',
           outline: 'none',
           background: 'transparent',
-          fontSize: 16,
-          color: disabled ? '#777777' : '#2B2B2B',
-          fontFamily,
-          padding: '0 8px 0 0',
-          cursor: disabled ? 'not-allowed' : undefined,
+          padding: `0 ${currentValue ? 36 : 12}px 0 36px`,
+          fontSize,
+          color: '#4A4A4A',
+          fontFamily: font,
+          cursor: disabled ? 'not-allowed' : 'text',
         }}
       />
 
       {/* Clear button */}
       {currentValue && !disabled && (
         <button
-          type="button"
           onClick={handleClear}
-          aria-label="Clear search"
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: '0 12px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            color: '#949494',
-            flexShrink: 0,
-          }}
+          type="button"
+          style={{ position: 'absolute', right: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#949494', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 2 }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#4A4A4A')}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = '#949494')}
         >
           <ClearIcon />
         </button>
