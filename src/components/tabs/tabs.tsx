@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const FONT = "'Source Sans 3', -apple-system, sans-serif";
 
-// ── PS Design Token Colors ─────────────────────────────────────────────────────
+// ââ PS Design Token Colors âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const PS_BLUE = '#005BA6';
 const MIDNIGHT = '#002F48';
 const INACTIVE = '#777777';
@@ -119,7 +119,7 @@ export const TabPanel: React.FC<{
 }> = ({ value, activeValue, children, style }) => {
   if (value !== activeValue) return null;
   return (
-    <div role="tabpanel" style={{ fontFamily: FONT, paddingTop: 16, ...style }}>
+    <div role="tabpanel" style={{ fontFamily: FONT, paddingTop: 16, backgroundColor: '#FFFFFF', ...style }}>
       {children}
     </div>
   );
