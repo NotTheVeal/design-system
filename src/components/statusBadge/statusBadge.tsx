@@ -1,10 +1,5 @@
 import React from 'react';
 
-// Three badge types per PS Design System 2.0:
-// 1. status  — solid fill pill (semantic color)
-// 2. outlined — border only, light bg
-// 3. dot      — 8px colored circle + label text
-
 export type StatusBadgeVariant = 'status' | 'outlined' | 'dot';
 export type StatusBadgeColor = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'primary';
 
@@ -16,13 +11,19 @@ export interface StatusBadgeProps {
   className?: string;
 }
 
-const colorMap: Record<StatusBadgeColor, { bg: string; text: string; border: string; dot: string }> = {
-  success: { bg: '#E2F5EE', text: '#0E7C55', border: '#0E7C55', dot: '#17AB78' },
-  warning: { bg: '#FFF4D0', text: '#B45309', border: '#B45309', dot: '#E3A92D' },
-  danger:  { bg: '#FACBCB', text: '#D32F2F', border: '#D32F2F', dot: '#FF0000' },
-  info:    { bg: '#EFF9FE', text: '#005BA6', border: '#009CF4', dot: '#009CF4' },
-  neutral: { bg: '#F1F1F1', text: '#777777', border: '#949494', dot: '#949494' },
-  primary: { bg: '#DCEAED', text: '#002F48', border: '#005BA6', dot: '#005BA6' },
+// Status (solid) = filled pill with dark colored text — light bg IS the PS standard
+// But for true "solid" feel, we use darker bg tones
+const colorMap: Record<StatusBadgeColor, {
+  solidBg: string; solidText: string;
+  outlinedBg: string; outlinedText: string; outlinedBorder: string;
+  dot: string;
+}> = {
+  success: { solidBg: '#17AB78', solidText: '#FFFFFF', outlinedBg: '#E2F5EE', outlinedText: '#0E7C55', outlinedBorder: '#0E7C55', dot: '#17AB78' },
+  warning: { solidBg: '#E3A92D', solidText: '#FFFFFF', outlinedBg: '#FFF4D0', outlinedText: '#B45309', outlinedBorder: '#B45309', dot: '#E3A92D' },
+  danger:  { solidBg: '#D32F2F', solidText: '#FFFFFF', outlinedBg: '#FACBCB', outlinedText: '#D32F2F', outlinedBorder: '#D32F2F', dot: '#FF0000' },
+  info:    { solidBg: '#009CF4', solidText: '#FFFFFF', outlinedBg: '#EFF9FE', outlinedText: '#005BA6', outlinedBorder: '#009CF4', dot: '#009CF4' },
+  neutral: { solidBg: '#949494', solidText: '#FFFFFF', outlinedBg: '#F1F1F1', outlinedText: '#777777', outlinedBorder: '#949494', dot: '#949494' },
+  primary: { solidBg: '#005BA6', solidText: '#FFFFFF', outlinedBg: '#DCEAED', outlinedText: '#002F48', outlinedBorder: '#005BA6', dot: '#005BA6' },
 };
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
@@ -39,29 +40,8 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   if (variant === 'dot') {
     return (
-      <span
-        className={className}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          fontFamily: font,
-          fontSize,
-          fontWeight: 600,
-          color: '#4A4A4A',
-          lineHeight: '20px',
-        }}
-      >
-        <span
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            background: c.dot,
-            flexShrink: 0,
-            display: 'inline-block',
-          }}
-        />
+      <span className={className} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: font, fontSize, fontWeight: 600, color: '#4A4A4A', lineHeight: '20px' }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', background: c.dot, flexShrink: 0, display: 'inline-block' }} />
         {label}
       </span>
     );
@@ -69,50 +49,15 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   if (variant === 'outlined') {
     return (
-      <span
-        className={className}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          padding,
-          borderRadius: '4px',
-          border: `1px solid ${c.border}`,
-          background: c.bg,
-          fontFamily: font,
-          fontSize,
-          fontWeight: 700,
-          color: c.text,
-          lineHeight: '16px',
-          letterSpacing: '0.2px',
-          whiteSpace: 'nowrap',
-        }}
-      >
+      <span className={className} style={{ display: 'inline-flex', alignItems: 'center', padding, borderRadius: '4px', border: `1px solid ${c.outlinedBorder}`, background: c.outlinedBg, fontFamily: font, fontSize, fontWeight: 700, color: c.outlinedText, lineHeight: '16px', letterSpacing: '0.2px', whiteSpace: 'nowrap' }}>
         {label}
       </span>
     );
   }
 
-  // default: solid status badge (pill)
+  // status = solid filled pill (true solid fill with white text)
   return (
-    <span
-      className={className}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding,
-        borderRadius: '100px',
-        background: c.bg,
-        border: `1px solid ${c.border}`,
-        fontFamily: font,
-        fontSize,
-        fontWeight: 700,
-        color: c.text,
-        lineHeight: '16px',
-        letterSpacing: '0.5px',
-        textTransform: 'uppercase' as const,
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <span className={className} style={{ display: 'inline-flex', alignItems: 'center', padding, borderRadius: '100px', background: c.solidBg, border: 'none', fontFamily: font, fontSize, fontWeight: 700, color: c.solidText, lineHeight: '16px', letterSpacing: '0.5px', textTransform: 'uppercase' as const, whiteSpace: 'nowrap' }}>
       {label}
     </span>
   );
