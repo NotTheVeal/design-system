@@ -16,9 +16,12 @@ export interface AccordionProps {
   className?: string;
 }
 
-const ChevronDown = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9" />
+// Figma spec: UI Actions/chevron/right — a right-pointing chevron (›)
+// Collapsed state: rotate(180deg) → points LEFT ‹
+// Expanded state:  rotate(90deg)  → points DOWN ∨
+const ChevronRight = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 
@@ -31,30 +34,28 @@ export const Accordion: React.FC<AccordionProps> = ({
   className = '',
 }) => {
   const [openIds, setOpenIds] = useState<Set<string>>(new Set(defaultOpen));
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const toggle = (id: string) => {
     setOpenIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        if (!allowMultiple) next.clear();
-        next.add(id);
-      }
+      if (next.has(id)) { next.delete(id); }
+      else { if (!allowMultiple) next.clear(); next.add(id); }
       return next;
     });
   };
 
   const font = "'Source Sans Pro', -apple-system, sans-serif";
-  const isCard = variant === 'card';
   const isInlineFaq = variant === 'inline-faq';
-  const triggerHeight = size === 'lg' ? 64 : 52;
+  const isCard = variant === 'card';
 
-  // Font sizes and weights per variant
-  const titleFontSize = isInlineFaq ? 17 : (size === 'lg' ? 16 : 15);
-  const titleFontWeight = isInlineFaq ? 600 : 600;
-  const titleColor = isInlineFaq ? '#002F48' : '#4A4A4A';
+  // Figma exact values:
+  // inline-faq: outer border #DCE6E9, header 56px h, 20px padding, title Regular/400, #002F48, 16px
+  // card: outer border #DCDCDC with shadow, same header sizing
+  // default: no outer border, #DCDCDC dividers between items
+
+  const borderColor = (isInlineFaq || isCard) ? '#DCE6E9' : '#DCDCDC';
+  const headerHeight = 56;
+  const headerPadding = '0 20px';
 
   return (
     <div
@@ -62,78 +63,69 @@ export const Accordion: React.FC<AccordionProps> = ({
       style={{
         width: '100%',
         fontFamily: font,
-        ...(isCard ? {
-          borderRadius: 4,
-          overflow: 'hidden',
-          border: '1px solid #DCDCDC',
-          boxShadow: '0 2px 10px rgba(0,47,72,0.10)',
-        } : {}),
+        background: '#FFFFFF',
+        border: (isInlineFaq || isCard) ? `1px solid ${borderColor}` : 'none',
+        boxShadow: isCard ? '0 2px 10px rgba(0,47,72,0.10)' : 'none',
+        borderRadius: isCard ? 4 : 0,
+        overflow: (isInlineFaq || isCard) ? 'hidden' : undefined,
       }}
     >
       {items.map((item, i) => {
         const isOpen = openIds.has(item.id);
-        const isHovered = hoveredId === item.id;
         const isFirst = i === 0;
-        const isLast = i === items.length - 1;
-
-        const triggerBg = item.disabled
-          ? '#FFFFFF'
-          : isHovered && !isOpen
-            ? '#FAFAFA'
-            : isOpen
-              ? (isCard ? '#F7FAFD' : '#FAFAFA')
-              : '#FFFFFF';
 
         return (
           <div
             key={item.id}
             style={{
-              borderTop: !isFirst ? '1px solid #DCDCDC' : (isCard ? 'none' : 'none'),
+              borderBottom: `1px solid ${borderColor}`,
             }}
           >
-            {/* Trigger */}
+            {/* Header Row — Figma: h-56px, px-20px, justify-between */}
             <button
               onClick={() => !item.disabled && toggle(item.id)}
               aria-expanded={isOpen}
               disabled={item.disabled}
-              onMouseEnter={() => !item.disabled && setHoveredId(item.id)}
-              onMouseLeave={() => setHoveredId(null)}
               style={{
                 width: '100%',
-                minHeight: triggerHeight,
+                height: headerHeight,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: size === 'lg' ? '14px 24px' : '12px 16px',
-                background: triggerBg,
+                padding: headerPadding,
+                background: '#FFFFFF',
                 border: 'none',
                 cursor: item.disabled ? 'not-allowed' : 'pointer',
                 fontFamily: font,
-                fontSize: titleFontSize,
-                fontWeight: titleFontWeight,
-                color: item.disabled ? '#949494' : titleColor,
+                // Figma: Source_Sans_Pro:Regular = fontWeight 400, #002F48, 16px
+                fontSize: isInlineFaq ? 16 : (size === 'lg' ? 16 : 15),
+                fontWeight: 400,
+                color: item.disabled ? '#949494' : '#002F48',
                 textAlign: 'left',
-                transition: 'background 150ms ease',
                 outline: 'none',
-                gap: 12,
               }}
             >
               <span style={{ flex: 1, lineHeight: 1.4 }}>{item.title}</span>
+
+              {/* Figma chevron: right-pointing, rotate(180deg) collapsed, rotate(90deg) expanded */}
               <span
                 style={{
                   flexShrink: 0,
-                  color: item.disabled ? '#DCDCDC' : '#005BA6',
+                  width: 24,
+                  height: 24,
                   display: 'flex',
                   alignItems: 'center',
-                  transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  justifyContent: 'center',
+                  color: item.disabled ? '#DCE6E9' : '#002F48',
+                  transform: isOpen ? 'rotate(90deg)' : 'rotate(180deg)',
                   transition: 'transform 220ms ease',
                 }}
               >
-                <ChevronDown />
+                <ChevronRight />
               </span>
             </button>
 
-            {/* Panel */}
+            {/* Content Panel */}
             <div
               aria-hidden={!isOpen}
               style={{
@@ -142,15 +134,17 @@ export const Accordion: React.FC<AccordionProps> = ({
                 transition: 'max-height 280ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
+              {/* Figma: ContentBody — pb-24px px-20px, #737B84, 14px, line-height 1.6 */}
               <div
                 style={{
-                  padding: size === 'lg' ? '4px 24px 20px' : '4px 16px 16px',
-                  background: isCard ? '#F7FAFD' : '#FAFAFA',
+                  padding: '8px 20px 24px',
+                  background: '#FFFFFF',
                   fontSize: 14,
                   fontWeight: 400,
-                  color: isInlineFaq ? '#4A4A4A' : '#777777',
-                  lineHeight: '22px',
-                  borderTop: '1px solid #DCDCDC',
+                  color: '#737B84',
+                  lineHeight: 1.6,
+                  borderTop: `1px solid ${borderColor}`,
+                  fontFamily: font,
                 }}
               >
                 {item.content}
