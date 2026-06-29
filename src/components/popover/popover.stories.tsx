@@ -1,1 +1,35 @@
-import type{Meta,StoryObj}from'@storybook/react';import React,{useState}from'react';import Popover from'./popover';const meta:Meta<typeof Popover>={title:'Components/Popover',component:Popover,parameters:{layout:'centered'}};export default meta;type Story=StoryObj<typeof Popover>;export const Default:Story={render:()=>{const[open,setOpen]=useState(false);return(<div style={{position:'relative',display:'inline-block'}}><button onClick={()=>setOpen(p=>!p)} style={{padding:'8px 16px',background:'#005BA6',color:'white',border:'none',borderRadius:4,cursor:'pointer',fontFamily:'Source Sans Pro,sans-serif',fontSize:13,fontWeight:600}}>More Info</button><Popover open={open} onClose={()=>setOpen(false)} title="Part Information"><div style={{fontFamily:'Source Sans Pro,sans-serif',fontSize:14,display:'flex',flexDirection:'column',gap:8}}><div style={{display:'flex',gap:8}}><span style={{color:'#777',minWidth:80}}>SKU:</span><span style={{fontWeight:600}}>4542-0012</span></div><div style={{display:'flex',gap:8}}><span style={{color:'#777',minWidth:80}}>Stock:</span><span style={{color:'#0E7C55',fontWeight:600}}>47 units</span></div></div></Popover></div>);}};
+import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import { Popover } from './popover';
+
+const Btn = ({ label = 'Open Popover' }: { label?: string }) => (
+  <button style={{ padding:'8px 20px', background:'#FFFFFF', border:'2px solid #005BA6', borderRadius:4, color:'#005BA6', cursor:'pointer', fontFamily:"'Source Sans Pro',sans-serif", fontSize:14, fontWeight:600 }}>
+    {label}
+  </button>
+);
+
+const meta: Meta<typeof Popover> = {
+  title: 'Components/Popover',
+  component: Popover,
+  parameters: { layout: 'centered' },
+};
+export default meta;
+type Story = StoryObj<typeof Popover>;
+
+export const Default: Story = {
+  render: () => <Popover trigger={<Btn />} title="Popover Title" content="Supporting text goes here to explain this element or action." />,
+};
+export const TextOnly: Story = {
+  render: () => <Popover trigger={<Btn label="Hover trigger" />} variant="text-only" content="Last updated 3 minutes ago by Sarah Johnson." />,
+};
+export const WithCTA: Story = {
+  render: () => (
+    <Popover trigger={<Btn label="Delete item" />} variant="cta" title="Delete Item"
+      content="This will permanently remove the item from your list."
+      actions={[{ label: 'Cancel', onClick: () => {} }, { label: 'Delete', onClick: () => {}, variant: 'primary' }]}
+    />
+  ),
+};
+export const PlacementBottom: Story = {
+  render: () => <Popover trigger={<Btn label="Bottom" />} title="Bottom Popover" content="This popover appears below the trigger." placement="bottom" />,
+};
