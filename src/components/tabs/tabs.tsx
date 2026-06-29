@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 
-const FONT = "'Source Sans 3', -apple-system, sans-serif";
-
-// ââ PS Design Token Colors âââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const PS_BLUE = '#005BA6';
-const MIDNIGHT = '#002F48';
-const INACTIVE = '#777777';
-const DISABLED = '#949494';
-const BORDER_CLR = '#DCDCDC';
+// Figma token values (node 4099:6022):
+const FONT          = "'Source Sans Pro', -apple-system, sans-serif";
+const PS_BLUE       = '#005BA6';
+const MIDNIGHT      = '#002F48';  // active tab text
+const INACTIVE      = '#777777';  // default tab text
+const DISABLED_CLR  = '#BBBBBB';  // Figma: #BBBBBB not #949494
+const RAIL_CLR      = '#E0E0E0';  // Figma rail/side border
+const GREY_400      = '#949494';  // Pill default border
 
 export interface Tab {
   label: string;
@@ -28,21 +28,42 @@ export interface TabsProps {
   style?: React.CSSProperties;
 }
 
-export const Tabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'default', className = '', style }) => {
+// ── Folder Tabs ─────────────────────────────────────────────────────────────
+// Active: 3px PS Blue top border, #002F48 Bold, white bg, lifts above rail
+// Hover:  #005BA6 text + 2px blue bottom line
+// Default: #777777 text, transparent bg
+// Disabled: #BBBBBB, not-allowed
+// Rail: 1px solid #E0E0E0 at container bottom
+// Padding: 24px per side (Figma: --ps-cmp-tab-ul-padding-x = 24px)
+
+export const Tabs: React.FC<TabsProps> = ({
+  tabs, value, onChange, size = 'default', className = '', style,
+}) => {
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
-  const height = size === 'sm' ? 36 : 44;
-  const fontSize = size === 'sm' ? 13 : 14;
-  const padX = size === 'sm' ? 14 : 20;
+  const padX = 24; // Figma: 24px side padding
+
   return (
     <div
       role="tablist"
       className={className}
-      style={{ display: 'flex', flexDirection: 'row', borderBottom: '1px solid ' + BORDER_CLR, fontFamily: FONT, ...style }}
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        borderBottom: `1px solid ${RAIL_CLR}`, // Figma rail #E0E0E0
+        fontFamily: FONT,
+        ...style,
+      }}
     >
       {tabs.map((tab) => {
-        const isActive = tab.value === value;
-        const isHovered = hoveredTab === tab.value && !tab.disabled;
-        const color = tab.disabled ? DISABLED : isActive ? PS_BLUE : isHovered ? MIDNIGHT : INACTIVE;
+        const isActive   = tab.value === value;
+        const isHovered  = hoveredTab === tab.value && !tab.disabled;
+
+        const color =
+          tab.disabled ? DISABLED_CLR :
+          isActive     ? MIDNIGHT :    // Figma: active = #002F48 Bold
+          isHovered    ? PS_BLUE  :    // Figma: hover = #005BA6
+          INACTIVE;
+
         return (
           <button
             key={tab.value}
@@ -55,22 +76,24 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'defau
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              height,
-              padding: '0 ' + padX + 'px',
+              height: 44,
+              padding: `0 ${padX}px`,
               fontFamily: FONT,
-              fontSize,
-              fontWeight: isActive ? 600 : 400,
+              fontSize: 16,
+              fontWeight: isActive ? 700 : 400,  // Figma: active = Bold
               cursor: tab.disabled ? 'not-allowed' : 'pointer',
               border: 'none',
-              background: isActive ? '#FFFFFF' : 'transparent',
+              background: 'transparent',
               outline: 'none',
               position: 'relative',
               color,
-              // Active tab: 3px solid PS Blue at bottom. Inactive: no border-bottom.
-              // marginBottom: -1 overlaps the container border so active tab border sits flush.
-              borderBottom: isActive ? '3px solid #005BA6' : 'none',
-              paddingBottom: isActive ? 0 : 3,
-              marginBottom: isActive ? -1 : 0,
+              // Active: 3px PS Blue top border (Figma: --ps-cmp-tab-ul-indicator-color)
+              // Active side borders: 1px #E0E0E0 left+right, open bottom
+              borderTop: isActive ? `3px solid ${PS_BLUE}` : '3px solid transparent',
+              borderLeft: isActive ? `1px solid ${RAIL_CLR}` : '1px solid transparent',
+              borderRight: isActive ? `1px solid ${RAIL_CLR}` : '1px solid transparent',
+              borderBottom: isHovered && !isActive ? `2px solid ${PS_BLUE}` : '2px solid transparent',
+              marginBottom: isActive ? -1 : 0,  // lifts above rail
               transition: 'color 0.15s ease, border-color 0.15s ease',
               whiteSpace: 'nowrap',
               userSelect: 'none',
@@ -79,28 +102,26 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'defau
             onClick={() => { if (!tab.disabled) onChange?.(tab.value); }}
             onMouseEnter={() => !tab.disabled && setHoveredTab(tab.value)}
             onMouseLeave={() => setHoveredTab(null)}
-            onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !tab.disabled) { e.preventDefault(); onChange?.(tab.value); } }}
+            onKeyDown={(e) => {
+              if ((e.key === 'Enter' || e.key === ' ') && !tab.disabled) {
+                e.preventDefault();
+                onChange?.(tab.value);
+              }
+            }}
           >
-            {tab.icon && <span style={{ display: 'inline-flex', alignItems: 'center' }}>{tab.icon}</span>}
+            {tab.icon && (
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>{tab.icon}</span>
+            )}
             <span>{tab.label}</span>
             {tab.count !== undefined && (
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minWidth: 20,
-                  height: 18,
-                  padding: '0 5px',
-                  borderRadius: 30,
-                  backgroundColor: isActive ? PS_BLUE : BORDER_CLR,
-                  color: isActive ? '#FFFFFF' : '#5C5C5C',
-                  fontFamily: FONT,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                }}
-              >
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                minWidth: 20, height: 18, padding: '0 5px',
+                borderRadius: 30,
+                backgroundColor: isActive ? PS_BLUE : '#DCDCDC',
+                color: isActive ? '#FFFFFF' : '#5C5C5C',
+                fontFamily: FONT, fontSize: 12, fontWeight: 700, lineHeight: 1,
+              }}>
                 {tab.count}
               </span>
             )}
@@ -125,20 +146,37 @@ export const TabPanel: React.FC<{
   );
 };
 
-export const SegmentedTabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'default', className = '', style }) => {
+// ── Segmented Tabs ────────────────────────────────────────────────────────────
+// Track: #F4F6F8, 5px radius, 34px height
+// Active segment: WHITE (#FFFFFF) pill with shadow — NOT blue
+// Figma: "Active segment = white pill with 0 1px 2px shadow"
+
+export const SegmentedTabs: React.FC<TabsProps> = ({
+  tabs, value, onChange, size = 'default', className = '', style,
+}) => {
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
-  const height = size === 'sm' ? 32 : 40;
-  const fontSize = size === 'sm' ? 13 : 14;
+
   return (
     <div
       role="tablist"
       className={className}
-      style={{ display: 'inline-flex', flexDirection: 'row', backgroundColor: '#F1F1F1', borderRadius: 8, padding: 4, gap: 2, fontFamily: FONT, ...style }}
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'row',
+        backgroundColor: '#F4F6F8',  // Figma: --ps-cmp-tab-seg-track-bg
+        borderRadius: 5,              // Figma: 5px
+        padding: 3,
+        gap: 2,
+        height: 34,                  // Figma: --ps-cmp-tab-seg-height = 34px
+        alignItems: 'center',
+        fontFamily: FONT,
+        ...style,
+      }}
     >
       {tabs.map((tab) => {
-        const isActive = tab.value === value;
+        const isActive  = tab.value === value;
         const isHovered = hoveredTab === tab.value && !tab.disabled;
-        const color = tab.disabled ? DISABLED : isActive ? '#FFFFFF' : isHovered ? MIDNIGHT : INACTIVE;
+
         return (
           <button
             key={tab.value}
@@ -151,49 +189,38 @@ export const SegmentedTabs: React.FC<TabsProps> = ({ tabs, value, onChange, size
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              height,
-              padding: '0 ' + (size === 'sm' ? 12 : 16) + 'px',
+              height: 28,
+              padding: '0 14px',
               fontFamily: FONT,
-              fontSize,
-              fontWeight: isActive ? 700 : 400,
-              color,
-              backgroundColor: isActive ? PS_BLUE : 'transparent',
+              fontSize: 14,
+              fontWeight: isActive ? 600 : 400,
+              color: tab.disabled ? DISABLED_CLR : isActive ? MIDNIGHT : isHovered ? MIDNIGHT : INACTIVE,
+              // Figma: active = WHITE (#FFFFFF) with shadow
+              backgroundColor: isActive ? '#FFFFFF' : 'transparent',
               border: 'none',
-              borderRadius: 6,
+              borderRadius: 3,
               cursor: tab.disabled ? 'not-allowed' : 'pointer',
               outline: 'none',
-              transition: 'background-color 0.15s ease, color 0.15s ease',
+              // Figma: "white pill with 0 1px 2px shadow"
+              boxShadow: isActive ? '0 1px 2px rgba(0,0,0,0.18)' : 'none',
+              transition: 'background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
               whiteSpace: 'nowrap',
               userSelect: 'none',
             }}
             onClick={() => { if (!tab.disabled) onChange?.(tab.value); }}
             onMouseEnter={() => !tab.disabled && setHoveredTab(tab.value)}
             onMouseLeave={() => setHoveredTab(null)}
-            onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !tab.disabled) { e.preventDefault(); onChange?.(tab.value); } }}
+            onKeyDown={(e) => {
+              if ((e.key === 'Enter' || e.key === ' ') && !tab.disabled) {
+                e.preventDefault();
+                onChange?.(tab.value);
+              }
+            }}
           >
-            {tab.icon && <span style={{ display: 'inline-flex', alignItems: 'center' }}>{tab.icon}</span>}
-            <span>{tab.label}</span>
-            {tab.count !== undefined && (
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minWidth: 18,
-                  height: 16,
-                  padding: '0 4px',
-                  borderRadius: 30,
-                  backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : BORDER_CLR,
-                  color: isActive ? '#FFFFFF' : '#5C5C5C',
-                  fontFamily: FONT,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                }}
-              >
-                {tab.count}
-              </span>
+            {tab.icon && (
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>{tab.icon}</span>
             )}
+            <span>{tab.label}</span>
           </button>
         );
       })}
@@ -201,22 +228,36 @@ export const SegmentedTabs: React.FC<TabsProps> = ({ tabs, value, onChange, size
   );
 };
 
-export const PillTabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'default', className = '', style }) => {
+// ── Pill Filter Tabs ──────────────────────────────────────────────────────────
+// Figma: 30px height, full radius (15px), border #949494 default
+// Active: #005BA6 fill + white text
+// Count badge: rgba(255,255,255,0.25) on active, #DCDCDC on default
+
+export const PillTabs: React.FC<TabsProps> = ({
+  tabs, value, onChange, size = 'default', className = '', style,
+}) => {
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
-  const height = size === 'sm' ? 28 : 36;
-  const fontSize = size === 'sm' ? 12 : 14;
+
   return (
     <div
       role="tablist"
       className={className}
-      style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 8, fontFamily: FONT, ...style }}
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        fontFamily: FONT,
+        ...style,
+      }}
     >
       {tabs.map((tab) => {
-        const isActive = tab.value === value;
+        const isActive  = tab.value === value;
         const isHovered = hoveredTab === tab.value && !tab.disabled;
-        const color = tab.disabled ? DISABLED : isActive ? '#FFFFFF' : isHovered ? MIDNIGHT : INACTIVE;
-        const borderColor = tab.disabled ? BORDER_CLR : isActive ? PS_BLUE : isHovered ? MIDNIGHT : BORDER_CLR;
-        const bg = isActive ? PS_BLUE : 'transparent';
+        const bg          = isActive ? PS_BLUE : 'transparent';
+        const color       = tab.disabled ? DISABLED_CLR : isActive ? '#FFFFFF' : isHovered ? PS_BLUE : INACTIVE;
+        const borderColor = tab.disabled ? '#DCDCDC' : isActive ? PS_BLUE : isHovered ? PS_BLUE : GREY_400;  // Figma: #949494 default
+
         return (
           <button
             key={tab.value}
@@ -229,15 +270,15 @@ export const PillTabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'd
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              height,
-              padding: '0 ' + (size === 'sm' ? 12 : 16) + 'px',
+              height: 30,              // Figma: --ps-cmp-tab-pill-height = 30px
+              padding: '0 14px',
               fontFamily: FONT,
-              fontSize,
+              fontSize: 14,
               fontWeight: isActive ? 700 : 400,
               color,
               backgroundColor: bg,
-              border: '1.5px solid ' + borderColor,
-              borderRadius: 9999,
+              border: `1px solid ${borderColor}`,  // Figma: 1px (not 1.5px)
+              borderRadius: 15,         // Figma: full pill (15px)
               cursor: tab.disabled ? 'not-allowed' : 'pointer',
               outline: 'none',
               transition: 'background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease',
@@ -247,28 +288,26 @@ export const PillTabs: React.FC<TabsProps> = ({ tabs, value, onChange, size = 'd
             onClick={() => { if (!tab.disabled) onChange?.(tab.value); }}
             onMouseEnter={() => !tab.disabled && setHoveredTab(tab.value)}
             onMouseLeave={() => setHoveredTab(null)}
-            onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !tab.disabled) { e.preventDefault(); onChange?.(tab.value); } }}
+            onKeyDown={(e) => {
+              if ((e.key === 'Enter' || e.key === ' ') && !tab.disabled) {
+                e.preventDefault();
+                onChange?.(tab.value);
+              }
+            }}
           >
-            {tab.icon && <span style={{ display: 'inline-flex', alignItems: 'center' }}>{tab.icon}</span>}
+            {tab.icon && (
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>{tab.icon}</span>
+            )}
             <span>{tab.label}</span>
             {tab.count !== undefined && (
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minWidth: 18,
-                  height: 16,
-                  padding: '0 4px',
-                  borderRadius: 30,
-                  backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : BORDER_CLR,
-                  color: isActive ? '#FFFFFF' : '#5C5C5C',
-                  fontFamily: FONT,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                }}
-              >
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                minWidth: 18, height: 16, padding: '0 4px',
+                borderRadius: 30,
+                backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : '#DCDCDC',
+                color: isActive ? '#FFFFFF' : '#5C5C5C',
+                fontFamily: FONT, fontSize: 11, fontWeight: 700, lineHeight: 1,
+              }}>
                 {tab.count}
               </span>
             )}
