@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import ContextActions from './contextActions';
+import { ContextActions } from './contextActions';
+
+const ACTIONS = [
+  { label: 'Edit', onClick: () => {} },
+  { label: 'Duplicate', onClick: () => {} },
+  { label: 'Archive', onClick: () => {} },
+  { label: 'Delete', onClick: () => {}, variant: 'danger' as const },
+];
 
 const meta: Meta<typeof ContextActions> = {
   title: 'Components/ContextActions',
@@ -10,32 +17,23 @@ const meta: Meta<typeof ContextActions> = {
 export default meta;
 type Story = StoryObj<typeof ContextActions>;
 
-export const Default: Story = {
-  args: {
-    actions: [
-      { label: 'Edit', onClick: () => {} },
-      { label: 'Delete', onClick: () => {}, variant: 'danger' },
-    ],
-  },
-};
-
+export const Default: Story = { render: () => <ContextActions actions={ACTIONS} /> };
 export const PartActions: Story = {
-  args: {
-    actions: [
+  render: () => (
+    <ContextActions actions={[
       { label: 'Add to Cart', onClick: () => {} },
       { label: 'View Details', onClick: () => {} },
       { label: 'Compare', onClick: () => {} },
-    ],
-  },
+    ]} />
+  ),
 };
-
 export const WithDivider: Story = {
-  args: {
-    actions: [
+  render: () => (
+    <ContextActions actions={[
       { label: 'Edit Item', onClick: () => {} },
       { label: 'Duplicate', onClick: () => {} },
       { label: 'Archive', onClick: () => {} },
-      { label: 'Delete', onClick: () => {}, variant: 'danger' },
-    ],
-  },
+      { label: 'Delete', onClick: () => {}, variant: 'danger' as const },
+    ]} />
+  ),
 };
