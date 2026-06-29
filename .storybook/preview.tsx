@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Preview } from '@storybook/react-vite';
 import '../src/tokens/tokens.css';
 
@@ -7,6 +8,10 @@ link.rel = 'stylesheet';
 link.href =
   'https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Source+Code+Pro:wght@400;500;700&display=swap';
 document.head.appendChild(link);
+
+document.body.style.fontFamily =
+  "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif";
+document.body.style.color = '#4A4A4A';
 
 const preview: Preview = {
   parameters: {
@@ -30,12 +35,7 @@ const preview: Preview = {
     layout: 'centered',
   },
   decorators: [
-    (Story) => {
-      document.body.style.fontFamily =
-        "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif";
-      document.body.style.color = '#4A4A4A';
-      return Story();
-    },
+    (Story) => <Story />,
   ],
 };
 
