@@ -1,65 +1,66 @@
 import React from 'react';
 
-const FONT = "'Source Sans 3', -apple-system, sans-serif";
+export type ButtonSquareSize = 'sm' | 'lg';
+export type ButtonSquareVariant = 'normal' | 'hover' | 'pressed' | 'disabled';
 
-export interface ButtonSquareProps {
-  icon: React.ReactNode;
-  size?: 'sm' | 'lg';
-  variant?: 'default' | 'filled' | 'ghost' | 'danger';
-  disabled?: boolean;
-  onClick?: () => void;
-  ariaLabel: string;
+export interface ButtonSquareProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  size?: ButtonSquareSize;
+  icon?: React.ReactNode;
+  label?: string;
+  variant?: ButtonSquareVariant;
+  loading?: boolean;
 }
 
-const variantStyles: Record<string, React.CSSProperties> = {
-  default: { border: '2px solid #005BA6', background: 'transparent', color: '#005BA6' },
-  filled: { border: '2px solid #005BA6', background: '#005BA6', color: '#FFFFFF' },
-  ghost: { border: 'none', background: 'transparent', color: '#4A4A4A' },
-  danger: { border: '2px solid #E00000', background: 'transparent', color: '#E00000' },
-};
-
-const hoverMap: Record<string, React.CSSProperties> = {
-  default: { background: '#EFF9FE', borderColor: '#005BA6' },
-  filled: { background: '#002F48', borderColor: '#002F48' },
-  ghost: { background: '#F1F1F1' },
-  danger: { background: '#FFF0F0', borderColor: '#E00000' },
-};
+// Figma (node 400:98 Button/SquareLG, 400:107 Button/SquareSM):
+// LG: 48px height, 4px radius
+// SM: 32px height, 4px radius
+// White bg, 1px #005BA6 border, #005BA6 text
+// Hover: fills #005BA6, white text
+// Disabled: #DCDCDC border, grey text
 
 export const ButtonSquare: React.FC<ButtonSquareProps> = ({
-  icon,
-  size = 'lg',
-  variant = 'default',
-  disabled = false,
-  onClick,
-  ariaLabel,
+  size = 'lg', icon, label, variant, loading = false, disabled, style, onMouseEnter, onMouseLeave, ...rest
 }) => {
   const [hovered, setHovered] = React.useState(false);
-  const sz = size === 'sm' ? 32 : 40;
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const h = size === 'sm' ? 32 : 48;
+  const fontSize = size === 'sm' ? 12 : 14;
+  const isDisabled = disabled || loading;
+  const isHovered = hovered && !isDisabled;
 
   return (
     <button
-      aria-label={ariaLabel}
-      disabled={disabled}
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      {...rest}
+      disabled={isDisabled}
+      onMouseEnter={e => { setHovered(true); onMouseEnter?.(e); }}
+      onMouseLeave={e => { setHovered(false); onMouseLeave?.(e); }}
       style={{
-        width: sz,
-        height: sz,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: 8,
+        height: h,
+        padding: `0 ${size === 'sm' ? 12 : 16}px`,
+        minWidth: h,
         borderRadius: 4,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.4 : 1,
-        transition: 'all 150ms ease',
-        fontFamily: FONT,
-        outline: 'none',
-        flexShrink: 0,
-        ...(hovered && !disabled ? hoverMap[variant] : variantStyles[variant]),
+        fontFamily: font,
+        fontSize,
+        fontWeight: 600,
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        border: `1px solid ${isDisabled ? '#DCDCDC' : '#005BA6'}`,
+        background: isDisabled ? '#FFFFFF' : isHovered ? '#005BA6' : '#FFFFFF',
+        color: isDisabled ? '#DCDCDC' : isHovered ? '#FFFFFF' : '#005BA6',
+        transition: 'all 200ms ease',
+        opacity: 1,
+        ...style,
       }}
     >
-      {icon}
+      {loading && (
+        <span style={{ width: 14, height: 14, border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', animation: 'ps-spin 0.6s linear infinite', display: 'inline-block' }} />
+      )}
+      {!loading && icon && <span style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>}
+      {!loading && label && <span>{label}</span>}
+      <style>{`@keyframes ps-spin { to { transform: rotate(360deg); } }`}</style>
     </button>
   );
 };
