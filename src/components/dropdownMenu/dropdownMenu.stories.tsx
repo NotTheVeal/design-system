@@ -7,13 +7,13 @@ const meta = {
   component: DropdownMenu,
   tags: ['autodocs'],
   parameters: {
-    layout: 'padded',
+    layout: 'centered',
     docs: {
       description: {
         component: `
-**PS Design System Ã¢â¬â DropdownMenu**
+**PS Design System ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ DropdownMenu**
 
-Action and navigation dropdown menus. **Distinct from Select** Ã¢â¬â use \`Select\` for form data
+Action and navigation dropdown menus. **Distinct from Select** ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ use \`Select\` for form data
 collection; use \`DropdownMenu\` for action menus, navigation, and context menus.
 
 ### Visual Spec
@@ -34,11 +34,11 @@ collection; use \`DropdownMenu\` for action menus, navigation, and context menus
 | Disabled opacity | 0.4 |
 
 ### Keyboard Navigation
-- \`Enter\` / \`Space\` / \`ArrowDown\` Ã¢â¬â opens menu and focuses first item
-- \`ArrowDown\` / \`ArrowUp\` Ã¢â¬â navigate items
-- \`Enter\` Ã¢â¬â select focused item
-- \`Escape\` Ã¢â¬â close menu
-- \`Tab\` Ã¢â¬â close menu and move focus
+- \`Enter\` / \`Space\` / \`ArrowDown\` ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ opens menu and focuses first item
+- \`ArrowDown\` / \`ArrowUp\` ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ navigate items
+- \`Enter\` ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ select focused item
+- \`Escape\` ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ close menu
+- \`Tab\` ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ close menu and move focus
 
 ### Select vs DropdownMenu
 - **Select**: Form field, returns a value for form submission, shows current selection
@@ -59,14 +59,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default Ã¢â¬â 3-dot overflow menu',
+  name: 'Default ÃÂ¢Ã¢ÂÂ¬Ã¢ÂÂ 3-dot overflow menu',
   args: {
     trigger: (
       <button
         style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid #DCDCDC', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#4A4A4A', fontFamily: "'Source Sans 3', sans-serif" }}
         aria-label="More options"
       >
-        Ã¢â¹Â¯
+        ÃÂ¢Ã¢ÂÂ¹ÃÂ¯
       </button>
     ),
     items: [
@@ -96,7 +96,7 @@ export const WithDangerItem: Story = {
   args: {
     trigger: (
       <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 16px', height: 36, border: '1px solid #DCDCDC', borderRadius: 4, background: '#FFFFFF', cursor: 'pointer', fontSize: 14, color: '#4A4A4A', fontFamily: "'Source Sans 3', sans-serif" }}>
-        More actions Ã¢âÂ¾
+        More actions ÃÂ¢Ã¢ÂÂÃÂ¾
       </button>
     ),
     items: [
@@ -113,7 +113,7 @@ export const WithDisabledItems: Story = {
   args: {
     trigger: (
       <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 16px', height: 36, border: '1px solid #DCDCDC', borderRadius: 4, background: '#FFFFFF', cursor: 'pointer', fontSize: 14, color: '#4A4A4A', fontFamily: "'Source Sans 3', sans-serif" }}>
-        Actions Ã¢âÂ¾
+        Actions ÃÂ¢Ã¢ÂÂÃÂ¾
       </button>
     ),
     items: [
