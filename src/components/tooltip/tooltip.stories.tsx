@@ -6,82 +6,23 @@ const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
   component: Tooltip,
   parameters: { layout: 'centered' },
-  argTypes: {
-    placement: { control: 'select', options: ['top', 'bottom', 'left', 'right'] },
-  },
 };
-
 export default meta;
 type Story = StoryObj<typeof Tooltip>;
 
-export const Default: Story = {
-  args: {
-    content: 'This is a tooltip',
-    placement: 'top',
-  },
-  render: (args) => (
-    <Tooltip {...args}>
-      <button style={{ padding: '8px 16px', borderRadius: 4, border: '1px solid #DCDCDC', cursor: 'pointer' }}>
-        Hover me
-      </button>
-    </Tooltip>
-  ),
-};
+const TriggerBtn = ({ label = 'Hover me' }: { label?: string }) => (
+  <button style={{ padding:'8px 16px', background:'#FFFFFF', border:'1px solid #DCDCDC', borderRadius:4, cursor:'pointer', fontFamily:"'Source Sans Pro',sans-serif", fontSize:14 }}>
+    {label}
+  </button>
+);
 
-export const Bottom: Story = {
-  args: { content: 'Opens below', placement: 'bottom' },
-  render: (args) => (
-    <Tooltip {...args}>
-      <button style={{ padding: '8px 16px', borderRadius: 4, border: '1px solid #DCDCDC', cursor: 'pointer' }}>
-        Hover me
-      </button>
-    </Tooltip>
-  ),
-};
-
-export const Left: Story = {
-  args: { content: 'Opens to the left', placement: 'left' },
-  render: (args) => (
-    <Tooltip {...args}>
-      <button style={{ padding: '8px 16px', borderRadius: 4, border: '1px solid #DCDCDC', cursor: 'pointer' }}>
-        Hover me
-      </button>
-    </Tooltip>
-  ),
-};
-
-export const Right: Story = {
-  args: { content: 'Opens to the right', placement: 'right' },
-  render: (args) => (
-    <Tooltip {...args}>
-      <button style={{ padding: '8px 16px', borderRadius: 4, border: '1px solid #DCDCDC', cursor: 'pointer' }}>
-        Hover me
-      </button>
-    </Tooltip>
-  ),
-};
-
+export const Default: Story = { render: () => <Tooltip content="This is a tooltip" trigger={<TriggerBtn />} /> };
+export const Top: Story = { render: () => <Tooltip content="Tooltip on top" placement="top" trigger={<TriggerBtn label="Top" />} /> };
+export const Bottom: Story = { render: () => <Tooltip content="Tooltip on bottom" placement="bottom" trigger={<TriggerBtn label="Bottom" />} /> };
+export const Left: Story = { render: () => <Tooltip content="Tooltip on left" placement="left" trigger={<TriggerBtn label="Left" />} /> };
+export const Right: Story = { render: () => <Tooltip content="Tooltip on right" placement="right" trigger={<TriggerBtn label="Right" />} /> };
 export const LongContent: Story = {
-  args: { content: 'This tooltip contains a longer description that spans more than a few words to test wrapping behavior.', placement: 'top' },
-  render: (args) => (
-    <Tooltip {...args}>
-      <button style={{ padding: '8px 16px', borderRadius: 4, border: '1px solid #DCDCDC', cursor: 'pointer' }}>
-        Long tooltip
-      </button>
-    </Tooltip>
-  ),
-};
-
-export const AllPlacements: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: 24, padding: 48, alignItems: 'center', justifyContent: 'center' }}>
-      {(['top', 'bottom', 'left', 'right'] as const).map(p => (
-        <Tooltip key={p} content={`${p} tooltip`} placement={p}>
-          <button style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #DCDCDC', cursor: 'pointer', textTransform: 'capitalize' }}>
-            {p}
-          </button>
-        </Tooltip>
-      ))}
-    </div>
+    <Tooltip content="Tooltips wrap automatically when the text exceeds the maximum width of approximately 200px." trigger={<TriggerBtn label="Long content" />} />
   ),
 };
