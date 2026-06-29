@@ -1,60 +1,59 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
-import { RadioButton, Radio, RadioGroup } from './radio';
+import { Radio, RadioGroup } from './radio';
 
-const meta: Meta<typeof RadioButton> = {
+const OPTIONS = [
+  { value: 'oem', label: 'OEM Parts only' },
+  { value: 'aftermarket', label: 'Aftermarket Parts only' },
+  { value: 'both', label: 'OEM and Aftermarket' },
+];
+
+const meta: Meta<typeof Radio> = {
   title: 'Components/Radio',
-  component: RadioButton,
+  component: Radio,
   parameters: { layout: 'centered' },
-  argTypes: {
-    checked: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-  },
 };
 export default meta;
-type Story = StoryObj<typeof RadioButton>;
+type Story = StoryObj<typeof Radio>;
 
 export const Default: Story = {
-  args: { name: 'demo', value: 'opt1', label: 'Option 1', checked: false, onChange: () => {} },
+  render: () => {
+    const [val, setVal] = useState('oem');
+    return <RadioGroup name="default" options={OPTIONS.slice(0, 1)} value={val} onChange={setVal} />;
+  },
 };
-export const Checked: Story = {
-  args: { name: 'demo', value: 'opt1', label: 'Selected option', checked: true, onChange: () => {} },
-};
-export const WithDescription: Story = {
-  render: () => (
-    <RadioButton name="demo" value="opt1" label="Standard Shipping" checked={true} onChange={() => {}}
-      description="3-5 business days — Free on orders over $500" />
-  ),
-};
-export const Disabled: Story = {
-  args: { name: 'demo', value: 'opt1', label: 'Unavailable option', checked: false, disabled: true, onChange: () => {} },
-};
-
-export const ShippingGroup: Story = {
+export const Group: Story = {
   parameters: { layout: 'padded' },
   render: () => {
-    const [v, setV] = useState('standard');
+    const [val, setVal] = useState('oem');
+    return <RadioGroup name="parts-group" options={OPTIONS} value={val} onChange={setVal} />;
+  },
+};
+export const Horizontal: Story = {
+  parameters: { layout: 'padded' },
+  render: () => {
+    const [val, setVal] = useState('oem');
+    return <RadioGroup name="parts-h" options={OPTIONS} value={val} onChange={setVal} orientation="horizontal" />;
+  },
+};
+export const WithDisabled: Story = {
+  parameters: { layout: 'padded' },
+  render: () => {
+    const [val, setVal] = useState('oem');
     return (
-      <RadioGroup name="shipping" value={v} onChange={setV} options={[
-        { value: 'standard', label: 'Standard Shipping', description: '3-5 business days — Free on orders over $500' },
-        { value: 'express',  label: 'Express Shipping',  description: '1-2 business days — $24.99' },
-        { value: 'overnight',label: 'Overnight',         description: 'Next business day — $49.99' },
-        { value: 'pickup',   label: 'Will Call Pickup',  description: 'Available same day at PartsSource warehouse' },
-      ]} />
+      <RadioGroup
+        name="parts-d"
+        options={[...OPTIONS, { value: 'na', label: 'Not Available', disabled: true }]}
+        value={val}
+        onChange={setVal}
+      />
     );
   },
 };
-
-export const HorizontalGroup: Story = {
+export const Selected: Story = {
   parameters: { layout: 'padded' },
   render: () => {
-    const [v, setV] = useState('oem');
-    return (
-      <RadioGroup name="partType" value={v} onChange={setV} orientation="horizontal" options={[
-        { value: 'oem',         label: 'OEM Parts' },
-        { value: 'aftermarket', label: 'Aftermarket' },
-        { value: 'refurb',      label: 'Refurbished' },
-      ]} />
-    );
+    const [val, setVal] = useState('aftermarket');
+    return <RadioGroup name="selected" options={OPTIONS} value={val} onChange={setVal} />;
   },
 };
