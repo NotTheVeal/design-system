@@ -164,7 +164,7 @@ export const SegmentedTabs: React.FC<TabsProps> = ({
         display: 'inline-flex',
         flexDirection: 'row',
         backgroundColor: '#F4F6F8',  // Figma: --ps-cmp-tab-seg-track-bg
-        borderRadius: 5,              // Figma: 5px
+        borderRadius: 4,              // Figma: 5px
         padding: 3,
         gap: 2,
         height: 34,                  // Figma: --ps-cmp-tab-seg-height = 34px
@@ -198,7 +198,7 @@ export const SegmentedTabs: React.FC<TabsProps> = ({
               // Figma: active = WHITE (#FFFFFF) with shadow
               backgroundColor: isActive ? '#FFFFFF' : 'transparent',
               border: 'none',
-              borderRadius: 3,
+              borderRadius: 4,
               cursor: tab.disabled ? 'not-allowed' : 'pointer',
               outline: 'none',
               // Figma: "white pill with 0 1px 2px shadow"
