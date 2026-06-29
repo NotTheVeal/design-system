@@ -5,7 +5,7 @@ import { Accordion } from './accordion';
 const meta: Meta<typeof Accordion> = {
   title: 'Components/Accordion',
   component: Accordion,
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   argTypes: {
     variant: { control: 'select', options: ['default', 'card', 'inline-faq'] },
     size: { control: 'select', options: ['md', 'lg'] },
