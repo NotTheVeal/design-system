@@ -6,23 +6,21 @@ const meta: Meta<typeof Avatar> = {
   title: 'Components/Avatar',
   component: Avatar,
   parameters: { layout: 'centered' },
-  argTypes: {
-    size:   { control: 'select', options: ['xs','sm','md','lg','xl'] },
-    status: { control: 'select', options: ['online','busy','away','offline'] },
-  },
 };
 export default meta;
 type Story = StoryObj<typeof Avatar>;
 
 export const Default: Story = { args: { name: 'Rachael Veal', size: 'md' } };
 export const WithStatus: Story = { args: { name: 'John Smith', size: 'md', status: 'online' } };
-export const Large: Story = { args: { name: 'Sarah Connor', size: 'lg', status: 'away' } };
+export const Large: Story = { args: { name: 'Sarah Connor', size: 'xl', status: 'away' } };
 export const Small: Story = { args: { name: 'Tom Baker', size: 'sm' } };
+export const ExtraSmall: Story = { args: { name: 'Anna Lee', size: 'xs' } };
+export const NoName: Story = { args: { size: 'md' } };
 
 export const AllSizes: Story = {
   parameters: { layout: 'padded' },
   render: () => (
-    <div style={{ display:'flex', alignItems:'center', gap:20, padding:24, fontFamily:"'Source Sans Pro', sans-serif" }}>
+    <div style={{ display:'flex', alignItems:'center', gap:20, padding:24, fontFamily:"'Source Sans Pro',sans-serif" }}>
       {(['xs','sm','md','lg','xl'] as const).map(s => (
         <div key={s} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
           <Avatar name="Rachael Veal" size={s} status="online" />
@@ -36,30 +34,13 @@ export const AllSizes: Story = {
 export const AllStatuses: Story = {
   parameters: { layout: 'padded' },
   render: () => (
-    <div style={{ display:'flex', alignItems:'center', gap:24, padding:24, fontFamily:"'Source Sans Pro', sans-serif" }}>
-      {([['online','Online'],['busy','Busy'],['away','Away'],['offline','Offline']] as const).map(([s, label]) => (
+    <div style={{ display:'flex', gap:24, padding:24, fontFamily:"'Source Sans Pro',sans-serif" }}>
+      {([['online','Online'],['away','Away'],['busy','Busy'],['offline','Offline']] as const).map(([s,l]) => (
         <div key={s} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
           <Avatar name="Jane Doe" size="lg" status={s} />
-          <span style={{ fontSize:12, color:'#4A4A4A' }}>{label}</span>
+          <span style={{ fontSize:12, color:'#4A4A4A' }}>{l}</span>
         </div>
       ))}
-    </div>
-  ),
-};
-
-export const AvatarGroupStory: Story = {
-  name: 'Avatar Group',
-  parameters: { layout: 'padded' },
-  render: () => (
-    <div style={{ display:'flex', alignItems:'center', padding:24 }}>
-      {['Alice Wong','Bob Chen','Carol Adams','Dave Park','Eve Torres'].map((name, i) => (
-        <div key={name} style={{ marginLeft: i ? -8 : 0, zIndex: 5 - i }}>
-          <Avatar name={name} size="md" />
-        </div>
-      ))}
-      <div style={{ marginLeft:-8, zIndex:0, width:36, height:36, borderRadius:'50%', background:'#DCDCDC', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:600, color:'#4A4A4A', border:'2px solid white', fontFamily:"'Source Sans Pro', sans-serif" }}>
-        +3
-      </div>
     </div>
   ),
 };
