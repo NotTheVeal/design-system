@@ -20,7 +20,6 @@ export const Default: Story = {
     ],
   },
 };
-
 export const Short: Story = {
   args: {
     items: [
@@ -29,7 +28,17 @@ export const Short: Story = {
     ],
   },
 };
-
 export const Single: Story = {
   args: { items: [{ label: 'Dashboard' }] },
+};
+export const Deep: Story = {
+  args: {
+    items: [
+      { label: 'Home', href: '/' },
+      { label: 'Procurement', href: '/procurement' },
+      { label: 'Orders', href: '/procurement/orders' },
+      { label: 'PO-12847', href: '/procurement/orders/12847' },
+      { label: 'Line Items' },
+    ],
+  },
 };
