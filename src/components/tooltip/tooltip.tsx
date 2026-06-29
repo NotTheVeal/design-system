@@ -6,7 +6,10 @@ export interface TooltipProps {
   content: React.ReactNode;
   placement?: TooltipPlacement;
   delay?: number;
-  children: React.ReactElement;
+  /** Trigger element — preferred API used in stories */
+  trigger?: React.ReactElement;
+  /** Alternatively, wrap children directly */
+  children?: React.ReactElement;
   className?: string;
 }
 
@@ -19,8 +22,9 @@ export interface TooltipProps {
 const ARROW_SIZE = 6;
 
 export const Tooltip: React.FC<TooltipProps> = ({
-  content, placement = 'top', delay = 300, children, className = '',
+  content, placement = 'top', delay = 300, trigger, children, className = '',
 }) => {
+  const triggerEl = trigger ?? children;
   const [visible, setVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const font = "'Source Sans Pro', -apple-system, sans-serif";
@@ -71,14 +75,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
       onFocus={show}
       onBlur={hide}
     >
-      {children}
+      {triggerEl}
       {visible && (
         <span
           role="tooltip"
           style={{
             position: 'absolute',
             zIndex: 1000,
-            background: '#323232',        // Figma: #323232 dark bg
+            background: '#323232',
             color: '#FFFFFF',
             fontSize: 12,
             fontWeight: 400,
