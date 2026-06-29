@@ -27,6 +27,10 @@ const vendorData = [
   { label: 'Other', value: 7 },
 ];
 
+export const Default: Story = {
+  args: { type: 'bar', title: 'Parts Activity -- H1 2025', labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], series: [{ name: 'Parts Ordered', data: [420, 580, 490, 720, 650, 810] }], height: 260 },
+};
+
 export const BarChart: Story = {
   args: { type: 'bar', title: 'Parts Activity — H1 2025', labels: months, series: quarterSeries, height: 260, showLegend: true },
 };
