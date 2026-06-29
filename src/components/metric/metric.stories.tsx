@@ -52,7 +52,7 @@ export const SmallKPIs: Story = {
       <Metric label="Orders" value="1,284" trend="up" delta="+5%" size="sm" />
       <Metric label="Revenue" value="\$892K" trend="up" delta="+12%" size="sm" />
       <Metric label="Returns" value="42" trend="down" delta="-8%" size="sm" />
-      <Metric label="NPS" value="67" trend="neutral" delta="±0" size="sm" />
+      <Metric label="NPS" value="67" trend="neutral" delta="+/-0" size="sm" />
     </div>
   ),
 };
