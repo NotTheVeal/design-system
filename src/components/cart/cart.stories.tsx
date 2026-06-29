@@ -1,56 +1,51 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React, { useState } from 'react';
-import { Cart, CartIconBadge } from './cart';
+import React from 'react';
+import { Cart } from './cart';
 
 const meta: Meta<typeof Cart> = {
   title: 'Components/Cart',
   component: Cart,
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
+  argTypes: {
+    cart: { control: 'select', options: ['Default','1','2','3','4','5','6','7','8','9','10+'] },
+  },
 };
 export default meta;
 type Story = StoryObj<typeof Cart>;
 
-export const Default: Story = {
-  render: () => <Cart onCheckout={() => alert('Checkout!')} onContinueShopping={() => {}} />,
-};
+export const Default: Story = { args: { cart: 'Default' } };
+export const Empty: Story = { args: { cart: 'Default' } };
+export const OneItem: Story = { args: { cart: '1' } };
+export const FiveItems: Story = { args: { cart: '5' } };
+export const NineItems: Story = { args: { cart: '9' } };
+export const TenPlus: Story = { args: { cart: '10+' } };
 
-export const EmptyCart: Story = {
-  render: () => <Cart items={[]} onCheckout={() => {}} onContinueShopping={() => {}} />,
-};
-
-export const SingleItem: Story = {
+export const AllVariants: Story = {
+  parameters: { layout: 'padded' },
   render: () => (
-    <Cart
-      items={[{ id: '1', name: 'GE Healthcare Ultrasound Probe', sku: '4542-0012', manufacturer: 'GE Healthcare', price: 1249.00, quantity: 1 }]}
-      onCheckout={() => {}}
-      onContinueShopping={() => {}}
-    />
+    <div style={{ display:'flex', gap:16, alignItems:'center', flexWrap:'wrap', padding:24 }}>
+      {(['Default','1','2','3','4','5','6','7','8','9','10+'] as const).map(c => (
+        <div key={c} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+          <Cart cart={c} onClick={() => {}} />
+          <span style={{ fontSize:11, color:'#777777', fontFamily:"'Source Sans Pro',sans-serif" }}>{c}</span>
+        </div>
+      ))}
+    </div>
   ),
 };
 
-export const CartIconInHeader: Story = {
-  render: () => {
-    const [count, setCount] = React.useState(3);
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24, padding: '12px 24px', background: '#FFFFFF', border: '1px solid #DCDCDC', borderRadius: 4 }}>
-        <div style={{ fontWeight: 700, fontSize: 18, color: '#002F48', fontFamily: 'Source Sans Pro, sans-serif' }}>PartsSource</div>
-        <div style={{ flex: 1 }} />
-        <CartIconBadge count={count} onClick={() => setCount(c => Math.max(0, c - 1))} />
-        <span style={{ fontSize: 12, color: '#949494' }}>Click badge to decrement</span>
-      </div>
-    );
-  },
-};
-
-export const FreeShipping: Story = {
-  name: 'With Free Shipping (>$500)',
+export const InNavBar: Story = {
+  parameters: { layout: 'padded' },
   render: () => (
-    <Cart
-      items={[
-        { id: '1', name: 'GE Healthcare Ultrasound Probe', sku: '4542-0012', manufacturer: 'GE Healthcare', price: 1249.00, quantity: 2 },
-        { id: '2', name: 'Stryker Surgical Instrument Set', sku: 'STR-9900', manufacturer: 'Stryker', price: 3450.00, quantity: 1 },
-      ]}
-      onCheckout={() => {}}
-    />
+    <div style={{
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      padding:'0 24px', height:56, background:'#002F48', borderRadius:4,
+      fontFamily:"'Source Sans Pro',sans-serif",
+    }}>
+      <span style={{ color:'#fff', fontWeight:700, fontSize:16 }}>PartsSource</span>
+      <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+        <Cart cart="3" onClick={() => {}} />
+      </div>
+    </div>
   ),
 };
