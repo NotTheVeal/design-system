@@ -5,7 +5,7 @@ import { Toggle } from './toggle';
 const meta: Meta<typeof Toggle> = {
   title: 'Components/Toggle',
   component: Toggle,
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   argTypes: { size: { control: 'select', options: ['sm','md'] }, disabled: { control: 'boolean' } },
 };
 export default meta;
@@ -18,6 +18,7 @@ export const Small: Story = { args: { label: 'Compact view', size: 'sm' } };
 export const Disabled: Story = { args: { label: 'Locked setting', disabled: true, defaultChecked: true } };
 
 export const SettingsPanel: Story = {
+  parameters: { layout: 'padded' },
   render: () => {
     const [s, setS] = useState({email:true,sms:false,slack:true,autoApprove:false,sync:true});
     return (
