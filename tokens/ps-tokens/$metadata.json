@@ -17,6 +17,7 @@
     "ps-tokens/semantic/spacing",
     "ps-tokens/semantic/sizing",
     "ps-tokens/semantic/border",
+    "ps-tokens/semantic/shadow",
     "ps-tokens/semantic/opacity",
     "ps-tokens/semantic/motion",
     "ps-tokens/semantic/zIndex",
@@ -69,6 +70,8 @@
     "ps-tokens/component/iconPictogram",
     "ps-tokens/component/inlineButton",
     "ps-tokens/component/ctaBar",
+    "ps-tokens/component/contextActions",
+    "ps-tokens/component/errorMessage",
     "ps-tokens/component/aiAgent",
     "ps-tokens/component/cms",
     "ps-tokens/component/dataVisualization"
