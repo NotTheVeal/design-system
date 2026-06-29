@@ -1,62 +1,40 @@
 import React from 'react';
 
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
-
-interface ErrorMessageProps {
-  title?: string;
-  message?: string;
-  children?: React.ReactNode;
+export interface ErrorMessageProps {
+  message: string;
   className?: string;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({
-  title,
-  message,
-  children,
-  className = '',
-}) => (
-  <div
-    className={className}
-    role="alert"
-    style={{
-      display: 'flex',
-      gap: 12,
-      padding: '12px 16px',
-      background: '#FACBCB',
-      borderRadius: 4,
-      fontFamily,
-    }}
-  >
-    <span
+// PS Design System inline error:
+// 12px Source Sans Pro, #E00000 (Figma error color), with X-circle icon
+// Used below input/select fields for validation errors
+
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, className = '' }) => {
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  return (
+    <div
+      className={className}
+      role="alert"
       style={{
-        flexShrink: 0,
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 20,
-        height: 20,
-        borderRadius: '50%',
-        background: '#E00000',
-        color: '#FFFFFF',
-        marginTop: 2,
+        alignItems: 'flex-start',
+        gap: 4,
+        fontSize: 12,
+        color: '#E00000',
+        fontFamily: font,
+        fontWeight: 400,
+        lineHeight: 1.4,
+        marginTop: 4,
       }}
     >
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <line x1="6" y1="4" x2="6" y2="6.5" />
-        <circle cx="6" cy="9" r="0.5" fill="currentColor" stroke="none" />
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
       </svg>
-    </span>
-    <div>
-      {title && (
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#E00000', marginBottom: 2, fontFamily }}>
-          {title}
-        </div>
-      )}
-      <div style={{ fontSize: 14, color: '#E00000', fontFamily }}>
-        {message ?? children}
-      </div>
+      <span>{message}</span>
     </div>
-  </div>
-);
+  );
+};
 
 export default ErrorMessage;
