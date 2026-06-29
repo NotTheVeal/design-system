@@ -1,83 +1,77 @@
 import React from 'react';
 
-const STYLE_ID = 'ps-loading-styles';
-const injectStyles = () => {
-  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    @keyframes ps-spin { to { transform: rotate(360deg); } }
-    .ps-loading-spinner { animation: ps-spin 0.8s linear infinite; transform-origin: center; }
-  `;
-  document.head.appendChild(style);
-};
+export type LoadingSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-const SIZES: Record<string, number> = { sm: 24, md: 40, lg: 64 };
-
-interface LoadingProps {
-  size?: 'sm' | 'md' | 'lg' | number;
+export interface LoadingProps {
+  size?: LoadingSize;
   color?: string;
-  trackColor?: string;
-  className?: string;
   label?: string;
+  overlay?: boolean;
+  className?: string;
 }
 
-const Loading: React.FC<LoadingProps> = ({
-  size = 'md',
-  color = '#005BA6',
-  trackColor = '#DCDCDC',
-  className = '',
-  label = 'Loadingâ¦',
+// PS Design System Loading spinner:
+// #005BA6 blue ring, transparent track
+// Sizes: xs=16, sm=24, md=40, lg=56, xl=72px
+// Centered in its container
+
+const SIZES: Record<LoadingSize, number> = { xs: 16, sm: 24, md: 40, lg: 56, xl: 72 };
+const THICKNESS: Record<LoadingSize, number> = { xs: 2, sm: 3, md: 4, lg: 5, xl: 6 };
+
+export const Loading: React.FC<LoadingProps> = ({
+  size = 'md', color = '#005BA6', label, overlay = false, className = '',
 }) => {
-  if (typeof document !== 'undefined') injectStyles();
+  const px = SIZES[size];
+  const stroke = THICKNESS[size];
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
 
-  const px = typeof size === 'number' ? size : SIZES[size];
-  const stroke = px <= 24 ? 3 : px <= 40 ? 4 : 6;
-  const r = (px - stroke * 2) / 2;
-  const cx = px / 2;
-  const circ = 2 * Math.PI * r;
-  // Show 75% arc
-  const dasharray = `${circ * 0.75} ${circ * 0.25}`;
-
-  return (
-    <span
-      role="status"
-      aria-label={label}
+  const spinner = (
+    <div
       className={className}
-      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+      role="status"
+      aria-label={label || 'Loading'}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        gap: 12,
+      }}
     >
       <svg
-        width={px}
-        height={px}
-        viewBox={`0 0 ${px} ${px}`}
-        fill="none"
-        className="ps-loading-spinner"
+        width={px} height={px}
+        viewBox="0 0 50 50"
+        style={{ animation: 'ps-spin 0.8s linear infinite', flexShrink: 0 }}
       >
         {/* Track */}
-        <circle
-          cx={cx}
-          cy={cx}
-          r={r}
-          stroke={trackColor}
-          strokeWidth={stroke}
-        />
+        <circle cx="25" cy="25" r="20" fill="none" stroke={color} strokeWidth={stroke * (50 / px)} opacity={0.15} />
         {/* Active arc */}
         <circle
-          cx={cx}
-          cy={cx}
-          r={r}
+          cx="25" cy="25" r="20"
+          fill="none"
           stroke={color}
-          strokeWidth={stroke}
-          strokeDasharray={dasharray}
+          strokeWidth={stroke * (50 / px)}
+          strokeDasharray="80 45"
           strokeLinecap="round"
-          transform={`rotate(-90 ${cx} ${cx})`}
         />
+        <style>{`@keyframes ps-spin { to { transform: rotate(360deg); } }`}</style>
       </svg>
-      <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
-        {label}
-      </span>
-    </span>
+      {label && (
+        <span style={{ fontSize: 14, color: '#777777', fontFamily: font }}>{label}</span>
+      )}
+    </div>
   );
+
+  if (overlay) {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 999,
+        background: 'rgba(255,255,255,0.8)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {spinner}
+      </div>
+    );
+  }
+
+  return spinner;
 };
 
 export default Loading;
