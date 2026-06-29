@@ -17,6 +17,11 @@ const sampleMessages: AiMessage[] = [
   { id: '4', role: 'assistant', content: 'I found 3 compatible alternatives for SKU 4542-0012 (GE Vivid Probe):\n\n• **SKU 4542-0018** — Philips C5-2 Curved Array (In Stock, $1,189)\n• **SKU 4542-0031** — Siemens 6C2 Convex Probe (In Stock, $1,340)\n• **SKU 4542-0044** — Mindray SC5-1U Probe (In Stock, $980)\n\nWould you like me to add any of these to your cart?', timestamp: new Date(Date.now() - 50000) },
 ];
 
+export const Default: Story = {
+  args: { messages: [], agentName: 'PartsSource AI', agentDescription: 'Your intelligent procurement assistant' },
+  render: args => <div style={{ maxWidth: 600 }}><AiAgent {...args} /></div>,
+};
+
 export const Empty: Story = {
   args: { messages: [], agentName: 'PartsSource AI', agentDescription: 'Your intelligent procurement assistant' },
   render: args => <div style={{ maxWidth: 600 }}><AiAgent {...args} /></div>,
