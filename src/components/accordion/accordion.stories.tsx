@@ -22,15 +22,21 @@ const faqItems = [
   { id: '5', title: 'Is bulk ordering available?', content: 'Yes, bulk ordering is available with volume discounts. Contact your account manager or reach out to our sales team for custom pricing.', disabled: true },
 ];
 
+const widthDecorator = (Story: React.ComponentType) => (
+  <div style={{ maxWidth: 600, width: '100%' }}><Story /></div>
+);
+
 export const Default: Story = {
   args: { items: faqItems, variant: 'default' },
 };
 
 export const CardVariant: Story = {
+  decorators: [widthDecorator],
   args: { items: faqItems.slice(0, 3), variant: 'card' },
 };
 
 export const InlineFaq: Story = {
+  decorators: [widthDecorator],
   args: { items: faqItems, variant: 'inline-faq' },
 };
 
@@ -47,10 +53,12 @@ export const DefaultOpen: Story = {
 };
 
 export const CardLarge: Story = {
+  decorators: [widthDecorator],
   args: { items: faqItems.slice(0, 4), variant: 'card', size: 'lg' },
 };
 
 export const WithRichContent: Story = {
+  decorators: [widthDecorator],
   args: {
     items: [
       {
