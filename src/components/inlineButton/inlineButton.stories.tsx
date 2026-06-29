@@ -7,14 +7,15 @@ const meta = {
   component: InlineButton,
   tags: ['autodocs'],
   parameters: {
+    layout: 'padded',
     docs: {
       description: {
         component: `
-**PS Design System — InlineButton**
+**PS Design System  -  InlineButton**
 
 Text and icon actions for use *within* content flow (table cells, body copy, cards).
 
-**NOT** for standalone page-level CTAs — use the \`Button\` component for those.
+**NOT** for standalone page-level CTAs  -  use the \`Button\` component for those.
 
 ### Variants
 
@@ -40,7 +41,7 @@ Text and icon actions for use *within* content flow (table cells, body copy, car
     variant: {
       control: 'select',
       options: ['tall', 'link', 'linkBlue', 'iconButton'],
-      description: 'Visual variant. Note: tertiary has been removed — use Button variant="tertiary" instead.',
+      description: 'Visual variant. Note: tertiary has been removed  -  use Button variant="tertiary" instead.',
       table: { defaultValue: { summary: 'link' } },
     },
     disabled: { control: 'boolean' },
@@ -50,10 +51,18 @@ Text and icon actions for use *within* content flow (table cells, body copy, car
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+export const Default: Story = {
+  name: 'Default (link variant)',
+  args: {
+    variant: 'link',
+    children: 'View Details',
+  },
+};
 
-// ─── tall ─────────────────────────────────────────────────────────────────────
+
+// --- tall ---------------------------------------------------------------------
 export const Tall: Story = {
-  name: 'tall — Pill CTA (in-content)',
+  name: 'tall  -  Pill CTA (in-content)',
   args: {
     variant: 'tall',
     children: 'View Details',
@@ -69,9 +78,9 @@ export const Tall: Story = {
   },
 };
 
-// ─── link ─────────────────────────────────────────────────────────────────────
+// --- link ---------------------------------------------------------------------
 export const Link: Story = {
-  name: 'link — Underlined text (dark)',
+  name: 'link  -  Underlined text (dark)',
   args: {
     variant: 'link',
     children: 'View order history',
@@ -87,9 +96,9 @@ export const Link: Story = {
   },
 };
 
-// ─── linkBlue ─────────────────────────────────────────────────────────────────
+// --- linkBlue -----------------------------------------------------------------
 export const LinkBlue: Story = {
-  name: 'linkBlue — Blue underlined',
+  name: 'linkBlue  -  Blue underlined',
   args: {
     variant: 'linkBlue',
     children: 'Download invoice PDF',
@@ -98,20 +107,20 @@ export const LinkBlue: Story = {
     docs: {
       description: {
         story:
-          'Blue (#005BA6) underlined link. Always blue — no hover color change (only opacity). ' +
+          'Blue (#005BA6) underlined link. Always blue  -  no hover color change (only opacity). ' +
           'Use when the action should draw more attention than a plain link.',
       },
     },
   },
 };
 
-// ─── iconButton ───────────────────────────────────────────────────────────────
+// --- iconButton ---------------------------------------------------------------
 export const IconButton: Story = {
-  name: 'iconButton — 32px icon circle',
+  name: 'iconButton  -  32px icon circle',
   args: {
     variant: 'iconButton',
     'aria-label': 'More options',
-    children: '⋯',
+    children: '...',
   },
   parameters: {
     docs: {
@@ -124,7 +133,7 @@ export const IconButton: Story = {
   },
 };
 
-// ─── All variants ─────────────────────────────────────────────────────────────
+// --- All variants -------------------------------------------------------------
 export const AllVariants: Story = {
   name: 'All Variants (side by side)',
   render: () => (
@@ -154,7 +163,7 @@ export const AllVariants: Story = {
         <p style={{ fontSize: 11, color: '#777', marginTop: 8, marginBottom: 0 }}>linkBlue</p>
       </div>
       <div style={{ textAlign: 'center' }}>
-        <InlineButton variant="iconButton" aria-label="More options">⋯</InlineButton>
+        <InlineButton variant="iconButton" aria-label="More options">...</InlineButton>
         <p style={{ fontSize: 11, color: '#777', marginTop: 8, marginBottom: 0 }}>iconButton</p>
       </div>
     </div>
@@ -168,7 +177,7 @@ export const AllVariants: Story = {
   },
 };
 
-// ─── Disabled states ──────────────────────────────────────────────────────────
+// --- Disabled states ----------------------------------------------------------
 export const DisabledStates: Story = {
   name: 'Disabled States',
   render: () => (
@@ -176,15 +185,15 @@ export const DisabledStates: Story = {
       <InlineButton variant="tall" disabled>View Details</InlineButton>
       <InlineButton variant="link" disabled>Order history</InlineButton>
       <InlineButton variant="linkBlue" disabled>Download PDF</InlineButton>
-      <InlineButton variant="iconButton" disabled aria-label="More options">⋯</InlineButton>
+      <InlineButton variant="iconButton" disabled aria-label="More options">...</InlineButton>
     </div>
   ),
   parameters: {
-    docs: { description: { story: 'All variants at disabled state — opacity 0.4, cursor not-allowed.' } },
+    docs: { description: { story: 'All variants at disabled state  -  opacity 0.4, cursor not-allowed.' } },
   },
 };
 
-// ─── In table context ─────────────────────────────────────────────────────────
+// --- In table context ---------------------------------------------------------
 export const InTableContext: Story = {
   name: 'In Table Cell Context',
   render: () => (
@@ -216,7 +225,7 @@ export const InTableContext: Story = {
             <td style={{ padding: '10px 12px', display: 'flex', gap: 16, alignItems: 'center' }}>
               <InlineButton variant="linkBlue">View</InlineButton>
               <InlineButton variant="link">Download</InlineButton>
-              <InlineButton variant="iconButton" aria-label="More options for this order">⋯</InlineButton>
+              <InlineButton variant="iconButton" aria-label="More options for this order">...</InlineButton>
             </td>
           </tr>
         ))}
@@ -234,7 +243,7 @@ export const InTableContext: Story = {
   },
 };
 
-// ─── Removed: tertiary migration note ────────────────────────────────────────
+// --- Removed: tertiary migration note ----------------------------------------
 export const TertiaryMigrationNote: Story = {
   name: 'MIGRATION: tertiary moved to Button',
   render: () => (
