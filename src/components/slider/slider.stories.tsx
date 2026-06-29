@@ -17,21 +17,30 @@ export const Default: Story = {
     return <Slider value={val} onChange={setVal} label="Volume" />;
   },
 };
-
-export const Full: Story = {
+export const Half: Story = {
   render: () => {
-    const [val, setVal] = useState(100);
+    const [val, setVal] = useState(50);
     return <Slider value={val} onChange={setVal} label="Brightness" />;
   },
 };
-
-export const Disabled: Story = {
-  render: () => <Slider value={50} onChange={() => {}} label="Disabled" disabled />,
+export const Full: Story = {
+  render: () => {
+    const [val, setVal] = useState(100);
+    return <Slider value={val} onChange={setVal} label="Maximum" />;
+  },
 };
-
 export const NoLabel: Story = {
   render: () => {
     const [val, setVal] = useState(60);
-    return <Slider value={val} onChange={setVal} />;
+    return <Slider value={val} onChange={setVal} showValue={false} />;
+  },
+};
+export const Disabled: Story = {
+  render: () => <Slider value={40} onChange={() => {}} label="Disabled" disabled />,
+};
+export const CustomRange: Story = {
+  render: () => {
+    const [val, setVal] = useState(500);
+    return <Slider value={val} onChange={setVal} min={0} max={1000} step={50} label="Budget ($)" />;
   },
 };
