@@ -4,35 +4,40 @@ import { Stepper } from './stepper';
 
 const STEPS = [
   { id: '1', label: 'Cart Review', description: 'Review your items' },
-  { id: '2', label: 'Shipping', description: 'Enter address' },
-  { id: '3', label: 'Payment', description: 'Enter payment' },
-  { id: '4', label: 'Confirm', description: 'Review order' },
+  { id: '2', label: 'Shipping', description: 'Enter delivery address' },
+  { id: '3', label: 'Payment', description: 'Enter payment details' },
+  { id: '4', label: 'Confirm', description: 'Review and submit' },
 ];
 
 const meta: Meta<typeof Stepper> = {
   title: 'Components/Stepper',
   component: Stepper,
   parameters: { layout: 'padded' },
+  decorators: [(Story) => <div style={{ maxWidth: 700, margin: '32px auto' }}><Story /></div>],
 };
 export default meta;
 type Story = StoryObj<typeof Stepper>;
 
-export const Default: Story = {
-  render: () => <Stepper steps={STEPS} currentStep={1} />,
-};
-
-export const Step1: Story = {
-  render: () => <Stepper steps={STEPS} currentStep={0} />,
-};
-
-export const Step3: Story = {
-  render: () => <Stepper steps={STEPS} currentStep={2} />,
-};
-
-export const AllComplete: Story = {
-  render: () => <Stepper steps={STEPS} currentStep={4} />,
-};
-
+export const Default: Story = { render: () => <Stepper steps={STEPS} currentStep={1} /> };
+export const Step1: Story = { render: () => <Stepper steps={STEPS} currentStep={0} /> };
+export const Step3: Story = { render: () => <Stepper steps={STEPS} currentStep={2} /> };
+export const AllComplete: Story = { render: () => <Stepper steps={STEPS} currentStep={4} /> };
 export const Vertical: Story = {
-  render: () => <Stepper steps={STEPS} currentStep={2} orientation="vertical" />,
+  render: () => (
+    <div style={{ maxWidth: 300 }}>
+      <Stepper steps={STEPS} currentStep={2} orientation="vertical" />
+    </div>
+  ),
+};
+export const WithError: Story = {
+  render: () => (
+    <Stepper
+      steps={[
+        { id: '1', label: 'Cart Review', status: 'completed' },
+        { id: '2', label: 'Shipping', status: 'error' },
+        { id: '3', label: 'Payment', status: 'upcoming' },
+        { id: '4', label: 'Confirm', status: 'upcoming' },
+      ]}
+    />
+  ),
 };
