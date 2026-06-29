@@ -1,1 +1,38 @@
-import type{Meta,StoryObj}from'@storybook/react';import React,{useState}from'react';import{Stepper}from'./stepper';const meta:Meta<typeof Stepper>={title:'Components/Stepper',component:Stepper,parameters:{layout: 'centered'}};export default meta;type Story=StoryObj<typeof Stepper>;const S=[{label:'Cart Review'},{label:'Shipping'},{label:'Payment'},{label:'Confirm'}];export const Default:Story={args:{steps:S,activeStep:1}};export const Completed:Story={args:{steps:S,activeStep:4}};export const Interactive:Story={render:()=>{const[step,setStep]=useState(0);return(<div style={{display:'flex',flexDirection:'column',gap:24,maxWidth:500,fontFamily:'Source Sans Pro,sans-serif'}}><Stepper steps={S} activeStep={step}/><div style={{display:'flex',gap:8}}><button disabled={step<=0} onClick={()=>setStep(p=>p-1)} style={{padding:'8px 16px',border:'1px solid #DCDCDC',borderRadius:4,cursor:'pointer',background:'white',fontFamily:'inherit'}}>Back</button><button disabled={step>=S.length} onClick={()=>setStep(p=>Math.min(p+1,S.length))} style={{padding:'8px 16px',border:'none',background:'#005BA6',color:'white',borderRadius:4,cursor:'pointer',fontFamily:'inherit'}}>Next</button></div></div>);}};
+import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import { Stepper } from './stepper';
+
+const STEPS = [
+  { id: '1', label: 'Cart Review', description: 'Review your items' },
+  { id: '2', label: 'Shipping', description: 'Enter address' },
+  { id: '3', label: 'Payment', description: 'Enter payment' },
+  { id: '4', label: 'Confirm', description: 'Review order' },
+];
+
+const meta: Meta<typeof Stepper> = {
+  title: 'Components/Stepper',
+  component: Stepper,
+  parameters: { layout: 'padded' },
+};
+export default meta;
+type Story = StoryObj<typeof Stepper>;
+
+export const Default: Story = {
+  render: () => <Stepper steps={STEPS} currentStep={1} />,
+};
+
+export const Step1: Story = {
+  render: () => <Stepper steps={STEPS} currentStep={0} />,
+};
+
+export const Step3: Story = {
+  render: () => <Stepper steps={STEPS} currentStep={2} />,
+};
+
+export const AllComplete: Story = {
+  render: () => <Stepper steps={STEPS} currentStep={4} />,
+};
+
+export const Vertical: Story = {
+  render: () => <Stepper steps={STEPS} currentStep={2} orientation="vertical" />,
+};
