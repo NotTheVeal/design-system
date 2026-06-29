@@ -1,65 +1,39 @@
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { AvatarGroup } from './avatarGroup';
+
+const TEAM = [
+  { name: 'Rachael Veal' },
+  { name: 'Mike Johnson' },
+  { name: 'Sarah Chen' },
+  { name: 'David Park' },
+  { name: 'Eve Torres' },
+  { name: 'Frank Lee' },
+];
 
 const meta: Meta<typeof AvatarGroup> = {
   title: 'Components/AvatarGroup',
   component: AvatarGroup,
-  tags: ['autodocs'],
   parameters: { layout: 'centered' },
-  argTypes: {
-    size: { control: 'select', options: ['sm', 'md', 'lg'] },
-    max: { control: 'number' },
-  },
 };
-
 export default meta;
 type Story = StoryObj<typeof AvatarGroup>;
 
-const TEAM = [
-  { name: 'Rachel Kim', initials: 'RK' },
-  { name: 'Marcus Johnson', initials: 'MJ' },
-  { name: 'Sarah Chen', initials: 'SC' },
-  { name: 'Tom Webb', initials: 'TW' },
-  { name: 'Dana Patel', initials: 'DP' },
-  { name: 'Luis Garcia', initials: 'LG' },
-];
-
-export const Default: Story = {
-  args: { avatars: TEAM.slice(0, 4), size: 'md', max: 4 },
-};
-
-export const WithOverflow: Story = {
-  args: { avatars: TEAM, max: 3, size: 'md' },
-};
-
-export const SmallSize: Story = {
-  args: { avatars: TEAM.slice(0, 5), size: 'sm', max: 4 },
-};
-
-export const LargeSize: Story = {
-  args: { avatars: TEAM, size: 'lg', max: 4 },
-};
-
+export const Default: Story = { args: { avatars: TEAM.slice(0, 4), size: 'md' } };
+export const WithOverflow: Story = { args: { avatars: TEAM, size: 'md', max: 4 } };
+export const SmallSize: Story = { args: { avatars: TEAM.slice(0, 4), size: 'sm' } };
+export const LargeSize: Story = { args: { avatars: TEAM.slice(0, 4), size: 'lg' } };
+export const TwoMembers: Story = { args: { avatars: TEAM.slice(0, 2), size: 'md' } };
 export const AllSizes: Story = {
+  parameters: { layout: 'padded' },
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, color: '#777777', width: 40 }}>sm</span>
-        <AvatarGroup avatars={TEAM} size="sm" max={4} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, color: '#777777', width: 40 }}>md</span>
-        <AvatarGroup avatars={TEAM} size="md" max={4} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, color: '#777777', width: 40 }}>lg</span>
-        <AvatarGroup avatars={TEAM} size="lg" max={4} />
-      </div>
+    <div style={{ display:'flex', flexDirection:'column', gap:20, padding:24, fontFamily:"'Source Sans Pro',sans-serif" }}>
+      {(['xs','sm','md','lg'] as const).map(s => (
+        <div key={s} style={{ display:'flex', alignItems:'center', gap:16 }}>
+          <span style={{ fontSize:12, color:'#777777', width:24, textTransform:'uppercase' }}>{s}</span>
+          <AvatarGroup avatars={TEAM} size={s} max={4} />
+        </div>
+      ))}
     </div>
   ),
-};
-
-export const TwoMembers: Story = {
-  args: { avatars: TEAM.slice(0, 2), size: 'md', max: 4 },
 };
