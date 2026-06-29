@@ -1,71 +1,95 @@
-/**
- * NavTop — PS Design System 2.0
- * Height: 56px, bg: #FFFFFF, border-bottom: 1px solid #DCDCDC
- * Position: fixed top, z-index: 100, padding: 0 24px
- */
-import React, { forwardRef } from 'react';
+import React from 'react';
+import { Cart } from '../cart/cart';
+import type { CartCount } from '../cart/cart';
 
-const FONT = "'Source Sans 3', 'Source Sans Pro', -apple-system, sans-serif";
-
-export interface NavTopProps extends React.HTMLAttributes<HTMLElement> {
-  logo?: React.ReactNode;
-  search?: React.ReactNode;
-  actions?: React.ReactNode;
+export interface NavTopAction {
+  key: string;
+  icon: React.ReactNode;
+  onClick?: () => void;
+  badge?: string;
 }
 
-export const NavTop = forwardRef<HTMLElement, NavTopProps>(function NavTop(
-  { logo, search, actions, className, style, ...rest },
-  ref
-) {
+export interface NavTopProps {
+  logo?: React.ReactNode;
+  search?: React.ReactNode;
+  cartCount?: CartCount;
+  onCartClick?: () => void;
+  actions?: NavTopAction[];
+  userAvatar?: React.ReactNode;
+  className?: string;
+}
+
+// PS Design System NavTop:
+// Height: 56px, white bg, bottom border 1px #DCDCDC
+// Logo left, search center (flex-grow), actions right
+// Cart icon with count badge
+
+export const NavTop: React.FC<NavTopProps> = ({
+  logo, search, cartCount, onCartClick, actions = [], userAvatar, className = '',
+}) => {
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+
+  const defaultLogo = (
+    <span style={{ fontSize: 20, fontWeight: 700, color: '#005BA6', fontFamily: font, letterSpacing: '-0.5px' }}>
+      PartsSource
+    </span>
+  );
+
   return (
     <header
-      ref={ref}
-      role="banner"
-      className={['ps-navtop', className].filter(Boolean).join(' ')}
+      className={className}
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        display: 'flex',
-        alignItems: 'center',
-        height: '56px',
-        backgroundColor: '#FFFFFF',
+        height: 56, width: '100%',
+        background: '#FFFFFF',
         borderBottom: '1px solid #DCDCDC',
-        padding: '0 24px',
+        display: 'flex', alignItems: 'center',
+        padding: '0 24px', gap: 16,
+        fontFamily: font,
         boxSizing: 'border-box',
-        zIndex: 100,
-        fontFamily: FONT,
-        gap: 16,
-        ...style,
       }}
-      {...rest}
     >
-      {/* Logo — left-aligned, flex-shrink 0 */}
-      {logo && (
-        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-          {logo}
-        </div>
-      )}
+      {/* Logo */}
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+        {logo || defaultLogo}
+      </div>
 
-      {/* Search — flex 1, full-width middle area */}
+      {/* Search — grows to fill center */}
       {search && (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 1, maxWidth: 640, minWidth: 0 }}>
           {search}
         </div>
       )}
+      {!search && <div style={{ flex: 1 }} />}
 
-      {/* Spacer when no search */}
-      {!search && <div style={{ flex: 1 }} aria-hidden="true" />}
-
-      {/* Actions — right-aligned icons */}
-      {actions && (
-        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-          {actions}
-        </div>
-      )}
+      {/* Right actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        {actions.map(action => (
+          <button
+            key={action.key}
+            onClick={action.onClick}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              width: 40, height: 40, borderRadius: 4,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#4A4A4A', transition: 'background 150ms',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#F1F1F1')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+          >
+            {action.icon}
+          </button>
+        ))}
+        {/* Cart */}
+        {(cartCount !== undefined || onCartClick) && (
+          <Cart cart={cartCount || 'Default'} onClick={onCartClick} />
+        )}
+        {/* User avatar */}
+        {userAvatar && (
+          <div style={{ marginLeft: 4 }}>{userAvatar}</div>
+        )}
+      </div>
     </header>
   );
-});
+};
 
 export default NavTop;
