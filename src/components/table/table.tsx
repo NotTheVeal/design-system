@@ -1,207 +1,134 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 
 export interface TableColumn<T = Record<string, unknown>> {
   key: string;
   header: string;
-  width?: string | number;
-  sortable?: boolean;
+  width?: number | string;
   align?: 'left' | 'center' | 'right';
-  render?: (value: unknown, row: T, index: number) => React.ReactNode;
+  sortable?: boolean;
+  render?: (value: unknown, row: T, idx: number) => React.ReactNode;
 }
 
 export interface TableProps<T = Record<string, unknown>> {
   columns: TableColumn<T>[];
   data: T[];
-  selectable?: boolean;
-  onSelectionChange?: (selected: T[]) => void;
-  onRowClick?: (row: T, index: number) => void;
-  emptyText?: string;
-  loading?: boolean;
+  rowKey?: (row: T, idx: number) => string;
+  selectedKeys?: string[];
+  onRowSelect?: (key: string) => void;
+  onSort?: (key: string, dir: 'asc' | 'desc') => void;
+  sortKey?: string;
+  sortDir?: 'asc' | 'desc';
+  striped?: boolean;
   stickyHeader?: boolean;
-  rowKey?: keyof T | ((row: T) => string);
+  emptyMessage?: string;
   className?: string;
 }
 
-type SortDir = 'asc' | 'desc' | null;
-
-const SortIcon: React.FC<{ dir: SortDir }> = ({ dir }) => (
-  <span style={{ marginLeft: 6, fontSize: 10, opacity: dir ? 1 : 0.5, userSelect: 'none' }}>
-    {dir === 'asc' ? '▲' : dir === 'desc' ? '▼' : '⇅'}
-  </span>
-);
+// PS Design System Table (Figma node 4099:6874):
+// Header: #FAFAFA bg, 14px SemiBold #4A4A4A, 1px #DCDCDC bottom border
+// Row: 48px height, 14px Regular #4A4A4A, 1px #F1F1F1 bottom border
+// Hover: #F7FAFD background
+// Selected: #E8F2FA background
+// Sort icon: chevron up/down #005BA6
 
 export function Table<T = Record<string, unknown>>({
-  columns,
-  data,
-  selectable = false,
-  onSelectionChange,
-  onRowClick,
-  emptyText = 'No results found.',
-  loading = false,
-  stickyHeader = false,
-  rowKey,
-  className = '',
+  columns, data, rowKey, selectedKeys = [], onRowSelect, onSort, sortKey, sortDir,
+  striped = false, emptyMessage = 'No data to display', className = '',
 }: TableProps<T>) {
-  const [sortKey, setSortKey] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<SortDir>(null);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
-  const getKey = (row: T, i: number): string => {
-    if (!rowKey) return String(i);
-    if (typeof rowKey === 'function') return rowKey(row);
-    return String(row[rowKey]);
-  };
-
-  const sorted = useMemo(() => {
-    if (!sortKey || !sortDir) return data;
-    return [...data].sort((a, b) => {
-      const av = (a as Record<string, unknown>)[sortKey];
-      const bv = (b as Record<string, unknown>)[sortKey];
-      const cmp = String(av ?? '').localeCompare(String(bv ?? ''), undefined, { numeric: true });
-      return sortDir === 'asc' ? cmp : -cmp;
-    });
-  }, [data, sortKey, sortDir]);
-
-  const handleSort = (col: TableColumn<T>) => {
-    if (!col.sortable) return;
-    if (sortKey !== col.key) { setSortKey(col.key); setSortDir('asc'); return; }
-    setSortDir(d => d === 'asc' ? 'desc' : d === 'desc' ? null : 'asc');
-    if (sortDir === 'desc') setSortKey(null);
-  };
-
-  const allSelected = sorted.length > 0 && sorted.every((r, i) => selected.has(getKey(r, i)));
-  const someSelected = sorted.some((r, i) => selected.has(getKey(r, i)));
-
-  const toggleAll = () => {
-    const next = new Set(allSelected ? [] : sorted.map((r, i) => getKey(r, i)));
-    setSelected(next);
-    onSelectionChange?.(sorted.filter((r, i) => next.has(getKey(r, i))));
-  };
-
-  const toggleRow = (row: T, i: number) => {
-    const k = getKey(row, i);
-    const next = new Set(selected);
-    next.has(k) ? next.delete(k) : next.add(k);
-    setSelected(next);
-    onSelectionChange?.(sorted.filter((r, j) => next.has(getKey(r, j))));
-  };
-
+  const [hoveredRow, setHoveredRow] = React.useState<string | null>(null);
   const font = "'Source Sans Pro', -apple-system, sans-serif";
 
+  const getKey = (row: T, idx: number) => rowKey ? rowKey(row, idx) : String(idx);
+
   return (
-    <div
-      className={className}
-      style={{ width: '100%', overflowX: 'auto', border: '1px solid #DCDCDC', borderRadius: 4, fontFamily: font }}
-    >
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+    <div className={className} style={{ width: '100%', overflowX: 'auto', fontFamily: font }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
         <thead>
-          <tr>
-            {selectable && (
-              <th style={{ width: 40, padding: '0 12px', background: '#005BA6', borderBottom: '1px solid #004A84', textAlign: 'center', position: stickyHeader ? 'sticky' : undefined, top: stickyHeader ? 0 : undefined, zIndex: stickyHeader ? 1 : undefined }}>
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  ref={el => el && (el.indeterminate = someSelected && !allSelected)}
-                  onChange={toggleAll}
-                  style={{ cursor: 'pointer', accentColor: '#FFFFFF' }}
-                />
-              </th>
-            )}
+          <tr style={{ background: '#FAFAFA', borderBottom: '1px solid #DCDCDC' }}>
             {columns.map(col => (
               <th
                 key={col.key}
-                onClick={() => handleSort(col)}
                 style={{
-                  height: 40,
                   padding: '0 16px',
-                  background: '#005BA6',
-                  color: '#FFFFFF',
+                  height: 44,
                   fontSize: 13,
                   fontWeight: 600,
+                  color: '#4A4A4A',
                   textAlign: col.align || 'left',
-                  whiteSpace: 'nowrap',
                   width: col.width,
+                  whiteSpace: 'nowrap',
                   cursor: col.sortable ? 'pointer' : 'default',
                   userSelect: 'none',
-                  borderBottom: '1px solid #004A84',
-                  borderRight: '1px solid rgba(255,255,255,0.12)',
-                  position: stickyHeader ? 'sticky' : undefined,
-                  top: stickyHeader ? 0 : undefined,
-                  zIndex: stickyHeader ? 1 : undefined,
-                  transition: 'background 150ms ease',
+                  background: '#FAFAFA',
                 }}
-                onMouseEnter={e => col.sortable && ((e.currentTarget as HTMLElement).style.background = '#004A84')}
-                onMouseLeave={e => col.sortable && ((e.currentTarget as HTMLElement).style.background = '#005BA6')}
+                onClick={() => {
+                  if (col.sortable && onSort) {
+                    onSort(col.key, sortKey === col.key && sortDir === 'asc' ? 'desc' : 'asc');
+                  }
+                }}
               >
-                {col.header}
-                {col.sortable && <SortIcon dir={sortKey === col.key ? sortDir : null} />}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  {col.header}
+                  {col.sortable && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={sortKey === col.key ? '#005BA6' : '#DCDCDC'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      {sortKey === col.key && sortDir === 'desc'
+                        ? <polyline points="18 15 12 9 6 15"/>
+                        : <polyline points="6 9 12 15 18 9"/>}
+                    </svg>
+                  )}
+                </span>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length + (selectable ? 1 : 0)} style={{ height: 120, textAlign: 'center', color: '#777777', padding: 24 }}>
-                Loading…
-              </td>
-            </tr>
-          ) : sorted.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length + (selectable ? 1 : 0)} style={{ height: 120, textAlign: 'center', color: '#777777', padding: 24 }}>
-                {emptyText}
+              <td colSpan={columns.length} style={{ textAlign: 'center', padding: '32px 16px', color: '#777777', fontSize: 14 }}>
+                {emptyMessage}
               </td>
             </tr>
           ) : (
-            sorted.map((row, i) => {
-              const k = getKey(row, i);
-              const isSelected = selected.has(k);
-              const isOdd = i % 2 === 1;
+            data.map((row, idx) => {
+              const key = getKey(row, idx);
+              const isSelected = selectedKeys.includes(key);
+              const isHovered = hoveredRow === key;
+              const isStriped = striped && idx % 2 === 1;
+              const bg = isSelected ? '#E8F2FA' : isHovered ? '#F7FAFD' : isStriped ? '#F9F9F9' : '#FFFFFF';
+
               return (
                 <tr
-                  key={k}
-                  onClick={() => onRowClick?.(row, i)}
+                  key={key}
+                  onClick={() => onRowSelect?.(key)}
+                  onMouseEnter={() => setHoveredRow(key)}
+                  onMouseLeave={() => setHoveredRow(null)}
                   style={{
-                    height: 48,
-                    background: isSelected ? '#DCEAED' : isOdd ? '#FAFAFA' : '#FFFFFF',
-                    cursor: onRowClick ? 'pointer' : 'default',
-                    borderBottom: '1px solid #DCDCDC',
-                    transition: 'background 150ms ease',
+                    background: bg,
+                    borderBottom: '1px solid #F1F1F1',
+                    cursor: onRowSelect ? 'pointer' : 'default',
+                    transition: 'background 100ms ease',
                   }}
-                  onMouseEnter={e => !isSelected && ((e.currentTarget as HTMLElement).style.background = '#EFF9FE')}
-                  onMouseLeave={e => !isSelected && ((e.currentTarget as HTMLElement).style.background = isOdd ? '#FAFAFA' : '#FFFFFF')}
                 >
-                  {selectable && (
-                    <td style={{ width: 40, padding: '0 12px', textAlign: 'center', borderRight: '1px solid #DCDCDC' }}>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleRow(row, i)}
-                        onClick={e => e.stopPropagation()}
-                        style={{ cursor: 'pointer', accentColor: '#005BA6' }}
-                      />
-                    </td>
-                  )}
-                  {columns.map(col => (
-                    <td
-                      key={col.key}
-                      style={{
-                        padding: '0 16px',
-                        color: '#4A4A4A',
-                        textAlign: col.align || 'left',
-                        fontSize: 14,
-                        borderRight: '1px solid #DCDCDC',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        maxWidth: 300,
-                      }}
-                    >
-                      {col.render
-                        ? col.render((row as Record<string, unknown>)[col.key], row, i)
-                        : String((row as Record<string, unknown>)[col.key] ?? '')}
-                    </td>
-                  ))}
+                  {columns.map(col => {
+                    const value = (row as Record<string, unknown>)[col.key];
+                    return (
+                      <td
+                        key={col.key}
+                        style={{
+                          padding: '0 16px',
+                          height: 48,
+                          fontSize: 14,
+                          fontWeight: 400,
+                          color: '#4A4A4A',
+                          textAlign: col.align || 'left',
+                          verticalAlign: 'middle',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {col.render ? col.render(value, row, idx) : String(value ?? '')}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })
