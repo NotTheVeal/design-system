@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+import React from 'react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -8,65 +6,68 @@ export interface BreadcrumbItem {
   onClick?: () => void;
 }
 
-interface BreadcrumbProps {
+export interface BreadcrumbProps {
   items: BreadcrumbItem[];
   separator?: React.ReactNode;
   className?: string;
 }
 
-const BreadcrumbLink: React.FC<{ item: BreadcrumbItem }> = ({ item }) => {
-  const [hovered, setHovered] = useState(false);
+// PS Design System Breadcrumb (node 4386:28732):
+// 14px Source Sans Pro, links #005BA6, current #4A4A4A Bold
+// Separator "/" in #949494, 8px horizontal gap
 
-  if (!item.href && !item.onClick) {
-    return (
-      <span
-        aria-current="page"
-        style={{ fontSize: 14, fontWeight: 600, color: '#4A4A4A', fontFamily }}
-      >
-        {item.label}
-      </span>
-    );
-  }
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({
+  items, separator = '/', className = '',
+}) => {
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
 
   return (
-    <a
-      href={item.href}
-      onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick!(); } : undefined}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
+    <nav aria-label="Breadcrumb" className={className}>
+      <ol style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 4,
+        margin: 0, padding: 0,
+        listStyle: 'none',
+        fontFamily: font,
         fontSize: 14,
-        color: hovered ? '#004A84' : '#005BA6',
-        textDecoration: hovered ? 'underline' : 'none',
-        transition: 'color 150ms ease',
-        cursor: 'pointer',
-        fontFamily,
-      }}
-    >
-      {item.label}
-    </a>
+      }}>
+        {items.map((item, idx) => {
+          const isLast = idx === items.length - 1;
+          return (
+            <React.Fragment key={idx}>
+              <li style={{ display: 'flex', alignItems: 'center' }}>
+                {isLast ? (
+                  <span
+                    aria-current="page"
+                    style={{ fontWeight: 700, color: '#4A4A4A' }}
+                  >
+                    {item.label}
+                  </span>
+                ) : (
+                  <a
+                    href={item.href || '#'}
+                    onClick={e => { if (item.onClick) { e.preventDefault(); item.onClick(); } }}
+                    style={{ color: '#005BA6', textDecoration: 'none', fontWeight: 400 }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >
+                    {item.label}
+                  </a>
+                )}
+              </li>
+              {!isLast && (
+                <li aria-hidden="true" style={{ color: '#949494', userSelect: 'none', padding: '0 4px' }}>
+                  {separator}
+                </li>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </ol>
+    </nav>
   );
 };
-
-const Breadcrumb: React.FC<BreadcrumbProps> = ({
-  items,
-  separator = '/',
-  className = '',
-}) => (
-  <nav aria-label="breadcrumb" className={className}>
-    <ol style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4, listStyle: 'none', margin: 0, padding: 0, fontFamily }}>
-      {items.map((item, i) => (
-        <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <BreadcrumbLink item={item} />
-          {i < items.length - 1 && (
-            <span aria-hidden="true" style={{ fontSize: 14, color: '#DCDCDC', userSelect: 'none', fontFamily }}>
-              {separator}
-            </span>
-          )}
-        </li>
-      ))}
-    </ol>
-  </nav>
-);
 
 export default Breadcrumb;
