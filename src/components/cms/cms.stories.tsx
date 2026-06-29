@@ -5,11 +5,20 @@ const meta: Meta<typeof Cms> = {
   title: 'Components/Cms',
   component: Cms,
   parameters: { layout: 'fullscreen' },
-  tags: ['autodocs'],
 };
-
 export default meta;
 type Story = StoryObj<typeof Cms>;
+
+export const Default: Story = {
+  args: {
+    type: 'hero',
+    title: 'The Smarter Way to Source Medical Parts',
+    subtitle: 'ProProcure Platform',
+    body: 'Reduce downtime with verified OEM and aftermarket parts from thousands of trusted suppliers.',
+    label: 'Get Started',
+    onClick: () => {},
+  },
+};
 
 export const Hero: Story = {
   args: {
@@ -27,7 +36,7 @@ export const Text: Story = {
     type: 'text',
     subtitle: 'Why PartsSource',
     title: 'Procurement Built for Healthcare',
-    body: 'Our platform connects biomedical teams with the parts they need â faster, at lower cost, with full compliance documentation included.',
+    body: 'Our platform connects biomedical teams with the parts they need - faster, at lower cost, with full compliance documentation included.',
     label: 'Learn More',
     onClick: () => {},
   },
@@ -56,7 +65,5 @@ export const Grid: Story = {
 };
 
 export const Divider: Story = {
-  args: {
-    type: 'divider',
-  },
+  args: { type: 'divider' },
 };
