@@ -1,7 +1,7 @@
 import type{Meta,StoryObj}from'@storybook/react';
 import React from'react';
 import Breadcrumb from'./breadcrumb';
-const meta:Meta<typeof Breadcrumb>={title:'Components/Breadcrumb',component:Breadcrumb,parameters:{layout:'padded'}};
+const meta:Meta<typeof Breadcrumb>={title:'Components/Breadcrumb',component:Breadcrumb,parameters:{layout: 'centered'}};
 export default meta;
 type Story=StoryObj<typeof Breadcrumb>;
 export const Default:Story={args:{items:[{label:'Home',href:'/'},{label:'Catalog',href:'/catalog'},{label:'Imaging',href:'/catalog/imaging'},{label:'Ultrasound Probes'}]}};
