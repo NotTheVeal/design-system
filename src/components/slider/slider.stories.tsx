@@ -5,7 +5,7 @@ import { Slider } from './slider';
 const meta: Meta<typeof Slider> = {
   title: 'Components/Slider',
   component: Slider,
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   argTypes: { disabled: { control: 'boolean' } },
 };
 export default meta;
