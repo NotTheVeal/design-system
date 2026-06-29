@@ -1,67 +1,58 @@
 import React from 'react';
 
-const STYLE_ID = 'ps-skeleton-styles';
-const injectSkeletonStyles = () => {
-  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    @keyframes ps-skeleton-shimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-    .ps-skeleton {
-      display: block;
-      overflow: hidden;
-      position: relative;
-      border-radius: 4px;
-      background: linear-gradient(90deg, #DCDCDC 25%, #F1F1F1 50%, #DCDCDC 75%);
-      background-size: 200% 100%;
-    }
-    .ps-skeleton--animate {
-      animation: ps-skeleton-shimmer 1400ms ease-in-out infinite;
-    }
-  `;
-  document.head.appendChild(style);
-};
-
-interface SkeletonProps {
-  height?: number;
+export interface SkeletonProps {
   width?: number | string;
-  borderRadius?: number;
-  animate?: boolean;
+  height?: number | string;
   circle?: boolean;
+  rounded?: boolean;
+  lines?: number;
   className?: string;
   style?: React.CSSProperties;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({
-  height = 20,
-  width = '100%',
-  borderRadius,
-  animate = true,
-  circle = false,
-  className = '',
-  style,
-}) => {
-  if (typeof document !== 'undefined') injectSkeletonStyles();
+// PS Design System Skeleton:
+// #F1F1F1 bg with shimmer wave animation
+// 4px radius (rectangle), 50% (circle)
+// Shimmer: gradient sweep left to right
 
-  const radius = circle ? '50%' : borderRadius !== undefined ? `${borderRadius}px` : '4px';
-  const w = circle ? height : (typeof width === 'number' ? `${width}px` : width);
+export const Skeleton: React.FC<SkeletonProps> = ({
+  width = '100%', height = 16, circle = false, rounded = false, lines, className = '', style,
+}) => {
+  const shimmerStyle: React.CSSProperties = {
+    display: 'block',
+    background: 'linear-gradient(90deg, #F1F1F1 25%, #E0E0E0 50%, #F1F1F1 75%)',
+    backgroundSize: '200% 100%',
+    animation: 'ps-skeleton-shimmer 1.5s infinite',
+    borderRadius: circle ? '50%' : rounded ? 100 : 4,
+    width,
+    height,
+    ...style,
+  };
+
+  if (lines && lines > 1) {
+    return (
+      <div className={className} style={{ display: 'flex', flexDirection: 'column', gap: 8, width }}>
+        {Array.from({ length: lines }).map((_, i) => (
+          <span
+            key={i}
+            style={{
+              ...shimmerStyle,
+              width: i === lines - 1 ? '70%' : '100%',
+              height,
+              display: 'block',
+            }}
+          />
+        ))}
+        <style>{`@keyframes ps-skeleton-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+      </div>
+    );
+  }
 
   return (
-    <span
-      role="status"
-      aria-label="Loading"
-      className={`ps-skeleton${animate ? ' ps-skeleton--animate' : ''} ${className}`}
-      style={{
-        display: 'block',
-        height: `${height}px`,
-        width: typeof w === 'number' ? `${w}px` : w,
-        borderRadius: radius,
-        ...style,
-      }}
-    />
+    <>
+      <span className={className} style={shimmerStyle} aria-hidden="true" />
+      <style>{`@keyframes ps-skeleton-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+    </>
   );
 };
 
