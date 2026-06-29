@@ -1,14 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 import { Radio, RadioGroup } from './radio';
-const meta: Meta<typeof Radio> = { title:'Components/Radio', component:Radio, parameters:{layout:'padded'} };
+
+const meta: Meta<typeof Radio> = { title:'Components/Radio', component:Radio, parameters:{layout:'centered'} };
 export default meta;
 type Story = StoryObj<typeof Radio>;
+
 export const Default: Story = { args:{value:'opt1',label:'Option 1'} };
 export const Checked: Story = { args:{value:'opt1',label:'Selected option',checked:true} };
 export const WithDescription: Story = { args:{value:'opt1',label:'Standard Shipping',description:'3-5 business days, free on orders over $500',checked:true} };
 export const Disabled: Story = { args:{value:'opt1',label:'Unavailable option',disabled:true} };
+
 export const ShippingGroup: Story = {
+  parameters: { layout: 'padded' },
   render: () => {
     const [v,setV] = useState('standard');
     return (<RadioGroup name="shipping" value={v} onChange={setV} options={[
@@ -19,7 +23,9 @@ export const ShippingGroup: Story = {
     ]}/>);
   },
 };
+
 export const HorizontalGroup: Story = {
+  parameters: { layout: 'padded' },
   render: () => {
     const [v,setV] = useState('oem');
     return (<RadioGroup name="partType" value={v} onChange={setV} orientation="horizontal" options={[
