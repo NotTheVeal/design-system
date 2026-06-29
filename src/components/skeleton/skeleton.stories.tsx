@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import Skeleton from './skeleton';
+import { Skeleton } from './skeleton';
 
 const meta: Meta<typeof Skeleton> = {
   title: 'Components/Skeleton',
@@ -12,9 +12,9 @@ export default meta;
 type Story = StoryObj<typeof Skeleton>;
 
 export const Default: Story = { args: { width: '100%', height: 16 } };
-export const TextLine: Story = { args: { width: '100%', height: 16 } };
 export const Circle: Story = { parameters: { layout: 'centered' }, args: { width: 48, height: 48, circle: true } };
 export const Rectangle: Story = { parameters: { layout: 'centered' }, args: { width: 200, height: 120 } };
+export const MultiLine: Story = { args: { width: '100%', height: 16, lines: 3 } };
 
 export const CardSkeleton: Story = {
   render: () => (
