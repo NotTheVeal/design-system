@@ -24,7 +24,7 @@ export const Draft: Story = { args: { value: 'draft' } };
 export const Archived: Story = { args: { value: 'archived' } };
 
 export const AllStates: Story = {
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   render: () => (
     <div style={{ display:'flex', flexWrap:'wrap', gap:12, fontFamily:'Source Sans Pro, sans-serif' }}>
       {(['active','inactive','pending','error','warning','draft','archived'] as const).map(v => (
@@ -35,7 +35,7 @@ export const AllStates: Story = {
 };
 
 export const SmallSize: Story = {
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   render: () => (
     <div style={{ display:'flex', flexWrap:'wrap', gap:8, fontFamily:'Source Sans Pro, sans-serif' }}>
       {(['active','inactive','pending','error'] as const).map(v => (
@@ -46,7 +46,7 @@ export const SmallSize: Story = {
 };
 
 export const CustomLabels: Story = {
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   render: () => (
     <div style={{ display:'flex', flexWrap:'wrap', gap:12, fontFamily:'Source Sans Pro, sans-serif' }}>
       <Status value="active" label="Online" />
@@ -61,7 +61,7 @@ export const CustomLabels: Story = {
 };
 
 export const InTable: Story = {
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   render: () => (
     <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Source Sans Pro, sans-serif', fontSize:13 }}>
       <thead>
