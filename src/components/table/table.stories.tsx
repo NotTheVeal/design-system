@@ -1,7 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { Table } from './table';
-import StatusBadge from '../statusBadge/statusBadge';
+
+const COLUMNS = [
+  { key: 'partNumber', header: 'Part #', width: 120 },
+  { key: 'description', header: 'Description' },
+  { key: 'manufacturer', header: 'Manufacturer', width: 160 },
+  { key: 'price', header: 'Price', width: 100, align: 'right' as const },
+  { key: 'status', header: 'Status', width: 120 },
+];
+
+const DATA = [
+  { partNumber: '4542-0012', description: 'GE Healthcare Ultrasound Probe', manufacturer: 'GE Healthcare', price: '$1,249.00', status: 'In Stock' },
+  { partNumber: 'CT-7821', description: 'Siemens CT Collimator Filter', manufacturer: 'Siemens Healthineers', price: '$89.50', status: 'Low Stock' },
+  { partNumber: 'PM-4401', description: 'Philips Patient Monitor Cable', manufacturer: 'Philips Healthcare', price: '$34.99', status: 'Out of Stock' },
+  { partNumber: 'INF-2280', description: 'Medtronic Infusion Pump Tubing', manufacturer: 'Medtronic', price: '$24.99', status: 'In Stock' },
+  { partNumber: 'BD-5510', description: 'BD Vacutainer Blood Collection Kit', manufacturer: 'BD Becton Dickinson', price: '$12.75', status: 'In Stock' },
+];
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
@@ -11,52 +26,20 @@ const meta: Meta<typeof Table> = {
 export default meta;
 type Story = StoryObj<typeof Table>;
 
-const columns = [
-  { key: 'name', header: 'Part Name', sortable: true, width: '25%' },
-  { key: 'sku', header: 'SKU', sortable: true },
-  { key: 'manufacturer', header: 'Manufacturer', sortable: true },
-  { key: 'category', header: 'Category' },
-  { key: 'price', header: 'Price', sortable: true, align: 'right' as const },
-  {
-    key: 'status',
-    header: 'Status',
-    align: 'center' as const,
-    render: (val: unknown) => (
-      <StatusBadge
-        label={String(val)}
-        color={val === 'In Stock' ? 'success' : val === 'Low Stock' ? 'warning' : 'danger'}
-        variant="outlined"
-        size="sm"
+export const Default: Story = { render: () => <Table columns={COLUMNS} data={DATA} rowKey={(r) => r.partNumber} /> };
+export const Striped: Story = { render: () => <Table columns={COLUMNS} data={DATA} rowKey={(r) => r.partNumber} striped /> };
+export const Empty: Story = { render: () => <Table columns={COLUMNS} data={[]} rowKey={(r) => r.partNumber} emptyMessage="No parts found" /> };
+export const Sortable: Story = {
+  render: () => {
+    const [sortKey, setSortKey] = React.useState('partNumber');
+    const [sortDir, setSortDir] = React.useState<'asc'|'desc'>('asc');
+    return (
+      <Table
+        columns={COLUMNS.map(c => ({ ...c, sortable: true }))}
+        data={DATA} rowKey={(r) => r.partNumber}
+        sortKey={sortKey} sortDir={sortDir}
+        onSort={(k, d) => { setSortKey(k); setSortDir(d); }}
       />
-    ),
+    );
   },
-];
-
-const data = [
-  { name: 'GE Healthcare Ultrasound Probe', sku: '4542-0012', manufacturer: 'GE Healthcare', category: 'Imaging', price: '\$1,249.00', status: 'In Stock' },
-  { name: 'Siemens CT Scanner Filter', sku: 'CT-7821', manufacturer: 'Siemens Healthineers', category: 'CT', price: '\$89.50', status: 'Low Stock' },
-  { name: 'Philips Patient Monitor Lead', sku: 'PM-4401-L', manufacturer: 'Philips Healthcare', category: 'Monitoring', price: '\$34.99', status: 'Out of Stock' },
-  { name: 'Stryker Surgical Instrument', sku: 'STR-9900', manufacturer: 'Stryker', category: 'Surgical', price: '\$3,450.00', status: 'In Stock' },
-  { name: 'Medtronic Infusion Pump Tubing', sku: 'INF-2280', manufacturer: 'Medtronic', category: 'Infusion', price: '\$24.99', status: 'In Stock' },
-  { name: 'BD Vacutainer Collection Tubes', sku: 'BD-5550', manufacturer: 'Becton Dickinson', category: 'Lab', price: '\$12.75', status: 'Low Stock' },
-];
-
-export const Default: Story = {
-  render: () => <Table columns={columns} data={data} rowKey="sku" />,
-};
-
-export const Selectable: Story = {
-  render: () => <Table columns={columns} data={data} rowKey="sku" selectable onSelectionChange={sel => console.log('Selected:', sel.length)} />,
-};
-
-export const SortableInteractive: Story = {
-  render: () => <Table columns={columns} data={data} rowKey="sku" onRowClick={row => console.log('Row clicked:', row)} />,
-};
-
-export const Empty: Story = {
-  render: () => <Table columns={columns} data={[]} emptyText="No parts found matching your search." />,
-};
-
-export const Loading: Story = {
-  render: () => <Table columns={columns} data={[]} loading />,
 };
