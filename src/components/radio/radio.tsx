@@ -114,4 +114,6 @@ export const Radio: React.FC<RadioProps> = ({
   );
 };
 
+// Alias for backward compatibility with existing stories
+export { Radio as RadioGroup };
 export default Radio;
