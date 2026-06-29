@@ -1,1 +1,15 @@
-import type{Meta,StoryObj}from'@storybook/react';import React,{useState}from'react';import{FilterChip}from'./filterChip';const meta:Meta<typeof FilterChip>={title:'Components/FilterChip',component:FilterChip,parameters:{layout:'padded'}};export default meta;type Story=StoryObj<typeof FilterChip>;export const Default:Story={args:{label:'Imaging'}};export const Selected:Story={args:{label:'Surgical',selected:true}};export const WithCount:Story={args:{label:'In Stock',count:142,selected:true}};export const Interactive:Story={render:()=>{const[sel,setSel]=useState<string[]>(['Imaging']);const cats=['Imaging','Surgical','Monitoring','Infusion','Lab'];return(<div style={{display:'flex',gap:8,flexWrap:'wrap',fontFamily:'Source Sans Pro, sans-serif'}}>{cats.map(c=>(<FilterChip key={c} label={c} selected={sel.includes(c)} onToggle={()=>setSel(p=>p.includes(c)?p.filter(x=>x!==c):[...p,c])}/>))}</div>);}};
+import type{Meta,StoryObj}from'@storybook/react';import React,{useState}from'react';import{FilterChip}from'./filterChip';
+const meta:Meta<typeof FilterChip>={title:'Components/FilterChip',component:FilterChip,parameters:{layout:'centered'}};
+export default meta;
+type Story=StoryObj<typeof FilterChip>;
+export const Default:Story={args:{label:'Imaging'}};
+export const Selected:Story={args:{label:'Surgical',selected:true}};
+export const WithCount:Story={args:{label:'In Stock',count:142,selected:true}};
+export const Interactive:Story={
+  parameters:{layout:'padded'},
+  render:()=>{
+    const[sel,setSel]=useState<string[]>(['Imaging']);
+    const cats=['Imaging','Surgical','Monitoring','Infusion','Lab'];
+    return(<div style={{display:'flex',gap:8,flexWrap:'wrap',fontFamily:'Source Sans Pro, sans-serif'}}>{cats.map(c=>(<FilterChip key={c} label={c} selected={sel.includes(c)} onToggle={()=>setSel(p=>p.includes(c)?p.filter(x=>x!==c):[...p,c])}/>))}</div>);
+  }
+};
