@@ -1,31 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Slider } from './slider';
 
 const meta: Meta<typeof Slider> = {
   title: 'Components/Slider',
   component: Slider,
-  parameters: { layout: 'centered' },
-  argTypes: { disabled: { control: 'boolean' } },
+  parameters: { layout: 'padded' },
+  decorators: [(Story) => <div style={{ maxWidth: 400, width: '100%', margin: '40px auto' }}><Story /></div>],
 };
 export default meta;
 type Story = StoryObj<typeof Slider>;
 
-export const Default: Story = { args: { label:'Budget Range', defaultValue:50, showValue:true } };
-export const PriceRange: Story = { args: { label:'Max Price ($)', min:0, max:10000, step:100, defaultValue:2500, showMinMax:true, showValue:true } };
-export const Quantity: Story = { args: { label:'Quantity', min:1, max:100, step:1, defaultValue:10, showValue:true } };
-export const Disabled: Story = { args: { label:'Discount (%)', defaultValue:15, disabled:true, showValue:true } };
-
-export const Interactive: Story = {
+export const Default: Story = {
   render: () => {
-    const [val, setVal] = React.useState(1500);
-    return (
-      <div style={{ maxWidth:400, fontFamily:'Source Sans Pro, sans-serif' }}>
-        <Slider label="Spend Limit" min={0} max={5000} step={50} value={val} onChange={setVal} showValue showMinMax />
-        <p style={{ marginTop:16, fontSize:14, color:'#4A4A4A' }}>
-          Monthly spend cap: <strong style={{color:'#005BA6'}}>{`$${val.toLocaleString()}`}</strong>
-        </p>
-      </div>
-    );
+    const [val, setVal] = useState(30);
+    return <Slider value={val} onChange={setVal} label="Volume" />;
+  },
+};
+
+export const Full: Story = {
+  render: () => {
+    const [val, setVal] = useState(100);
+    return <Slider value={val} onChange={setVal} label="Brightness" />;
+  },
+};
+
+export const Disabled: Story = {
+  render: () => <Slider value={50} onChange={() => {}} label="Disabled" disabled />,
+};
+
+export const NoLabel: Story = {
+  render: () => {
+    const [val, setVal] = useState(60);
+    return <Slider value={val} onChange={setVal} />;
   },
 };
