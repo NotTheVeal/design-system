@@ -1,61 +1,66 @@
 import React from 'react';
 
-const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
+export type DividerWeight = 'subtle' | 'default' | 'strong';
+export type DividerOrientation = 'horizontal' | 'vertical';
 
-type DividerWeight = 'subtle' | 'default' | 'strong';
-
-interface DividerProps {
-  orientation?: 'horizontal' | 'vertical';
-  label?: string;
+export interface DividerProps {
   weight?: DividerWeight;
-  color?: string;
+  orientation?: DividerOrientation;
+  label?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const WEIGHT_COLORS: Record<DividerWeight, string> = {
-  subtle: '#EDEDED',
+// Figma exact (node 4532:1092):
+// Subtle: #E0E0E0 — inside cards on white bg
+// Default: #CCCCCC — standard on #F5F5F5 page bg
+// Strong: #999999 — dense tables and data grids
+// All: 1px thickness
+
+const COLORS: Record<DividerWeight, string> = {
+  subtle:  '#E0E0E0',
   default: '#CCCCCC',
-  strong: '#999999',
+  strong:  '#999999',
 };
 
-const Divider: React.FC<DividerProps> = ({
-  orientation = 'horizontal',
-  label,
-  weight = 'default',
-  color,
-  className = '',
+export const Divider: React.FC<DividerProps> = ({
+  weight = 'default', orientation = 'horizontal', label, className = '', style,
 }) => {
-  const lineColor = color ?? WEIGHT_COLORS[weight];
+  const color = COLORS[weight];
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
 
   if (orientation === 'vertical') {
     return (
       <div
+        className={className}
+        style={{ width: 1, alignSelf: 'stretch', background: color, flexShrink: 0, ...style }}
         role="separator"
         aria-orientation="vertical"
-        className={className}
-        style={{ display: 'inline-block', alignSelf: 'stretch', width: 1, backgroundColor: lineColor }}
       />
     );
   }
 
   if (label) {
     return (
-      <div role="separator" className={className} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ flex: 1, height: 1, backgroundColor: lineColor }} />
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#777777', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', fontFamily }}>
-          {label}
-        </span>
-        <div style={{ flex: 1, height: 1, backgroundColor: lineColor }} />
+      <div
+        className={className}
+        style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', ...style }}
+        role="separator"
+        aria-orientation="horizontal"
+      >
+        <div style={{ flex: 1, height: 1, background: color }} />
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#777777', fontFamily: font, whiteSpace: 'nowrap' }}>{label}</span>
+        <div style={{ flex: 1, height: 1, background: color }} />
       </div>
     );
   }
 
   return (
     <div
+      className={className}
+      style={{ width: '100%', height: 1, background: color, flexShrink: 0, ...style }}
       role="separator"
       aria-orientation="horizontal"
-      className={className}
-      style={{ width: '100%', height: 1, backgroundColor: lineColor }}
     />
   );
 };
