@@ -1,102 +1,84 @@
 import React from 'react';
 
-const FONT = "'Source Sans 3', -apple-system, sans-serif";
-
 export interface QuantityStepperProps {
   value: number;
-  onChange: (value: number) => void;
   min?: number;
   max?: number;
-  size?: 'sm' | 'md';
+  step?: number;
+  onChange: (value: number) => void;
   disabled?: boolean;
+  size?: 'sm' | 'md';
   className?: string;
 }
 
+// PS Design System QuantityStepper — from Cart component:
+// 32px button height, white bg, #DCDCDC border, 4px radius
+// − and + buttons, number in center
+// Hover: #F1F1F1 bg on buttons
+
 export const QuantityStepper: React.FC<QuantityStepperProps> = ({
-  value,
-  onChange,
-  min = 1,
-  max,
-  size = 'md',
-  disabled = false,
-  className = '',
+  value, min = 0, max = 9999, step = 1, onChange, disabled = false, size = 'md', className = '',
 }) => {
-  const btnSize = size === 'sm' ? 24 : 32;
-  const fontSize = size === 'sm' ? 13 : 14;
+  const font = "'Source Sans Pro', -apple-system, sans-serif";
+  const h = size === 'sm' ? 28 : 32;
+  const btnW = h;
+  const inputW = size === 'sm' ? 36 : 44;
 
-  const decrement = () => { if (!disabled && value > min) onChange(value - 1); };
-  const increment = () => { if (!disabled && (max === undefined || value < max)) onChange(value + 1); };
+  const decrement = () => { if (value - step >= min) onChange(value - step); };
+  const increment = () => { if (value + step <= max) onChange(value + step); };
 
-  const atMin = value <= min;
-  const atMax = max !== undefined && value >= max;
-
-  const btnStyle = (inactive: boolean): React.CSSProperties => ({
-    width: btnSize,
-    height: btnSize,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '1px solid #DCDCDC',
-    borderRadius: 4,
-    background: '#FFFFFF',
-    color: (disabled || inactive) ? '#DCDCDC' : '#005BA6',
-    cursor: (disabled || inactive) ? 'not-allowed' : 'pointer',
-    fontFamily: FONT,
-    fontSize: fontSize + 2,
-    fontWeight: 400,
-    lineHeight: 1,
-    transition: 'all 120ms ease',
+  const btnStyle = (active: boolean): React.CSSProperties => ({
+    width: btnW, height: h,
+    background: '#FFFFFF', border: '1px solid #DCDCDC',
+    cursor: disabled || !active ? 'not-allowed' : 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: disabled || !active ? '#DCDCDC' : '#4A4A4A',
+    fontSize: 18, fontWeight: 400, fontFamily: font,
+    transition: 'background 150ms ease',
+    opacity: disabled ? 0.5 : 1,
     flexShrink: 0,
-    outline: 'none',
-    padding: 0,
   });
 
   return (
     <div
       className={className}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        opacity: disabled ? 0.5 : 1,
-        fontFamily: FONT,
-      }}
-      aria-label="Quantity"
+      style={{ display: 'inline-flex', alignItems: 'center', borderRadius: 4, overflow: 'hidden' }}
     >
       <button
         onClick={decrement}
-        disabled={disabled || atMin}
+        disabled={disabled || value <= min}
+        style={{ ...btnStyle(value > min), borderRadius: '4px 0 0 4px', borderRight: 'none' }}
         aria-label="Decrease quantity"
-        style={btnStyle(atMin)}
+        onMouseEnter={e => { if (!disabled && value > min) e.currentTarget.style.background = '#F1F1F1'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
       >
         −
       </button>
-      <div
-        style={{
-          width: 40,
-          height: btnSize,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '1px solid #DCDCDC',
-          borderRadius: 4,
-          background: '#FFFFFF',
-          fontFamily: FONT,
-          fontSize,
-          fontWeight: 600,
-          color: '#4A4A4A',
-          userSelect: 'none',
+      <input
+        type="number"
+        value={value}
+        min={min} max={max}
+        disabled={disabled}
+        onChange={e => {
+          const n = parseInt(e.target.value);
+          if (!isNaN(n) && n >= min && n <= max) onChange(n);
         }}
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {value}
-      </div>
+        style={{
+          width: inputW, height: h,
+          border: '1px solid #DCDCDC', borderLeft: 'none', borderRight: 'none',
+          textAlign: 'center', fontSize: 14, fontFamily: font, color: '#4A4A4A',
+          fontWeight: 600, background: '#FFFFFF', outline: 'none',
+          MozAppearance: 'textfield',
+        }}
+        aria-label="Quantity"
+      />
       <button
         onClick={increment}
-        disabled={disabled || atMax}
+        disabled={disabled || value >= max}
+        style={{ ...btnStyle(value < max), borderRadius: '0 4px 4px 0', borderLeft: 'none' }}
         aria-label="Increase quantity"
-        style={btnStyle(atMax)}
+        onMouseEnter={e => { if (!disabled && value < max) e.currentTarget.style.background = '#F1F1F1'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
       >
         +
       </button>
