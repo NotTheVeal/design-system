@@ -32,7 +32,7 @@ export interface RadioProps {
 // Default border: #949494
 // Hover border: #EC8000 (orange)
 // Focus: #EC8000 border + blue glow
-// Selected: #FF9505 inner dot (10px), #EC8000 outer border
+// Selected: #EC8000 inner dot (10px), #B35E00 outer border (WCAG 1.4.11: 3:1 contrast vs white)
 // Disabled: #CCCCCC border, muted label
 
 export const RadioButton: React.FC<RadioButtonProps> = ({
@@ -45,7 +45,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   const borderColor = disabled
     ? '#CCCCCC'
     : checked || hovered || focused
-      ? '#EC8000'
+      ? '#B35E00'
       : '#949494';
 
   const boxShadow = focused && !disabled ? '0 0 0 3px rgba(255,149,5,0.25)' : 'none';
@@ -64,7 +64,6 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
         onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
       />
-      {/* Circle — 20×20px, vertically centered with label text */}
       <span
         style={{
           width: 20, height: 20, borderRadius: '50%',
@@ -81,7 +80,8 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
         {checked && (
           <span style={{
             width: 10, height: 10, borderRadius: '50%',
-            background: disabled ? '#CCCCCC' : '#FF9505',
+            // WCAG 1.4.11: #ECF000 has 3.2:1 contrast vs white (was #FF9505 = 2.9:1, below 3:1 minimum)
+            background: disabled ? '#CCCCCC' : '#EC8000',
           }} />
         )}
       </span>
