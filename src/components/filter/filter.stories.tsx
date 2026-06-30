@@ -19,7 +19,7 @@ const meta: Meta = {
 
 export default meta;
 
-// ─── Sample data ──────────────────────────────────────────────────────────────
+// âââ Sample data ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const categoryOptions = [
   { label: 'Patient Monitoring', value: 'patient-monitoring' },
@@ -66,10 +66,10 @@ const treeNodes: TreeFilterNode[] = [
   },
 ];
 
-// ─── CheckboxFilter stories ───────────────────────────────────────────────────
+// âââ CheckboxFilter stories âââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export const Default: StoryObj = {
-  name: 'Default — CheckboxFilter',
+  name: 'Default â CheckboxFilter',
   render: () => (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
       <CheckboxFilter label="Category" options={categoryOptions} />
@@ -88,7 +88,7 @@ export const Default: StoryObj = {
 };
 
 export const WithSelection: StoryObj = {
-  name: 'With Selection — CheckboxFilter',
+  name: 'With Selection â CheckboxFilter',
   render: () => (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
       <CheckboxFilter
@@ -109,10 +109,10 @@ export const WithSelection: StoryObj = {
   ),
 };
 
-// ─── TreeFilter stories ───────────────────────────────────────────────────────
+// âââ TreeFilter stories âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export const TreeFilterStory: StoryObj = {
-  name: 'TreeFilter — Hierarchical',
+  name: 'TreeFilter â Hierarchical',
   render: () => (
     <div style={{ width: 280 }}>
       <TreeFilter nodes={treeNodes} defaultValue={['vital-signs', 'ecg', 'ventilators']} />
@@ -121,7 +121,7 @@ export const TreeFilterStory: StoryObj = {
 };
 
 export const TreeFilterWithSearch: StoryObj = {
-  name: 'TreeFilter — With Search',
+  name: 'TreeFilter â With Search',
   render: () => (
     <div style={{ width: 280 }}>
       <TreeFilter
