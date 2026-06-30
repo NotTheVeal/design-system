@@ -4,7 +4,7 @@ export type CartCount = 'Default' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8
 
 export interface CartProps {
   cart?: CartCount;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
 }
 
@@ -17,12 +17,16 @@ const CartIcon = () => (
   </svg>
 );
 
-export const Cart: React.FC<CartProps> = ({ cart = 'Default', onClick, className = '' }) => {
+const Cart = React.forwardRef<HTMLButtonElement, CartProps>(function Cart(
+  { cart = 'Default', onClick, className = '', ...rest },
+  ref,
+) {
   const count = cart === 'Default' ? null : cart;
   const font = "'Source Sans Pro', -apple-system, sans-serif";
 
   return (
     <button
+      ref={ref}
       className={className}
       onClick={onClick}
       aria-label={count ? `Cart, ${count} item${count === '1' ? '' : 's'}` : 'Cart, empty'}
@@ -43,6 +47,7 @@ export const Cart: React.FC<CartProps> = ({ cart = 'Default', onClick, className
       }}
       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,91,166,0.06)')}
       onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+      {...rest}
     >
       <CartIcon />
 
@@ -74,6 +79,7 @@ export const Cart: React.FC<CartProps> = ({ cart = 'Default', onClick, className
       )}
     </button>
   );
-};
+});
 
+export { Cart };
 export default Cart;
