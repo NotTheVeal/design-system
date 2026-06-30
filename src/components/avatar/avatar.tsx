@@ -1,96 +1,230 @@
 import React from 'react';
 
-export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-export type AvatarStatus = 'online' | 'away' | 'busy' | 'offline';
+// Fix: updated to 'Source Sans 3' (Source Sans Pro is deprecated)
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
 
-export interface AvatarProps {
-  name?: string;
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
+export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away';
+
+export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string;
+  alt?: string;
+  initials?: string;
   size?: AvatarSize;
   status?: AvatarStatus;
-  className?: string;
 }
 
-// Figma sizes: XS=24, SM=32, MD=40, LG=48, XL=64
-const SIZES: Record<AvatarSize, number> = { xs:24, sm:32, md:40, lg:48, xl:64 };
-
-// Generated palette — consistent color per name
-const PALETTE = ['#005BA6','#17AB78','#E3A92D','#D32F2F','#6D28D9','#0E7C55','#B45309','#002F48','#009CF4','#FF9505'];
-function getColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return PALETTE[Math.abs(hash) % PALETTE.length];
+export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  avatars: Array<{ src?: string; name?: string; initials?: string; size?: AvatarSize; status?: AvatarStatus }>;
+  max?: number;         // default 4 — shows "+N" after
+  size?: AvatarSize;    // overrides per-avatar size
 }
 
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
+// ── Constants ──────────────────────────────────────────────────────────────────
 
-// Status dot colors per Figma
-const STATUS_COLORS: Record<AvatarStatus, string> = {
-  online:  '#17AB78',
-  away:    '#E3A92D',
-  busy:    '#D32F2F',
-  offline: '#777777',
+const SIZE_MAP: Record<AvatarSize, { px: number; fontSize: number; statusPx: number }> = {
+  sm: { px: 24, fontSize: 10, statusPx: 6  },
+  md: { px: 32, fontSize: 12, statusPx: 8  },
+  lg: { px: 40, fontSize: 15, statusPx: 10 },
+  xl: { px: 56, fontSize: 20, statusPx: 12 },
 };
 
-export const Avatar: React.FC<AvatarProps> = ({
-  name = '', src, size = 'md', status, className = '',
-}) => {
-  const px = SIZES[size];
-  const font = "'Source Sans Pro', -apple-system, sans-serif";
-  const initials = getInitials(name);
-  const bg = src ? 'transparent' : getColor(name || '?');
-  // Status dot sizing per Figma: 14px outer, 10px inner
-  const dotOuter = Math.max(10, Math.round(px * 0.35));
-  const dotInner = Math.max(7, Math.round(px * 0.25));
-  const fontSize = px <= 24 ? 9 : px <= 32 ? 11 : px <= 40 ? 13 : px <= 48 ? 15 : 20;
+// Figma spec: online=#17AB78, busy=#FF0000, away=#E3A92D, offline=#DCDCDC
+const STATUS_COLORS: Record<AvatarStatus, string> = {
+  online:  '#17AB78',  // PS Green (Figma spec exact)
+  busy:    '#FF0000',  // Red (Figma spec exact)
+  away:    '#E3A92D',  // Amber (Figma spec exact)
+  offline: '#DCDCDC',  // Gray-200 (Figma spec exact)
+};
 
-  return (
-    <div className={className} style={{ position: 'relative', width: px, height: px, flexShrink: 0 }}>
-      <div style={{
-        width: px, height: px,
-        borderRadius: '50%',
-        background: bg,
-        border: '2px solid #FFFFFF',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        overflow: 'hidden',
-        fontFamily: font, fontSize, fontWeight: 700, color: '#FFFFFF',
-        userSelect: 'none',
-      }}>
+// ── Avatar Component ───────────────────────────────────────────────────────────
+
+const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+  (
+    {
+      src,
+      alt = '',
+      initials,
+      size = 'md',
+      status,
+      className = '',
+      style,
+      ...rest
+    },
+    ref
+  ) => {
+    const { px, fontSize, statusPx } = SIZE_MAP[size];
+
+    return (
+      <div
+        ref={ref}
+        className={className}
+        {...rest}
+        style={{
+          position: 'relative',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: px,
+          height: px,
+          borderRadius: '50%',
+          overflow: status ? 'visible' : 'hidden',
+          flexShrink: 0,
+          ...style,
+        }}
+      >
         {src ? (
-          <img src={src} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : name ? (
-          initials
+          <img
+            src={src}
+            alt={alt}
+            style={{
+              width: px,
+              height: px,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+          />
         ) : (
-          // Icon fallback
-          <svg width={px * 0.5} height={px * 0.5} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
+          <div
+            aria-label={alt || initials}
+            style={{
+              width: px,
+              height: px,
+              borderRadius: '50%',
+              background: '#005BA6',   // PS Blue initials background
+              color: '#FFFFFF',         // White text on blue
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: FONT,
+              fontSize,
+              fontWeight: 600,
+              lineHeight: 1,
+              userSelect: 'none',
+              letterSpacing: '0.02em',
+            }}
+          >
+            {initials?.slice(0, 2).toUpperCase() ?? '??'}
+          </div>
+        )}
+
+        {status && (
+          <span
+            aria-label={`Status: ${status}`}
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: statusPx,
+              height: statusPx,
+              borderRadius: '50%',
+              background: STATUS_COLORS[status],
+              border: '2px solid #FFFFFF',
+            }}
+          />
         )}
       </div>
-      {/* Status dot — bottom-right, white border ring */}
-      {status && (
-        <span style={{
-          position: 'absolute', bottom: 0, right: 0,
-          width: dotOuter, height: dotOuter,
-          borderRadius: '50%',
-          background: '#FFFFFF',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 0 1.5px #FFFFFF',
-        }}>
-          <span style={{
-            width: dotInner, height: dotInner,
-            borderRadius: '50%',
-            background: STATUS_COLORS[status],
-          }} />
-        </span>
-      )}
-    </div>
-  );
-};
+    );
+  }
+);
 
+Avatar.displayName = 'Avatar';
+
+// ── Avatar Group Component ─────────────────────────────────────────────────────
+// Shows 3-4 overlapping avatars. Overflow badge: "+N" in #DCDCDC bg, dark text.
+// Overlap: -8px margin
+
+const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
+  (
+    {
+      avatars,
+      max = 4,
+      size = 'md',
+      className = '',
+      style,
+      ...rest
+    },
+    ref
+  ) => {
+    const { px } = SIZE_MAP[size];
+    const visible = avatars.slice(0, max);
+    const overflow = avatars.length - max;
+
+    return (
+      <div
+        ref={ref}
+        className={className}
+        {...rest}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          flexDirection: 'row',
+          ...style,
+        }}
+        role="group"
+        aria-label={`${avatars.length} team members`}
+      >
+        {visible.map((av, i) => {
+          const initials = av.initials ?? (av.name ? av.name.split(' ').map(n => n[0]).join('').slice(0, 2) : '??');
+          return (
+            <div
+              key={i}
+              title={av.name}
+              style={{
+                marginLeft: i > 0 ? -8 : 0,
+                zIndex: visible.length - i,
+                position: 'relative',
+                border: '2px solid #FFFFFF',
+                borderRadius: '50%',
+                flexShrink: 0,
+              }}
+            >
+              <Avatar
+                src={av.src}
+                initials={initials}
+                alt={av.name ?? initials}
+                size={av.size ?? size}
+                status={av.status}
+              />
+            </div>
+          );
+        })}
+
+        {overflow > 0 && (
+          <div
+            aria-label={`${overflow} more`}
+            style={{
+              marginLeft: -8,
+              zIndex: 0,
+              position: 'relative',
+              width: px,
+              height: px,
+              borderRadius: '50%',
+              background: '#DCDCDC',      // Figma spec: #DCDCDC bg
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid #FFFFFF',
+              fontFamily: FONT,
+              fontSize: px * 0.28,
+              fontWeight: 700,
+              color: '#4A4A4A',           // Dark text on gray
+              flexShrink: 0,
+              userSelect: 'none',
+            }}
+          >
+            +{overflow}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+AvatarGroup.displayName = 'AvatarGroup';
+
+export { Avatar, AvatarGroup };
 export default Avatar;
