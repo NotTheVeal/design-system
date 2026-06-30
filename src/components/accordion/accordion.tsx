@@ -18,7 +18,7 @@ export interface AccordionProps {
 
 // Figma spec: UI Actions/chevron/right — a right-pointing chevron (›)
 // Collapsed state: rotate(180deg) → points LEFT ‹
-// Expanded state:  rotate(90deg)  → points DOWN ∨
+// Expanded state:  rotate(90deg)  → points DOWN ↓
 const ChevronRight = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 18 15 12 9 6" />
@@ -48,11 +48,6 @@ export const Accordion: React.FC<AccordionProps> = ({
   const isInlineFaq = variant === 'inline-faq';
   const isCard = variant === 'card';
 
-  // Figma exact values:
-  // inline-faq: outer border #DCE6E9, header 56px h, 20px padding, title Regular/400, #002F48, 16px
-  // card: outer border #DCDCDC with shadow, same header sizing
-  // default: no outer border, #DCDCDC dividers between items
-
   const borderColor = (isInlineFaq || isCard) ? '#DCE6E9' : '#DCDCDC';
   const headerHeight = 56;
   const headerPadding = '0 20px';
@@ -70,83 +65,35 @@ export const Accordion: React.FC<AccordionProps> = ({
         overflow: (isInlineFaq || isCard) ? 'hidden' : undefined,
       }}
     >
-      {items.map((item, i) => {
+      {items.map((item) => {
         const isOpen = openIds.has(item.id);
-        const isFirst = i === 0;
+        const triggerId = `accordion-trigger-${item.id}`;
+        const panelId = `accordion-panel-${item.id}`;
 
         return (
-          <div
-            key={item.id}
-            style={{
-              borderBottom: `1px solid ${borderColor}`,
-            }}
-          >
-            {/* Header Row — Figma: h-56px, px-20px, justify-between */}
+          <div key={item.id} style={{ borderBottom: `1px solid ${borderColor}` }}>
             <button
+              id={triggerId}
               onClick={() => !item.disabled && toggle(item.id)}
               aria-expanded={isOpen}
+              aria-controls={panelId}
               disabled={item.disabled}
               style={{
-                width: '100%',
-                height: headerHeight,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: headerPadding,
-                background: '#FFFFFF',
-                border: 'none',
+                width: '100%', height: headerHeight, display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between', padding: headerPadding,
+                background: '#FFFFFF', border: 'none',
                 cursor: item.disabled ? 'not-allowed' : 'pointer',
-                fontFamily: font,
-                // Figma: Source_Sans_Pro:Regular = fontWeight 400, #002F48, 16px
-                fontSize: isInlineFaq ? 16 : (size === 'lg' ? 16 : 15),
-                fontWeight: 400,
-                color: item.disabled ? '#949494' : '#002F48',
-                textAlign: 'left',
-                outline: 'none',
+                fontFamily: font, fontSize: isInlineFaq ? 16 : (size === 'lg' ? 16 : 15),
+                fontWeight: 400, color: item.disabled ? '#949494' : '#002F48',
+                textAlign: 'left', outline: 'none',
               }}
             >
               <span style={{ flex: 1, lineHeight: 1.4 }}>{item.title}</span>
-
-              {/* Figma chevron: right-pointing, rotate(180deg) collapsed, rotate(90deg) expanded */}
-              <span
-                style={{
-                  flexShrink: 0,
-                  width: 24,
-                  height: 24,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: item.disabled ? '#DCE6E9' : '#002F48',
-                  transform: isOpen ? 'rotate(90deg)' : 'rotate(180deg)',
-                  transition: 'transform 220ms ease',
-                }}
-              >
-                <ChevronRight />
-              </span>
+              <span style={{ flexShrink: 0, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.disabled ? '#DCE6E9' : '#002F48', transform: isOpen ? 'rotate(90deg)' : 'rotate(180deg)', transition: 'transform 220ms ease' }}><ChevronRight /></span>
             </button>
-
-            {/* Content Panel */}
-            <div
-              aria-hidden={!isOpen}
-              style={{
-                overflow: 'hidden',
-                maxHeight: isOpen ? 2000 : 0,
-                transition: 'max-height 280ms cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-            >
-              {/* Figma: ContentBody — pb-24px px-20px, #737B84, 14px, line-height 1.6 */}
-              <div
-                style={{
-                  padding: '8px 20px 24px',
-                  background: '#FFFFFF',
-                  fontSize: 14,
-                  fontWeight: 400,
-                  color: '#737B84',
-                  lineHeight: 1.6,
-                  borderTop: `1px solid ${borderColor}`,
-                  fontFamily: font,
-                }}
-              >
+            <div id={panelId} role="region" aria-labelledby={triggerId} aria-hidden={!isOpen}
+              style={{ overflow: 'hidden', maxHeight: isOpen ? 2000 : 0, transition: 'max-height 280ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+              <div style={{ padding: '8px 20px 24px', background: '#FFFFFF', fontSize: 14, fontWeight: 400, color: '#737B84', lineHeight: 1.6, borderTop: `1px solid ${borderColor}`, fontFamily: font }}>
                 {item.content}
               </div>
             </div>
