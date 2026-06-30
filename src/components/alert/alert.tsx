@@ -1,153 +1,293 @@
-import React from 'react';
+/**
+ * Alert — PS Design System 2.0
+ *
+ * 4 variants:
+ *   core        — Basic inline alert (success/danger/warning/info)
+ *   dismissable — Same as core + X close button
+ *   multiline   — Long text wraps; icon aligns to top
+ *   toast       — Fixed position bottom-right, auto-dismiss with countdown bar
+ *
+ * Colors (Figma Alerts page — exact match):
+ *   success: bg #E2F5EE / text+icon #0E7C55  icon: lucide/circle-check-big
+ *   danger:  bg #FDEBEB / text+icon #E00000  icon: lucide/circle-x (XCircle)
+ *   warning: bg #FFF4E5 / text+icon #B45309  icon: lucide/triangle-alert
+ *   info:    bg #EFF9FE / text+icon #005BA6  icon: lucide/info
+ */
 
-export type AlertType = 'success' | 'error' | 'warning' | 'info';
+import React, { useEffect, useState } from 'react';
+import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 
-export interface AlertProps {
-  type?: AlertType;
-  title?: string;
-  message: string;
-  onClose?: () => void;
-  action?: { label: string; onClick: () => void };
-  className?: string;
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+export type AlertType = 'success' | 'danger' | 'warning' | 'info';
+export type AlertVariant = 'core' | 'dismissable' | 'multiline' | 'toast';
+
+export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
+  type: AlertType;
+  variant?: AlertVariant;
+  title: string;
+  message?: string;
+  onDismiss?: () => void;
+  actions?: React.ReactNode;
+  /** Auto-dismiss delay in ms. Only applies to `toast` variant. */
+  autoDismiss?: number;
 }
 
-// Figma exact palette (node 456:199):
-// Success: bg #E2F5EE, text #0E7C55
-// Error/Fail: bg #FEF0F0, text #E00000  ← Figma says E00000 not D32F2F
-// Info: bg #EFF9FE, text #005BA6
-// Warning: bg #FFF4E5, text #B45309
+// ── Config — verified against Figma Alerts page ───────────────────────────────
+// success: bg #E2F5EE / text+icon #0E7C55  (lucide/circle-check-big)
+// danger:  bg #FDEBEB / text+icon #E00000  (lucide/circle-x = XCircle)
+// warning: bg #FFF4E5 / text+icon #B45309  (lucide/triangle-alert)
+// info:    bg #EFF9FE / text+icon #005BA6  (lucide/info)
 
-const STYLES: Record<AlertType, { bg: string; color: string }> = {
-  success: { bg: '#E2F5EE', color: '#0E7C55' },
-  error:   { bg: '#FEF0F0', color: '#E00000' },   // Figma: #E00000
-  warning: { bg: '#FFF4E5', color: '#B45309' },
-  info:    { bg: '#EFF9FE', color: '#005BA6' },
-};
+const ALERT_CONFIG = {
+  success: { bg: '#E2F5EE', color: '#0E7C55', Icon: CheckCircle2 },
+  danger:  { bg: '#FDEBEB', color: '#E00000', Icon: XCircle      },
+  warning: { bg: '#FFF4E5', color: '#B45309', Icon: AlertTriangle },
+  info:    { bg: '#EFF9FE', color: '#005BA6', Icon: Info          },
+} as const;
 
-// Lucide-style SVG icons (24×24)
-const SuccessIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-    <polyline points="22 4 12 14.01 9 11.01"/>
-  </svg>
-);
-const ErrorIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="15" y1="9" x2="9" y2="15"/>
-    <line x1="9" y1="9" x2="15" y2="15"/>
-  </svg>
-);
-const WarningIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-    <line x1="12" y1="9" x2="12" y2="13"/>
-    <line x1="12" y1="17" x2="12.01" y2="17"/>
-  </svg>
-);
-const InfoIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="12" y1="8" x2="12" y2="12"/>
-    <line x1="12" y1="16" x2="12.01" y2="16"/>
-  </svg>
-);
-const CloseIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-    <line x1="18" y1="6" x2="6" y2="18"/>
-    <line x1="6" y1="6" x2="18" y2="18"/>
-  </svg>
-);
+const fontFamily = "'Source Sans 3', -apple-system, sans-serif";
 
-const ICONS: Record<AlertType, React.ReactNode> = {
-  success: <SuccessIcon />,
-  error:   <ErrorIcon />,
-  warning: <WarningIcon />,
-  info:    <InfoIcon />,
-};
+// ── Toast keyframe injection ───────────────────────────────────────────────────
 
-export const Alert: React.FC<AlertProps> = ({
-  type = 'info', title, message, onClose, action, className = '',
-}) => {
-  const s = STYLES[type];
-  const font = "'Source Sans Pro', -apple-system, sans-serif";
+const TOAST_CSS = `
+@keyframes ps-toast-slide-in {
+  from { transform: translateX(110%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes ps-toast-slide-out {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(110%); opacity: 0; }
+}
+@keyframes ps-toast-progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+`;
 
-  return (
-    <div
-      role="alert"
-      className={className}
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 18,             // Figma: 18px gap between icon and text
-        padding: '12px 18px',
-        background: s.bg,
-        color: s.color,
-        fontFamily: font,
-        minHeight: 48,       // Figma: 48px height
-        width: '100%',
-        boxSizing: 'border-box',
-      }}
-    >
-      {/* Lucide icon, 24×24 */}
-      <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center', marginTop: 1 }}>
-        {ICONS[type]}
-      </span>
+let toastCssInjected = false;
+function injectToastCss() {
+  if (toastCssInjected || typeof document === 'undefined') return;
+  const el = document.createElement('style');
+  el.textContent = TOAST_CSS;
+  document.head.appendChild(el);
+  toastCssInjected = true;
+}
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {title && (
-          <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px', marginBottom: 2 }}>
-            {title}
-          </div>
-        )}
-        <div style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px' }}>
-          {message}
-        </div>
-        {action && (
-          <button
-            onClick={action.onClick}
+// ── Alert component ───────────────────────────────────────────────────────────
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  (
+    {
+      type,
+      variant = 'core',
+      title,
+      message,
+      onDismiss,
+      actions,
+      autoDismiss,
+      className = '',
+      style,
+      ...rest
+    },
+    ref
+  ) => {
+    const { bg, color, Icon } = ALERT_CONFIG[type];
+    const [exiting, setExiting] = useState(false);
+    const [visible, setVisible] = useState(true);
+
+    // Toast auto-dismiss
+    useEffect(() => {
+      if (variant !== 'toast' || !autoDismiss) return;
+      const timer = setTimeout(() => {
+        setExiting(true);
+        setTimeout(() => {
+          setVisible(false);
+          onDismiss?.();
+        }, 300);
+      }, autoDismiss);
+      return () => clearTimeout(timer);
+    }, [variant, autoDismiss, onDismiss]);
+
+    injectToastCss();
+
+    const handleDismiss = () => {
+      if (variant === 'toast') {
+        setExiting(true);
+        setTimeout(() => {
+          setVisible(false);
+          onDismiss?.();
+        }, 300);
+      } else {
+        onDismiss?.();
+      }
+    };
+
+    if (!visible) return null;
+
+    // ── Shared inner content ───────────────────────────────────────────────────
+
+    const isMultiline = variant === 'multiline';
+    const showDismiss = variant === 'dismissable' || variant === 'toast' || !!onDismiss;
+
+    const iconAlignSelf: React.CSSProperties['alignSelf'] = isMultiline ? 'flex-start' : 'center';
+
+    const innerContent = (
+      <>
+        <Icon
+          size={20}
+          strokeWidth={1.75}
+          aria-hidden="true"
+          style={{ flexShrink: 0, alignSelf: iconAlignSelf, marginTop: isMultiline ? 1 : 0 }}
+        />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span
             style={{
-              marginTop: 8,
+              fontFamily,
+              fontSize: 14,
+              fontWeight: 600,
+              lineHeight: 1.4,
+              display: 'block',
+              color,
+            }}
+          >
+            {title}
+          </span>
+          {message && (
+            <p
+              style={{
+                fontFamily,
+                fontSize: 14,
+                fontWeight: 400,
+                marginTop: 4,
+                marginBottom: 0,
+                lineHeight: 1.5,
+                color,
+                opacity: 0.9,
+              }}
+            >
+              {message}
+            </p>
+          )}
+          {actions && (
+            <div style={{ marginTop: 10 }}>{actions}</div>
+          )}
+        </div>
+        {showDismiss && (
+          <button
+            onClick={handleDismiss}
+            aria-label="Dismiss alert"
+            style={{
+              flexShrink: 0,
+              alignSelf: 'flex-start',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: 'inherit',
-              fontSize: 13,
-              fontWeight: 600,
-              padding: 0,
-              fontFamily: font,
-              textDecoration: 'underline',
+              padding: 2,
+              color,
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: 2,
+              transition: 'opacity 150ms ease',
+              outline: 'none',
             }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.6'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+            onFocus={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 2px ${color}`; }}
+            onBlur={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none'; }}
           >
-            {action.label}
+            <X size={18} strokeWidth={1.75} />
           </button>
         )}
-      </div>
+      </>
+    );
 
-      {onClose && (
-        <button
-          onClick={onClose}
+    // ── Toast variant ──────────────────────────────────────────────────────────
+
+    if (variant === 'toast') {
+      return (
+        <div
+          ref={ref}
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          className={className}
+          {...rest}
           style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'inherit',
-            padding: 0,
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            opacity: 0.6,
-            transition: 'opacity 150ms',
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            minWidth: 320,
+            maxWidth: 420,
+            backgroundColor: bg,
+            borderRadius: 6,
+            boxShadow: '0 6px 20px rgba(0,47,72,0.18)',
+            overflow: 'hidden',
+            animation: exiting
+              ? 'ps-toast-slide-out 300ms ease forwards'
+              : 'ps-toast-slide-in 300ms ease forwards',
+            ...style,
           }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '0.6')}
-          aria-label="Dismiss"
         >
-          <CloseIcon />
-        </button>
-      )}
-    </div>
-  );
-};
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+              padding: '14px 16px',
+              color,
+              fontFamily,
+            }}
+          >
+            {innerContent}
+          </div>
+          {/* Auto-dismiss progress bar */}
+          {autoDismiss && (
+            <div
+              style={{
+                height: 3,
+                backgroundColor: color,
+                opacity: 0.35,
+                animation: `ps-toast-progress ${autoDismiss}ms linear forwards`,
+                transformOrigin: 'left',
+              }}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // ── Core / Dismissable / Multiline variants ────────────────────────────────
+
+    return (
+      <div
+        ref={ref}
+        role="alert"
+        aria-live="polite"
+        className={className}
+        {...rest}
+        style={{
+          display: 'flex',
+          alignItems: isMultiline ? 'flex-start' : 'center',
+          gap: 12,
+          padding: '12px 16px',
+          borderRadius: 4,
+          width: '100%',
+          backgroundColor: bg,
+          color,
+          boxSizing: 'border-box',
+          fontFamily,
+          ...style,
+        }}
+      >
+        {innerContent}
+      </div>
+    );
+  }
+);
+
+Alert.displayName = 'Alert';
 
 export default Alert;
+export { Alert };
