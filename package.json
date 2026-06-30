@@ -1,7 +1,7 @@
 {
   "name": "@r_november24/react-ui-core",
-  "version": "1.2.2",
-  "description": "PartsSource React component library — design tokens, Tailwind utilities, and 57 production-ready components",
+  "version": "1.3.0",
+  "description": "PartsSource React component library â design tokens, Tailwind utilities, and 57 production-ready components",
   "license": "MIT",
   "author": "PartsSource",
   "homepage": "https://partssourceinc.github.io/react-ui-core",
