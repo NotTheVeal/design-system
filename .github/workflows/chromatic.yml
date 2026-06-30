@@ -39,6 +39,7 @@ jobs:
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          autoAcceptChanges: 'main'
           exitZeroOnChanges: true
           exitOnceUploaded: true
         continue-on-error: true
@@ -51,4 +52,4 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
-            {"text": "[${{ github.workflow }}] ${{ job.status }}: ${{ github.repository }}@${{ github.ref_name }} — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
+            {"text": "[${{ github.workflow }}] ${{ job.status }}: ${{ github.repository }}@${{ github.ref_name }} â <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"}
