@@ -52,7 +52,7 @@ Text and icon actions for use *within* content flow (table cells, body copy, car
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Default: Story = {
-  name: 'Default (link variant)',
+  name: 'Default',
   args: {
     variant: 'link',
     children: 'View Details',
