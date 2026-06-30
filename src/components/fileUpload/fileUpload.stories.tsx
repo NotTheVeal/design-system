@@ -61,12 +61,12 @@ const FileRow = ({ name, size, status, pct }: { name: string; size: string; stat
 };
 
 export const Default: Story = {
-  name: 'Default Drop Zone',
+  name: 'Default',
   args: { accept: '.pdf, .docx, .xlsx', multiple: true },
 };
 
 export const Uploading: Story = {
-  name: 'Uploading — with Progress Bar',
+  name: 'Uploading â with Progress Bar',
   render: () => (
     <div style={{ width: 480, fontFamily: FF }}>
       <FileUpload accept=".pdf" multiple={false} />
@@ -78,7 +78,7 @@ export const Uploading: Story = {
 };
 
 export const UploadComplete: Story = {
-  name: 'Upload Complete — Green Checkmark',
+  name: 'Upload Complete â Green Checkmark',
   render: () => (
     <div style={{ width: 480, fontFamily: FF }}>
       <FileUpload accept=".pdf" multiple={false} />
@@ -90,7 +90,7 @@ export const UploadComplete: Story = {
 };
 
 export const UploadError: Story = {
-  name: 'Upload Error — Red Error Message',
+  name: 'Upload Error â Red Error Message',
   render: () => (
     <div style={{ width: 480, fontFamily: FF }}>
       <FileUpload accept=".pdf" multiple={false} error="One or more files could not be uploaded." />
@@ -102,7 +102,7 @@ export const UploadError: Story = {
 };
 
 export const MultipleFiles: Story = {
-  name: 'Multiple Files — Queued and Uploading',
+  name: 'Multiple Files â Queued and Uploading',
   render: () => (
     <div style={{ width: 480, fontFamily: FF }}>
       <FileUpload accept=".pdf,.docx" multiple />
@@ -116,14 +116,14 @@ export const MultipleFiles: Story = {
 };
 
 export const LargeFile: Story = {
-  name: 'Large File — MB Progress',
+  name: 'Large File â MB Progress',
   render: () => (
     <div style={{ width: 480, fontFamily: FF }}>
       <FileUpload accept=".zip" maxSize={104857600} multiple={false} />
       <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
         <FileRow name="parts-catalog-2026-full.zip" size="87.3 MB" status="uploading" pct={24} />
       </div>
-      <div style={{ marginTop: 6, fontSize: 12, color: '#777', fontFamily: FF }}>Uploading 87.3 MB — 24% complete (approx. 2 min remaining)</div>
+      <div style={{ marginTop: 6, fontSize: 12, color: '#777', fontFamily: FF }}>Uploading 87.3 MB â 24% complete (approx. 2 min remaining)</div>
     </div>
   ),
 };
