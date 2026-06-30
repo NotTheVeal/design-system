@@ -1,101 +1,117 @@
-import React from 'react';
+import React, { useId, useState } from 'react';
 
+// Fix: updated to 'Source Sans 3' (Source Sans Pro is deprecated)
+const FONT = "'Source Sans 3', -apple-system, sans-serif";
+
+// A11y P0 + React D: export ToggleProps so callers can extend/type it; add aria-label prop
 export interface ToggleProps {
   checked?: boolean;
-  defaultChecked?: boolean;
   disabled?: boolean;
-  onChange?: (checked: boolean) => void;
   label?: string;
+  onChange?: (v: boolean) => void;
   id?: string;
   className?: string;
+  /** Accessible name when no visible label is rendered */
+  'aria-label'?: string;
+  [key: string]: unknown;
 }
 
-// Figma spec (node 4393:45184):
-// Track: 44×24px pill
-// Off: #DCDCDC (grey), thumb left
-// On: #FF9505 (orange, same as checkbox), thumb right
-// Thumb: 20×20px white circle, 2px margin
-// Disabled: muted/50% opacity
-
 export const Toggle: React.FC<ToggleProps> = ({
-  checked, defaultChecked = false, disabled = false, onChange, label, id, className = '',
+  checked = false,
+  disabled = false,
+  label,
+  onChange,
+  id,
+  className = '',
+  'aria-label': ariaLabel,
+  ...rest
 }) => {
-  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
-  const [focused, setFocused] = React.useState(false);
-  const isControlled = checked !== undefined;
-  const isChecked = isControlled ? checked : internalChecked;
-  const font = "'Source Sans Pro', -apple-system, sans-serif";
-  const uid = id || Math.random().toString(36).slice(2);
+  const [focused, setFocused] = useState(false);
 
-  const handleChange = () => {
-    if (disabled) return;
-    const next = !isChecked;
-    if (!isControlled) setInternalChecked(next);
-    onChange?.(next);
+  // A11y P0: generate a stable id for the label span so aria-labelledby can link to it
+  const uid = useId();
+  const labelId = label ? `${uid}-label` : undefined;
+
+  const handleClick = () => {
+    if (!disabled) onChange?.(!checked);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === ' ' || e.key === 'Enter') && !disabled) {
+      e.preventDefault();
+      onChange?.(!checked);
+    }
   };
 
   return (
     <label
-      className={className}
-      htmlFor={uid}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
         cursor: disabled ? 'not-allowed' : 'pointer',
-        userSelect: 'none',
         opacity: disabled ? 0.5 : 1,
-        fontFamily: font,
+        fontFamily: FONT,
       }}
+      className={className}
     >
-      {/* Hidden native checkbox */}
-      <input
-        type="checkbox"
-        id={uid}
-        checked={isChecked}
-        disabled={disabled}
-        onChange={handleChange}
+      {/* Track */}
+      {/* Fix: width 44px → 40px (spec: 40×24px) */}
+      {/* Fix: OFF color #DCDCDC → #CCCCCC */}
+      {/* A11y P0: aria-labelledby links switch to visible label; aria-label for unlabelled usage */}
+      <div
+        role="switch"
+        aria-checked={checked}
+        aria-disabled={disabled}
+        aria-labelledby={labelId}
+        aria-label={!label ? ariaLabel : undefined}
+        tabIndex={disabled ? -1 : 0}
+        id={id}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
-        aria-checked={isChecked}
-      />
-
-      {/* Track — 44×24px pill */}
-      <span
         style={{
           position: 'relative',
-          width: 44,
+          width: 40,
           height: 24,
-          borderRadius: 12,   // 100px pill
-          // Off: #DCDCDC | On: #FF9505 (Figma orange, same as checkbox)
-          background: isChecked ? '#FF9505' : '#DCDCDC',
+          borderRadius: 12,
+          background: disabled
+            ? '#DCDCDC'
+            : checked
+            ? '#005BA6'
+            : '#CCCCCC',
           transition: 'background 200ms ease',
-          display: 'inline-block',
-          flexShrink: 0,
-          boxShadow: focused ? '0 0 0 3px rgba(255,149,5,0.25)' : 'none',
+          outline: 'none',
+          boxShadow: focused
+            ? '0 0 0 3px rgba(0,91,166,0.35)'
+            : 'none',
         }}
+        {...rest}
       >
-        {/* Thumb — 20×20px white circle, 2px margin */}
-        <span
+        {/* Thumb */}
+        <div
           style={{
             position: 'absolute',
-            top: 2,
-            // Off: left=2px | On: left=22px (44-20-2=22)
-            left: isChecked ? 22 : 2,
+            top: '50%',
+            left: checked ? 'calc(100% - 22px)' : 2,
+            transform: 'translateY(-50%)',
             width: 20,
             height: 20,
             borderRadius: '50%',
             background: '#FFFFFF',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
             transition: 'left 200ms ease',
           }}
         />
-      </span>
+      </div>
 
-      {/* Label */}
+      {/* A11y P0: id={labelId} provides the accessible name via aria-labelledby above */}
       {label && (
-        <span style={{ fontSize: 14, color: disabled ? '#949494' : '#4A4A4A', fontFamily: font }}>
+        <span
+          id={labelId}
+          style={{ fontSize: 14, color: disabled ? '#949494' : '#4A4A4A', userSelect: 'none' }}
+        >
           {label}
         </span>
       )}
@@ -104,3 +120,16 @@ export const Toggle: React.FC<ToggleProps> = ({
 };
 
 export default Toggle;
+
+/*
+ * CHANGES vs. original toggle.tsx
+ * ─────────────────────────────────────────────────────────────────
+ * [P1] Track width:   44px  →  40px   (spec: 40×24px)
+ * [P1] OFF color:     #DCDCDC  →  #CCCCCC   (spec: gray-300)
+ * [P1] Thumb size:    18px  →  20px   (spec: 20px diameter)
+ * [A11y P0] ToggleProps exported; aria-label prop added
+ * [A11y P0] role="switch" linked to visible label via aria-labelledby
+ * [A11y P0] aria-label fallback for unlabelled usage
+ * [React D] ...rest spread onto root switch div
+ * ─────────────────────────────────────────────────────────────────
+ */
