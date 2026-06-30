@@ -55,12 +55,12 @@ const STATUS_CONFIG: Record<
   TakeActionStatus,
   { label: string; bg: string; color: string; dot: string }
 > = {
-  available:      { label: 'Available',     bg: '#E6F7EF', color: '#0E7D4B', dot: '#17AB78' },
-  'low-stock':    { label: 'Low Stock',     bg: '#FEF5E6', color: '#92621A', dot: '#E3A92D' },
-  'out-of-stock': { label: 'Out of Stock',  bg: '#FEF0F0', color: '#B00000', dot: '#E00000' },
-  pending:        { label: 'Pending',       bg: '#EFF9FE', color: '#005BA6', dot: '#009CF4' },
-  approved:       { label: 'Approved',      bg: '#E6F7EF', color: '#0E7D4B', dot: '#17AB78' },
-  'on-order':     { label: 'On Order',      bg: '#F3F0FF', color: '#5B21B6', dot: '#7C3AED' },
+  available:     { label: 'Available',     bg: '#E6F7EF', color: '#0E7D4B', dot: '#17AB78' },
+  'low-stock':   { label: 'Low Stock',     bg: '#FEF5E6', color: '#92621A', dot: '#E3A92D' },
+  'out-of-stock':{ label: 'Out of Stock',  bg: '#FEF0F0', color: '#B00000', dot: '#E00000' },
+  pending:       { label: 'Pending',       bg: '#EFF9FE', color: '#005BA6', dot: '#009CF4' },
+  approved:      { label: 'Approved',      bg: '#E6F7EF', color: '#0E7D4B', dot: '#17AB78' },
+  'on-order':    { label: 'On Order',      bg: '#F3F0FF', color: '#5B21B6', dot: '#7C3AED' },
 };
 
 // ── Image / icon placeholder ───────────────────────────────────────────────────
