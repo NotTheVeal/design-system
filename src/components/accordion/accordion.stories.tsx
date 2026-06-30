@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { Accordion, AccordionCard } from './accordion';
-import type { AccordionItem, AccordionCardItem } from './accordion';
+import { Accordion } from './accordion';
+import type { AccordionItem } from './accordion';
 
 // ─── Sample data ──────────────────────────────────────────────────────────────
 
@@ -10,7 +10,7 @@ const FAQ_ITEMS: AccordionItem[] = [
     id: 'q1',
     title: 'What is ProProcure?',
     content:
-      'ProProcure is PartsSource's cloud-based procurement platform for healthcare, providing centralized purchasing, supplier management, and spend analytics.',
+      'ProProcure is PartsSource’s cloud-based procurement platform for healthcare, providing centralized purchasing, supplier management, and spend analytics.',
   },
   {
     id: 'q2',
@@ -21,7 +21,6 @@ const FAQ_ITEMS: AccordionItem[] = [
   {
     id: 'q3',
     title: 'Can I track my order status?',
-    defaultOpen: true,
     content:
       'Yes. Go to Orders → My Orders to see real-time status for all submitted POs including shipping tracking numbers once dispatched.',
   },
@@ -56,9 +55,9 @@ const CARD_CONTENT = (
   </div>
 );
 
-const CARD_ITEMS: AccordionCardItem[] = [
+const CARD_ITEMS: AccordionItem[] = [
   { id: 'collapsed', title: 'Accordion Header Collapsed', content: CARD_CONTENT },
-  { id: 'expanded',  title: 'Accordion Header Expanded',  defaultOpen: true, content: CARD_CONTENT },
+  { id: 'expanded',  title: 'Accordion Header Expanded',  content: CARD_CONTENT },
 ];
 
 // ─── Meta ─────────────────────────────────────────────────────────────────────
@@ -87,7 +86,7 @@ Figma: \`Accordion-Section\` node \`4390:39583\`
 - White card, \`4px\` border-radius, \`2px solid #F1F1F1\` border
 - 60px header · Source Sans Pro 25px/300 (Light) · \`#000000\`
 - Drag grip handle on left · 14px \`#777777\` chevron
-        `.trim(),
+`.trim(),
       },
     },
   },
@@ -100,7 +99,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   name: 'Inline — FAQ (default)',
-  args: { items: FAQ_ITEMS, multiple: false },
+  args: { items: FAQ_ITEMS, allowMultiple: false },
   parameters: {
     docs: {
       description: {
@@ -113,7 +112,7 @@ export const Default: Story = {
 
 export const MultipleOpen: Story = {
   name: 'Inline — Multiple open',
-  args: { items: FAQ_ITEMS, multiple: true },
+  args: { items: FAQ_ITEMS, allowMultiple: true },
 };
 
 export const WithDisabledItem: Story = {
@@ -130,7 +129,8 @@ export const WithDisabledItem: Story = {
 export const Controlled: Story = {
   name: 'Inline — Controlled state',
   render: () => {
-    const [open, setOpen] = useState<string[]>(['q1']);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [openIds, setOpenIds] = useState<string[]>(['q1']);
     return (
       <div>
         <div style={{ marginBottom: 12, display: 'flex', gap: 8 }}>
@@ -138,14 +138,14 @@ export const Controlled: Story = {
             <button
               key={item.id}
               onClick={() =>
-                setOpen(prev =>
+                setOpenIds(prev =>
                   prev.includes(item.id) ? prev.filter(x => x !== item.id) : [...prev, item.id],
                 )
               }
               style={{
                 padding: '4px 12px', borderRadius: 4, border: '1px solid #DCDCDC',
-                background: open.includes(item.id) ? '#005BA6' : '#fff',
-                color: open.includes(item.id) ? '#fff' : '#4A4A4A',
+                background: openIds.includes(item.id) ? '#005BA6' : '#fff',
+                color: openIds.includes(item.id) ? '#fff' : '#4A4A4A',
                 fontSize: 12, cursor: 'pointer',
                 fontFamily: "'Source Sans 3', sans-serif",
               }}
@@ -154,7 +154,7 @@ export const Controlled: Story = {
             </button>
           ))}
         </div>
-        <Accordion items={FAQ_ITEMS} openItems={open} onOpenChange={setOpen} multiple />
+        <Accordion items={FAQ_ITEMS} defaultOpen={openIds} allowMultiple />
       </div>
     );
   },
@@ -164,7 +164,7 @@ export const Controlled: Story = {
 
 export const CardDefault: Story = {
   name: 'Card — Figma Accordion-Section',
-  render: () => <AccordionCard items={CARD_ITEMS} />,
+  render: () => <Accordion variant="card" items={CARD_ITEMS} defaultOpen={['expanded']} />,
   parameters: {
     docs: {
       description: {
@@ -178,7 +178,8 @@ export const CardDefault: Story = {
 export const CardAllCollapsed: Story = {
   name: 'Card — All collapsed',
   render: () => (
-    <AccordionCard
+    <Accordion
+      variant="card"
       items={[
         { id: 'a', title: 'Accordion Header Collapsed', content: CARD_CONTENT },
         { id: 'b', title: 'Service Orders Q2 2025',     content: CARD_CONTENT },
@@ -190,11 +191,13 @@ export const CardAllCollapsed: Story = {
 export const CardMultiple: Story = {
   name: 'Card — Both open (multiple)',
   render: () => (
-    <AccordionCard
-      multiple
+    <Accordion
+      variant="card"
+      allowMultiple
+      defaultOpen={['a', 'b']}
       items={[
-        { id: 'a', title: 'Accordion Header Expanded', defaultOpen: true, content: CARD_CONTENT },
-        { id: 'b', title: 'Service Orders Q2 2025',    defaultOpen: true, content: CARD_CONTENT },
+        { id: 'a', title: 'Accordion Header Expanded', content: CARD_CONTENT },
+        { id: 'b', title: 'Service Orders Q2 2025',    content: CARD_CONTENT },
       ]}
     />
   ),
@@ -203,10 +206,12 @@ export const CardMultiple: Story = {
 export const CardWithSubtitle: Story = {
   name: 'Card — With subtitle',
   render: () => (
-    <AccordionCard
+    <Accordion
+      variant="card"
+      defaultOpen={['b']}
       items={[
-        { id: 'a', title: 'Active Service Orders', subtitle: '5 items', content: CARD_CONTENT },
-        { id: 'b', title: 'Completed Orders',      subtitle: '142 items', defaultOpen: true, content: CARD_CONTENT },
+        { id: 'a', title: 'Active Service Orders', content: CARD_CONTENT },
+        { id: 'b', title: 'Completed Orders',      content: CARD_CONTENT },
       ]}
     />
   ),
@@ -226,7 +231,7 @@ export const BothVariants: Story = {
         <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#777', marginBottom: 12 }}>
           CARD
         </p>
-        <AccordionCard items={CARD_ITEMS} />
+        <Accordion variant="card" items={CARD_ITEMS} defaultOpen={['expanded']} />
       </div>
     </div>
   ),
@@ -268,10 +273,10 @@ const ActivityRow = ({ orderId, partName, updated }: { orderId: string; partName
 
 const IN_PROGRESS_CONTENT = (
   <div>
-    <ActivityRow orderId="PS-100821" partName="Ventilator Flow Sensor, Hamilton G5"       updated="Updated 2h ago" />
-    <ActivityRow orderId="PS-100834" partName="ECG Cable, 5-Lead Banana, GE DASH 3000"    updated="Updated 4h ago" />
-    <ActivityRow orderId="PS-100849" partName="Infusion Pump Module, Alaris 8100"         updated="Updated 6h ago" />
-    <ActivityRow orderId="PS-100862" partName="Pulse Ox Probe, Adult Reusable, Nellcor"   updated="Updated 1d ago" />
+    <ActivityRow orderId="PS-100821" partName="Ventilator Flow Sensor, Hamilton G5"          updated="Updated 2h ago" />
+    <ActivityRow orderId="PS-100834" partName="ECG Cable, 5-Lead Banana, GE DASH 3000"       updated="Updated 4h ago" />
+    <ActivityRow orderId="PS-100849" partName="Infusion Pump Module, Alaris 8100"            updated="Updated 6h ago" />
+    <ActivityRow orderId="PS-100862" partName="Pulse Ox Probe, Adult Reusable, Nellcor"      updated="Updated 1d ago" />
   </div>
 );
 
@@ -279,7 +284,6 @@ const IN_PROGRESS_ITEMS: AccordionItem[] = [
   {
     id: 'active-repairs',
     title: 'Active Repairs',
-    defaultOpen: true,
     content: IN_PROGRESS_CONTENT,
   },
   {
@@ -297,10 +301,10 @@ const IN_PROGRESS_ITEMS: AccordionItem[] = [
 export const InProgressActivity: Story = {
   name: 'In-Progress Activity',
   render: () => (
-    <div style={{ maxWidth: 640 }}>
+    <div style={{ maxWidth: 640, borderLeft: '4px solid #005BA6', backgroundColor: '#FFFFFF' }}>
       <Accordion
         items={IN_PROGRESS_ITEMS}
-        style={{ borderLeft: '4px solid #005BA6', backgroundColor: '#FFFFFF' }}
+        defaultOpen={['active-repairs']}
       />
     </div>
   ),
@@ -366,10 +370,10 @@ const ServiceEventRow = ({
 
 const SERVICE_EVENT_CONTENT = (
   <div>
-    <ServiceEventRow type="repair"      description="Replaced worn drive belt assembly on unit B-224."           timestamp="Jun 12, 2025 09:14" />
-    <ServiceEventRow type="inspection"  description="Routine PM — all vitals within spec, no issues found."       timestamp="Apr 30, 2025 13:45" />
-    <ServiceEventRow type="replacement" description="Battery pack replaced due to capacity below 80% threshold."  timestamp="Feb 18, 2025 11:02" />
-    <ServiceEventRow type="install"     description="Initial installation and commissioning completed."            timestamp="Nov 03, 2024 08:30" />
+    <ServiceEventRow type="repair"      description="Replaced worn drive belt assembly on unit B-224."              timestamp="Jun 12, 2025 09:14" />
+    <ServiceEventRow type="inspection"  description="Routine PM — all vitals within spec, no issues found."         timestamp="Apr 30, 2025 13:45" />
+    <ServiceEventRow type="replacement" description="Battery pack replaced due to capacity below 80% threshold."    timestamp="Feb 18, 2025 11:02" />
+    <ServiceEventRow type="install"     description="Initial installation and commissioning completed."              timestamp="Nov 03, 2024 08:30" />
   </div>
 );
 
@@ -438,7 +442,6 @@ const NAV_ITEMS: AccordionItem[] = [
   {
     id: 'quick-links',
     title: 'Quick Links',
-    defaultOpen: true,
     content: (
       <div style={{ padding: '0 16px 10px', fontFamily: FONT_STACK, fontSize: 12, lineHeight: 1.8 }}>
         {['Order History', 'Supplier Catalog', 'Spend Analytics', 'Support'].map((link) => (
@@ -454,13 +457,11 @@ const NAV_ITEMS: AccordionItem[] = [
 export const TopHeaderAccordion: Story = {
   name: 'Top Header (NavTop) Accordion',
   render: () => (
-    <div style={{ maxWidth: 340, border: '1px solid #DCDCDC', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ maxWidth: 340, border: '1px solid #DCDCDC', borderRadius: 4, overflow: 'hidden', backgroundColor: '#FAFAFA' }}>
       <Accordion
         items={NAV_ITEMS}
-        style={{
-          backgroundColor: '#FAFAFA',
-          // Override individual item padding via wrapper — items render flush
-        }}
+        defaultOpen={['quick-links']}
+        className="nav-top-accordion"
       />
     </div>
   ),
