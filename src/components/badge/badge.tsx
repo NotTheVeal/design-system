@@ -35,7 +35,10 @@ const STATUS_STYLES: Record<BadgeStatus, { bg: string; border: string }> = {
   'neutral':     { bg: '#F7F7F7', border: '#B6B6B6' },
 };
 
-export const Badge: React.FC<BadgeProps> = ({ label, status = 'neutral', variant = 'status', icon }) => {
+const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
+  { label, status = 'neutral', variant = 'status', icon, ...rest },
+  ref,
+) {
   const font = "'Source Sans Pro', -apple-system, sans-serif";
   const s = STATUS_STYLES[status] || STATUS_STYLES.neutral;
   const base: React.CSSProperties = {
@@ -46,22 +49,23 @@ export const Badge: React.FC<BadgeProps> = ({ label, status = 'neutral', variant
     border: `1px solid ${s.border}`, background: s.bg,
   };
   if (variant === 'chip') {
-    return <span style={{ ...base, height: 20, padding: '0 8px', borderRadius: 100 }}>
+    return <span ref={ref} style={{ ...base, height: 20, padding: '0 8px', borderRadius: 100 }} {...rest}>
       {icon && <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>}
       {label}
     </span>;
   }
   if (variant === 'list' || variant === 'assignment') {
-    return <span style={{ ...base, height: 26, padding: '0 12px', borderRadius: 100 }}>
+    return <span ref={ref} style={{ ...base, height: 26, padding: '0 12px', borderRadius: 100 }} {...rest}>
       {icon && <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>}
       {label}
     </span>;
   }
   // status variant: 26px height, px-16, 4px radius
-  return <span style={{ ...base, height: 26, padding: '5px 16px', borderRadius: 4 }}>
+  return <span ref={ref} style={{ ...base, height: 26, padding: '5px 16px', borderRadius: 4 }} {...rest}>
     {icon && <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>}
     {label}
   </span>;
-};
+});
 
+export { Badge };
 export default Badge;
