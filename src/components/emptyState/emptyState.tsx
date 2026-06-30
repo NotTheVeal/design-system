@@ -66,62 +66,21 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     <div
       className={className}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 12,
-        padding: 40,
-        background: '#FFFFFF',
-        border: '1px solid #DCDCDC',
-        borderRadius: 8,          // Figma: rounded-[8px]
-        width: isFull ? 480 : 320,
-        minHeight: isFull ? 320 : 240,
-        fontFamily: font,
-        textAlign: 'center',
-        boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        gap: 12, padding: 40,
+        background: '#FFFFFF', border: '1px solid #DCDCDC', borderRadius: 8,
+        width: isFull ? 480 : 320, minHeight: isFull ? 320 : 240,
+        fontFamily: font, textAlign: 'center', boxSizing: 'border-box',
       }}
     >
-      {/* Icon badge — 72×72 circle, #F1F1F1 bg */}
-      <div style={{
-        width: 72, height: 72,
-        borderRadius: '50%',
-        background: '#F1F1F1',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexShrink: 0,
-      }}>
+      <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#F1F1F1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {iconEl}
       </div>
-
-      {/* Title — SemiBold 18px #4A4A4A */}
-      <p style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#4A4A4A', fontFamily: font, lineHeight: 1.3 }}>
-        {displayTitle}
-      </p>
-
-      {/* Description — Regular 14px #777777 */}
-      <p style={{ margin: 0, fontSize: 14, fontWeight: 400, color: '#777777', fontFamily: font, lineHeight: 1.5, maxWidth: 360 }}>
-        {displayDesc}
-      </p>
-
-      {/* Action — Secondary LG style */}
+      <p style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#4A4A4A', fontFamily: font, lineHeight: 1.3 }}>{displayTitle}</p>
+      <p style={{ margin: 0, fontSize: 14, fontWeight: 400, color: '#777777', fontFamily: font, lineHeight: 1.5, maxWidth: 360 }}>{displayDesc}</p>
       {action && (
-        <button
-          onClick={action.onClick}
-          style={{
-            marginTop: 8,
-            height: 50,
-            padding: '0 40px',
-            background: '#FFFFFF',
-            border: '2px solid #005BA6',
-            borderRadius: 4,
-            fontSize: 16, fontWeight: 600,
-            color: '#005BA6',
-            cursor: 'pointer',
-            fontFamily: font,
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            transition: 'all 200ms ease',
-          }}
+        <button onClick={action.onClick}
+          style={{ marginTop: 8, height: 50, padding: '0 40px', background: '#FFFFFF', border: '2px solid #005BA6', borderRadius: 4, fontSize: 16, fontWeight: 600, color: '#005BA6', cursor: 'pointer', fontFamily: font, textTransform: 'uppercase', letterSpacing: '0.5px', transition: 'all 200ms ease' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#005BA6'; e.currentTarget.style.color = '#FFFFFF'; }}
           onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.color = '#005BA6'; }}
         >
