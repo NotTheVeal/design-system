@@ -69,7 +69,7 @@ const treeNodes: TreeFilterNode[] = [
 // âââ CheckboxFilter stories âââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export const Default: StoryObj = {
-  name: 'Default â CheckboxFilter',
+  name: 'Default',
   render: () => (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
       <CheckboxFilter label="Category" options={categoryOptions} />
