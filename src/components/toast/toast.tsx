@@ -1,72 +1,159 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-export interface ToastMessage { id: string; type: ToastType; title: string; message?: string; duration?: number; }
-export interface ToastProps { toasts?: ToastMessage[]; position?: string; onDismiss?: (id: string) => void; className?: string; }
+const fontFamily = "'Source Sans Pro', 'Source Sans 3', sans-serif";
 
-const COLORS: Record<ToastType, { border: string; icon: string; bar: string }> = {
-  success: { border: '#17AB78', icon: '#0E7C55', bar: '#17AB78' },
-  error:   { border: '#D32F2F', icon: '#D32F2F', bar: '#D32F2F' },
-  warning: { border: '#E3A92D', icon: '#B45309', bar: '#E3A92D' },
-  info:    { border: '#005BA6', icon: '#005BA6', bar: '#005BA6' },
+type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+
+interface ToastProps {
+  message: string;
+  variant?: ToastVariant;
+  title?: string;
+  onDismiss?: () => void;
+  duration?: number;
+  className?: string;
+}
+
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const XCircleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="15" y1="9" x2="9" y2="15" />
+    <line x1="9" y1="9" x2="15" y2="15" />
+  </svg>
+);
+
+const AlertIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+    <line x1="12" y1="9" x2="12" y2="13" />
+    <line x1="12" y1="17" x2="12.01" y2="17" />
+  </svg>
+);
+
+const InfoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="12" />
+    <line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+const VARIANTS: Record<ToastVariant, {
+  bg: string; borderColor: string; iconColor: string; titleColor: string; textColor: string; icon: React.ReactNode;
+}> = {
+  success: {
+    bg: '#E2F5EE', borderColor: '#0E7C55', iconColor: '#0E7C55',
+    titleColor: '#0E7C55', textColor: '#0E7C55', icon: <CheckIcon />,
+  },
+  error: {
+    bg: '#FEF0F0', borderColor: '#E00000', iconColor: '#E00000',
+    titleColor: '#E00000', textColor: '#E00000', icon: <XCircleIcon />,
+  },
+  warning: {
+    bg: '#FFF4E5', borderColor: '#B45309', iconColor: '#B45309',
+    titleColor: '#B45309', textColor: '#B45309', icon: <AlertIcon />,
+  },
+  info: {
+    bg: '#EFF9FE', borderColor: '#005BA6', iconColor: '#005BA6',
+    titleColor: '#005BA6', textColor: '#005BA6', icon: <InfoIcon />,
+  },
 };
 
-const SuccessIcon = () => (<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#0E7C55"/><path d="M5 9l3 3 5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>);
-const ErrorIcon = () => (<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#D32F2F"/><path d="M6 6l6 6M12 6l-6 6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/></svg>);
-const WarningIcon = () => (<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1L1 16h16L9 1z" fill="#E3A92D"/><path d="M9 7v4M9 13h.01" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/></svg>);
-const InfoIcon = () => (<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#005BA6"/><path d="M9 8v5M9 6h.01" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/></svg>);
-const CloseIcon = () => (<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="#949494" strokeWidth="1.5" strokeLinecap="round"/></svg>);
-
-const ICONS: Record<ToastType, React.ReactNode> = { success: <SuccessIcon />, error: <ErrorIcon />, warning: <WarningIcon />, info: <InfoIcon /> };
-
-const ToastItem: React.FC<{ toast: ToastMessage; onDismiss: (id: string) => void }> = ({ toast, onDismiss }) => {
-  const [progress, setProgress] = useState(100);
-  const [visible, setVisible] = useState(false);
-  const dur = toast.duration ?? 4000;
-  const c = COLORS[toast.type];
-  const font = "'Source Sans Pro', -apple-system, sans-serif";
-  useEffect(() => { const t = setTimeout(() => setVisible(true), 10); return () => clearTimeout(t); }, []);
+const Toast: React.FC<ToastProps> = ({
+  message,
+  variant = 'info',
+  title,
+  onDismiss,
+  duration = 5000,
+  className = '',
+}) => {
   useEffect(() => {
-    if (!dur) return;
-    const start = Date.now();
-    const iv = setInterval(() => {
-      const p = Math.max(0, 100 - ((Date.now() - start) / dur) * 100);
-      setProgress(p);
-      if (p <= 0) { clearInterval(iv); dismiss(); }
-    }, 50);
-    return () => clearInterval(iv);
-  }, []);
-  const dismiss = useCallback(() => { setVisible(false); setTimeout(() => onDismiss(toast.id), 250); }, [toast.id]);
-  const isError = toast.type === 'error';
+    if (duration > 0 && onDismiss) {
+      const timer = setTimeout(onDismiss, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [duration, onDismiss]);
+
+  const v = VARIANTS[variant];
+
   return (
-    <div role={isError ? 'alert' : 'status'} aria-live={isError ? 'assertive' : 'polite'} aria-atomic="true"
-      style={{ background:'#FFFFFF', border:'1px solid #DCDCDC', borderLeft:`4px solid ${c.border}`, borderRadius:4, boxShadow:'0 4px 16px rgba(0,47,72,.12)', minWidth:300, maxWidth:400, overflow:'hidden', fontFamily:font, transform:visible?'translateX(0)':'opacity', opacity:visible?1:0, transition:'all 250ms ease' }}>
-      <div style={{ padding:'12px 14px', display:'flex', gap:10, alignItems:'flex-start' }}>
-        <span style={{ flexShrink:0, display:'flex', alignItems:'center', marginTop:1 }}>{ICOMStoast.type]}</span>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:14, fontWeight:600, color:'#002F48', lineHeight:'20px' }}>{toast.title}</div>
-          {toast.message && <div style={{ fontSize:13, color:'#777777', lineHeight:'18px', marginTop:2 }}>{toast.message}</div>}
-        </div>
-        <button onClick={dismiss} style={{ background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', alignItems:'center', flexShrink:0, marginTop:2 }} aria-label="Dismiss"><CloseIcon /></button>
+    <div
+      role="alert"
+      aria-live="polite"
+      className={className}
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 12,
+        minWidth: 320,
+        maxWidth: 380,
+        padding: '14px 16px',
+        borderRadius: 8,
+        borderLeft: `4px solid ${v.borderColor}`,
+        background: v.bg,
+        boxShadow: '0 6px 20px rgba(0,47,72,0.18)',
+        fontFamily,
+      }}
+    >
+      {/* Icon */}
+      <span style={{ flexShrink: 0, color: v.iconColor, marginTop: 1, display: 'flex' }}>
+        {v.icon}
+      </span>
+
+      {/* Content */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {title && (
+          <p style={{ margin: '0 0 2px', fontSize: 14, fontWeight: 600, color: v.titleColor, fontFamily }}>
+            {title}
+          </p>
+        )}
+        <p style={{ margin: 0, fontSize: 14, fontWeight: 400, color: v.textColor, fontFamily }}>
+          {message}
+        </p>
       </div>
-      {!!dur && (<div style={{ height:3, background:'#F1F1F1' }}><div style={{ height:'100%', background:c.bar, width:progress+'%', transition:'width 50ms linear' }} /></div>)}
+
+      {/* Dismiss */}
+      {onDismiss && (
+        <button
+          onClick={onDismiss}
+          aria-label="Dismiss notification"
+          style={{
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 24,
+            height: 24,
+            border: 'none',
+            background: 'transparent',
+            color: v.iconColor,
+            cursor: 'pointer',
+            opacity: 0.6,
+            borderRadius: 4,
+            padding: 0,
+            transition: 'opacity 150ms ease',
+            fontFamily,
+          }}
+          onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.opacity = '1'}
+          onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.opacity = '0.6'}
+        >
+          <CloseIcon />
+        </button>
+      )}
     </div>
   );
 };
-
-const POSITIONS: Record<string, React.CSSProperties> = { 'top-right': { top:16, right:16 }, 'top-left': {* top:16, left:16 }, 'bottom-right': { bottom:16, right:16 }, 'bottom-left': { bottom:16, left:16 } };
-
-export const Toast: React.FC<ToastProps> = ({ toasts = [], position = 'top-right', onDismiss, className = '' }) => (
-  <div className={className} style={{ position:'fixed', zIndex:9999, display:'flex', flexDirection:'column', gap:8, ...POSITIONS[position||'top-right'] }}>
-    {toasts.map(t => <ToastItem key={t.id} toast={t} onDismiss={onDismiss || (() => {})} />)}
-  </div>
-);
-
-export function useToast() {
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const add = useCallback((t: Omit<ToastMessage, 'id'>) => { const id = Date.now().toString(); setToasts(p => [...p, { ...t, id }]); return id; }, []);
-  const dismiss = useCallback((id: string) => setToasts(p => p.filter(t => t.id !== id)), []);
-  return { toasts, dismiss, success: (title: string, message?: string) => add({ type:'success', title, message }), error: (title: string, message?: string) => add({ type:'error', title, message }), warning: (title: string, message?: string) => add({ type:'warning', title, message }), info: (title: string, message?: string) => add({ type:'info', title, message }) };
-}
 
 export default Toast;
