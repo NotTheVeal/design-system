@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { within, userEvent } from '@storybook/testing-library';
-import { expect } from '@storybook/jest';
+import { within, userEvent, expect } from '@storybook/test';
 import { Tabs } from './tabs';
 
 const meta = {
@@ -12,14 +11,14 @@ const meta = {
     docs: {
       description: {
         component: `
-**PS Design System — Tabs**
+**PS Design System â Tabs**
 
 Horizontal tab navigation with active indicator. Key spec values (FIXED):
 
 - **Active indicator**: 3px solid #005BA6 at the **TOP** of the tab *(spec: top border, not bottom)*
 - **Active text**: #005BA6 (PS Blue), font-weight 700
-- **Inactive text**: #777777 *(was #4A4A4A — too dark)*
-- **Hover text**: #002F48 (Midnight) *(was #005BA6 — now correct)*
+- **Inactive text**: #777777 *(was #4A4A4A â too dark)*
+- **Hover text**: #002F48 (Midnight) *(was #005BA6 â now correct)*
 - **Count badge**: active = PS Blue bg + white text, inactive = #DCDCDC bg + #777777 text
         `.trim(),
       },
@@ -29,7 +28,7 @@ Horizontal tab navigation with active indicator. Key spec values (FIXED):
     size: {
       control: 'select',
       options: ['default', 'sm'],
-      description: 'Tab height — default=44px, sm=36px',
+      description: 'Tab height â default=44px, sm=36px',
     },
   },
 } satisfies Meta<typeof Tabs>;
@@ -37,7 +36,7 @@ Horizontal tab navigation with active indicator. Key spec values (FIXED):
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Default ──────────────────────────────────────────────────────────────────
+// âââ Default ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const Default: Story = {
   name: 'Default',
   render: () => {
@@ -74,7 +73,7 @@ export const Default: Story = {
   },
 };
 
-// ─── With Badge Counts ────────────────────────────────────────────────────────
+// âââ With Badge Counts ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const WithBadgeCounts: Story = {
   name: 'With Badge Counts',
   render: () => {
@@ -91,7 +90,7 @@ export const WithBadgeCounts: Story = {
       <div style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
         <Tabs tabs={tabs} value={tab} onChange={setTab} />
         <div style={{ padding: '16px 0', fontSize: 14, color: '#4A4A4A' }}>
-          Showing: <strong>{tabs.find(t => t.value === tab)?.label}</strong> —{' '}
+          Showing: <strong>{tabs.find(t => t.value === tab)?.label}</strong> â{' '}
           {tabs.find(t => t.value === tab)?.count} items
         </div>
       </div>
@@ -100,13 +99,13 @@ export const WithBadgeCounts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Tabs with count badges — active tab badge is PS Blue + white, inactive is #DCDCDC + #777777.',
+        story: 'Tabs with count badges â active tab badge is PS Blue + white, inactive is #DCDCDC + #777777.',
       },
     },
   },
 };
 
-// ─── Small Size ───────────────────────────────────────────────────────────────
+// âââ Small Size âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const Small: Story = {
   name: 'Small (sm)',
   render: () => {
@@ -130,13 +129,13 @@ export const Small: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Small variant — 36px height, 13px font. Used in compact panels and sidebars.',
+        story: 'Small variant â 36px height, 13px font. Used in compact panels and sidebars.',
       },
     },
   },
 };
 
-// ─── With Disabled Tab ────────────────────────────────────────────────────────
+// âââ With Disabled Tab ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const WithDisabledTab: Story = {
   name: 'With Disabled Tab',
   render: () => {
@@ -152,7 +151,7 @@ export const WithDisabledTab: Story = {
       <div style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
         <Tabs tabs={tabs} value={tab} onChange={setTab} />
         <div style={{ padding: '16px 0', fontSize: 13, color: '#777777' }}>
-          Forecasting and Export tabs are disabled — restricted to admin users.
+          Forecasting and Export tabs are disabled â restricted to admin users.
         </div>
       </div>
     );
@@ -160,13 +159,13 @@ export const WithDisabledTab: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Tabs with some options disabled — fot-allowed cursor, #AAAAAA text, not keyboard-focusable.',
+        story: 'Tabs with some options disabled â fot-allowed cursor, #AAAAAA text, not keyboard-focusable.',
       },
     },
   },
 };
 
-// ─── With Panel Content ───────────────────────────────────────────────────────
+// âââ With Panel Content âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const WithPanelContent: Story = {
   name: 'With Tab Panel Content',
   render: () => {
@@ -198,7 +197,7 @@ export const WithPanelContent: Story = {
             <div role="tabpanel" style={{ fontFamily: "'Source Sans 3', sans-serif", paddingTop: 16 }}>
               <div style={{ fontSize: 14, color: '#4A4A4A' }}>
                 <p style={{ margin: '0 0 12px' }}>
-                  <strong>PO-2024-0895</strong> · Centrifugal Pump 2" · Grundfos
+                  <strong>PO-2024-0895</strong> Â· Centrifugal Pump 2" Â· Grundfos
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px', fontSize: 13 }}>
                   <div><span style={{ color: '#777777' }}>Status</span><br /><strong>Under Review</strong></div>
@@ -227,7 +226,7 @@ export const WithPanelContent: Story = {
                     {[
                       { pn: 'PUMP-CENT-2', desc: 'Centrifugal Pump 2"', total: '$3,890.00' },
                       { pn: 'SEAL-OIL-25', desc: 'Oil Seal Kit', total: '$24.50' },
-                      { pn: 'BOLT-M12-SS', desc: 'M12 Stainless Bolts ×8', total: '$18.40' },
+                      { pn: 'BOLT-M12-SS', desc: 'M12 Stainless Bolts Ã8', total: '$18.40' },
                       { pn: 'GASKET-100', desc: 'Pump Inlet Gasket', total: '$12.10' },
                     ].map(row => (
                       <tr key={row.pn} style={{ borderBottom: '1px solid #DCDCDC' }}>
@@ -256,7 +255,7 @@ export const WithPanelContent: Story = {
                       borderBottom: '1px solid #DCDCDC',
                     }}
                   >
-                    <span style={{ fontSize: 20 }}>📄</span>
+                    <span style={{ fontSize: 20 }}>ð</span>
                     <span style={{ fontSize: 13 }}>{doc}</span>
                   </div>
                 ))}
@@ -287,7 +286,7 @@ export const WithPanelContent: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Full tabs + panel content integration — realistic PO detail view with four content panels.',
+        story: 'Full tabs + panel content integration â realistic PO detail view with four content panels.',
       },
     },
   },
@@ -300,7 +299,7 @@ export const WithPanelContent: Story = {
   },
 };
 
-// ─── All States ───────────────────────────────────────────────────────────────
+// âââ All States âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export const AllStates: Story = {
   name: 'All States',
   render: () => {
@@ -369,7 +368,7 @@ export const AllStates: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'All tab configurations — default, badge counts, small, with disabled tab.',
+        story: 'All tab configurations â default, badge counts, small, with disabled tab.',
       },
     },
   },
